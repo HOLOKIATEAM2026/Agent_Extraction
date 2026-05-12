@@ -1,0 +1,13 @@
+langchain
+langchain-groq
+langchain-community
+langchain-ollama
+langchain-openai
+python-dotenv
+pyyaml
+requests
+pymupdf
+pandas
+python-docx
+chromadb
+langchain-chroma

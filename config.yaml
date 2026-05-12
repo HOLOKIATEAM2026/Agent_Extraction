@@ -1,0 +1,32 @@
+default_provider: "groq"
+default_model: "llama-3.1-8b-instant"
+
+embeddings:
+  provider: "ollama"
+  model: "nomic-embed-text"
+  base_url: "http://localhost:11434"
+  sync_client_kwargs:
+    timeout: 60.0
+
+vectorstore:
+  type: "chroma"
+  persist_dir: "vectorstore/chroma"
+  collection_name: "reports"
+
+providers:
+  groq:
+    model: "llama-3.1-8b-instant"
+    temperature: 0.0
+    
+  ollama:
+    model: "mistral"
+    base_url: "http://localhost:11434"
+    temperature: 0.0
+    
+  openai:
+    model: "gpt-4o"
+    temperature: 0.0
+    
+  gemini:
+    model: "gemini-1.5-pro"
+    temperature: 0.0
