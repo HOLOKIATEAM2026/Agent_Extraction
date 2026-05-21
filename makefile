@@ -30,3 +30,19 @@ ollama pull nomic-embed-text
 
 # Test retrieval (après indexation)
 .\venv\Scripts\python.exe test\test_retrieval.py
+
+#T3
+.\venv\Scripts\python.exe run_approach_a.py --input data\raw\Maroc_Telecom\2024\Maroc_Telecom_RFA_2024.pdf --provider groq --max-chars 5000 --max-chunks 1
+
+#T3.2
+.\venv\Scripts\python.exe build_index.py --reset --data-dir data\raw\Maroc_Telecom --limit-files 2
+.\venv\Scripts\python.exe run_approach_b.py --input data\raw\Maroc_Telecom\2024\Maroc_Telecom_RFA_2024.pdf --provider groq --top-k 2 --max-chunks 8
+
+#T3.3
+.\venv\Scripts\python.exe run_approach_c.py --input data\raw\Maroc_Telecom\2024\Maroc_Telecom_RFA_2024.pdf --provider groq --steps 8 --top-k 2
+
+#T3.4
+.\venv\Scripts\python.exe run_approach_d.py --input data\raw\Maroc_Telecom\2024\Maroc_Telecom_RFA_2024.pdf --provider groq --top-k 2 --max-chunks 10 --fix-passes 1 --max-llm-context-chars 6500
+
+#T3.5
+.\venv\Scripts\python.exe benchmark\compare.py --glob "benchmark/out/*.json" --out benchmark\comparison.md
