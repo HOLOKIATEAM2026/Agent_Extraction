@@ -1,0 +1,660 @@
+<SEC-DOCUMENT>0000350894-23-000017.txt : 20230224
+<SEC-HEADER>0000350894-23-000017.hdr.sgml : 20230224
+<ACCEPTANCE-DATETIME>20230224131529
+ACCESSION NUMBER:		0000350894-23-000017
+CONFORMED SUBMISSION TYPE:	10-K/A
+PUBLIC DOCUMENT COUNT:		4
+CONFORMED PERIOD OF REPORT:	20221231
+FILED AS OF DATE:		20230224
+DATE AS OF CHANGE:		20230224
+
+FILER:
+
+	COMPANY DATA:	
+		COMPANY CONFORMED NAME:			SEI INVESTMENTS CO
+		CENTRAL INDEX KEY:			0000350894
+		STANDARD INDUSTRIAL CLASSIFICATION:	SECURITY BROKERS, DEALERS & FLOTATION COMPANIES [6211]
+		IRS NUMBER:				231707341
+		STATE OF INCORPORATION:			PA
+		FISCAL YEAR END:			1231
+
+	FILING VALUES:
+		FORM TYPE:		10-K/A
+		SEC ACT:		1934 Act
+		SEC FILE NUMBER:	000-10200
+		FILM NUMBER:		23665358
+
+	BUSINESS ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19456-1100
+		BUSINESS PHONE:		6106761000
+
+	MAIL ADDRESS:	
+		STREET 1:		1 FREEDOM VALLEY DRIVE
+		CITY:			OAKS
+		STATE:			PA
+		ZIP:			19456-1100
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SEI INVESTMENT CO
+		DATE OF NAME CHANGE:	20040806
+
+	FORMER COMPANY:	
+		FORMER CONFORMED NAME:	SEI CORP
+		DATE OF NAME CHANGE:	19920703
+</SEC-HEADER>
+<DOCUMENT>
+<TYPE>10-K/A
+<SEQUENCE>1
+<FILENAME>seic-12312022form10xka.htm
+<DESCRIPTION>FORM 10-K/A
+<TEXT>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<!-- Document created using Wdesk -->
+<!-- Copyright 2023 Workiva -->
+<title>Document</title></head><body><div id="i79c4cf60f9bf458db241d597a5887ebe_33"></div><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="margin-top:3pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:18pt;font-weight:700;line-height:120%">UNITED STATES</font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:18pt;font-weight:700;line-height:120%">SECURITIES AND EXCHANGE COMMISSION</font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:700;line-height:120%">Washington, D.C. 20549</font></div><div style="margin-top:4pt;text-align:center"><font><br></font></div><div style="margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:18pt;font-weight:700;line-height:120%">FORM 10-K&#47;A </font></div><div style="margin-bottom:4pt;margin-top:4pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:700;line-height:120%">&#160;(Amendment No. 1)</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:4.756%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:93.044%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9746;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:100%">ANNUAL REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934</font></td></tr></table></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">For the fiscal year ended December&#160;31, 2022 </font></div><div style="margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">OR</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:4.756%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:93.044%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9744;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:100%">TRANSITION REPORT PURSUANT TO SECTION 13 OR 15(d) OF THE SECURITIES EXCHANGE ACT OF 1934</font></td></tr></table></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">For the transition period from</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline">_________</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">to</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%;text-decoration:underline"> ________</font></div><div><font><br></font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Commission File Number&#58; 0-10200 </font></div><div style="margin-bottom:6pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">________________________________________</font></div><div style="margin-top:5pt;text-align:center"><img alt="seilogo.jpg" src="seilogo.jpg" style="height:125px;margin-bottom:5pt;vertical-align:text-bottom;width:125px"></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">________________________________________</font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:18pt;font-weight:700;line-height:120%">SEI INVESTMENTS COMPANY </font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">(Exact name of Registrant as Specified in Its Charter)</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:47.948%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:2.560%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:46.192%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">Pennsylvania</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">23-1707341</font></td></tr><tr><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">State or Other Jurisdiction of Incorporation or Organization</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">I.R.S. Employer Identification No.</font></td></tr></table></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">1 Freedom Valley Drive </font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Oaks, PA 19456 </font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:120%">(Address of Principal Executive Offices and Zip Code)</font></div><div style="margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">610-676-1000 </font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:120%">(Registrant&#8217;s Telephone Number, Including Area Code)</font></div><div style="margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Securities registered pursuant to Section&#160;12(b) of the Act&#58;</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.583%"><tr><td style="width:1.0%"></td><td style="width:41.924%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:0.534%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:11.381%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:0.534%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:41.927%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:100%">Title of each class</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:100%">Trading Symbol</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:100%">Name of each exchange on which registered</font></td></tr><tr><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Common Stock, par value $.01 per share</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">SEIC</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">The NASDAQ Stock Market LLC</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(The NASDAQ Global Select Market&#174;)</font></td></tr></table></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Securities registered pursuant to Section&#160;12(g) of the Act&#58;</font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%;text-decoration:underline">None</font></div><div style="text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:700;line-height:120%">(Title of class)</font></div><div style="margin-top:4pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark if the registrant is a well-known seasoned issuer, as defined in Rule 405 of the Securities Act.  </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">Yes </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9746;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">&#160;&#160;&#160;No&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9744;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">&#160;</font></div><div style="margin-top:9pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark if the registrant is not required to file reports pursuant to Section&#160;13 or 15(d) of the Act.  </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">Yes&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9744;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">&#160;&#160;&#160;&#160;No&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9746;</font></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="margin-top:4pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark whether the registrant (1)&#160;has filed all reports required to be filed by Section&#160;13 or 15(d) of the Securities Exchange Act of 1934 during the preceding 12&#160;months (or for such shorter period that the registrant was required to file such reports), and (2)&#160;has been subject to such filing requirements for the past 90&#160;days.  </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%"> Yes&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9746;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">&#160;&#160;&#160;&#160;No&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9744;</font></div><div style="margin-top:4pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark whether the registrant has submitted electronically every Interactive Data File required to be submitted pursuant to Rule&#160;405 of Regulation&#160;S-T (&#167;&#160;232.405 of this chapter) during the preceding 12&#160;months (or for such shorter period that the registrant was required to submit such files).&#160;&#160; </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">Yes&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9746;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">&#160;&#160;&#160;&#160;No&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9744;</font></div><div style="margin-top:9pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark whether the registrant is a large accelerated filer, an accelerated filer, a non-accelerated filer, smaller reporting company, or an emerging growth company. See the definitions of &#8220;large accelerated filer,&#8221; &#8220;accelerated filer,&#8221; &#8220;smaller reporting company,&#8221; and &#8220;emerging growth company&#8221; in Rule 12b-2 of the Exchange Act.</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:34.185%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:3.145%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:19.544%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:34.478%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:3.148%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%">Large accelerated filer</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9746;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%">Accelerated&#160;filer</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9744;</font></td></tr><tr style="height:3pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%">Non-accelerated filer</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><div style="margin-top:4pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9744;</font></div></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%">Smaller&#160;reporting&#160;company</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><div style="margin-top:4pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9744;</font></div></td></tr><tr style="height:3pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:100%">Emerging growth company</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><div style="margin-top:4pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">&#9744;</font></div></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr></table></div><div><font><br></font></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">If an emerging growth company, indicate by check mark if the registrant has elected not to use the extended transition period for complying with any new or revised financial accounting standards provided pursuant to Section 13(a) of the Exchange Act.&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%">&#9744;</font></div><div><font><br></font></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark whether the registrant has filed a report on and attestation to its management&#8217;s assessment of the effectiveness of its internal control over financial reporting under Section 404(b) of the Sarbanes-Oxley Act (15 U.S.C. 7262(b)) by the registered public accounting firm that prepared or issued its audit report.</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:12pt;font-weight:400;line-height:120%"> &#9746;</font></div><div><font><br></font></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Indicate by check mark whether the registrant is a shell company (as defined in Rule&#160;12b-2 of the Act).&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Yes </font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">&#9744;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">&#160;&#160;No&#160;&#160;</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">&#9746;</font></div><div style="margin-top:9pt;text-align:justify"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">The aggregate market value of the voting common stock held by non-affiliates of the registrant was approximately $5.4 billion based on the closing price reported by NASDAQ on June&#160;30, 2022 (the last business day of the registrant&#8217;s most recently completed second fiscal quarter). For purposes of making this calculation only, the registrant has defined affiliates as including all executive officers, directors and beneficial owners of more than 10% of the common stock of the registrant.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">The number of shares outstanding of the registrant's common stock, as of the close of business on January&#160;31, 2023&#58;</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:47.948%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:2.560%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:46.192%"></td><td style="width:0.1%"></td></tr><tr style="height:9pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">Common Stock, $.01 par value</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:100%">134,264,038</font></td></tr></table></div><div style="text-align:center"><font><br></font></div><div style="margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">DOCUMENTS INCORPORATED BY REFERENCE</font></div><div style="margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">Portions of the following documents are incorporated by reference herein&#58;</font></div><div><font><br></font></div><div style="padding-left:18pt;text-indent:-18pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:400;line-height:120%">1.&#160;&#160;&#160;&#160;The definitive proxy statement relating to the registrant&#8217;s 2023 Annual Meeting of Shareholders, to be filed within 120 days after the end of the fiscal year covered by this annual report, is incorporated by reference in Part III hereof.</font></div><div style="padding-left:18pt;text-indent:-18pt"><font><br></font></div><div style="padding-left:18pt;text-indent:-18pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:9pt;font-weight:700;line-height:120%">Explanatory Note&#58; </font></div><div style="margin-top:3pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">We are filing this Amendment No. 1 on Form 10-K&#47;A (&#8220;Amendment No. 1&#8221;) to our Annual Report on Form 10-K filed with the Securities and Exchange Commission (&#8220;SEC&#8221;) on February 21, 2023 (&#8220;Original Form 10-K&#8221;) solely to revise the listing captioned &#8220;Identification of Executive Officers&#8221; of Item&#160;10. Directors, Executive Officers and Corporate Governance. In the Original Form 10-K, Philip N. McCabe was inadvertently excluded from the listing of executive officers due to an administrative error and is now included in this Amendment No. 1. This Amendment No. 1 does not reflect events occurring after the filing of the Original Form 10-K on February 21, 2023 and no attempt has been made in this Amendment No. 1 to modify or update other disclosures as presented in the Original Form 10-K. Accordingly, this Amendment No. 1 should be read in conjunction with the Original Form 10-K.</font></div><div style="text-align:center"><font><br></font></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><div id="i79c4cf60f9bf458db241d597a5887ebe_86"></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="margin-top:9pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">PART III</font></div><div><font><br></font></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Item&#160;10. Directors, Executive Officers and Corporate Governance.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Identification of Executive Officers</font></div><div style="margin-top:3pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">The Board of Directors of the Company has determined that the Company&#8217;s executive officers within the meaning of Rule 3b-7 promulgated under the Securities Exchange Act of 1934, as amended, are as follows&#58;</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">ALFRED P. WEST, JR.,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 80, has been the Executive Chairman of our Board of Directors since June 2022. Prior to June 2022, Mr. West served as our Chief Executive Officer since we were founded in 1968. Additionally, Mr.&#160;West also served as our President from June 1979 to August 1990.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">RYAN P. HICKE,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 45, has been an employee since May 1998, and our Chief Executive Officer since June 2022. Prior to his appointment as our Chief Executive Officer, Mr. Hicke was one of our Executive Vice Presidents from November 2018 until June 2022. Mr. Hicke served as our Chief Information Officer from November 2018 to June 2022, and was a Senior Vice President from 2015 until November 2018.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">KATHY C. HEILIG,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 64, has been an employee since November 1987, and has served as our Chief Accounting Officer and Controller since May 1999. Ms.&#160;Heilig was our Treasurer from May 1997 to May 2005.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">PHILIP N. MCCABE,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 60, has been an employee since February 1989, and one of our Executive Vice Presidents since March 2022. Mr. McCabe was a Senior Vice President from January 2016 until March 2022.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">DENNIS J. MCGONIGLE,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 62, has been an employee since August 1985 and has served as our Chief Financial Officer since December 2002, as well as one of our Executive Vice Presidents since July 1996. Mr. McGonigle was a Senior Vice President from May 1995 until July 1996.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">MICHAEL N. PETERSON,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 56, has been one of our Executive Vice Presidents and has served as our General Counsel since June 2018. Prior to February 2018, Mr. Peterson was a partner of Morgan, Lewis &#38; Bockius LLP, a law firm, and from February 2018 until May 2018, Mr.&#160;Peterson was a partner of Reed Smith LLP, a law firm.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">SANJAY K. SHARMA</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">, 53, has been one of our Executive Vice Presidents since June 2022. Mr. Sharma was a Senior Vice President from August 2008 until June 2022.</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">WAYNE M. WITHROW,</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%"> 67, has been an employee since January 1990, and one of our Executive Vice Presidents since March 2000. Mr. Withrow was a Senior Vice President from January 1994 until March 2000. Mr.&#160;Withrow served as our Chief Information Officer from March 2000 to May 2002.</font></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><div id="i79c4cf60f9bf458db241d597a5887ebe_142"></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="margin-top:9pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">PART IV</font></div><div><font><br></font></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">Item&#160;15. Exhibits, Financial Statement Schedules.</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:100.000%"><tr><td style="width:1.0%"></td><td style="width:11.816%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:85.984%"></td><td style="width:0.1%"></td></tr><tr style="height:6pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(a) (1)&#160;and&#160;(2)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:underline">Financial Statements and Financial Statement Schedules</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">. The following is a list of the Consolidated Financial Statements of the Company and its subsidiaries and supplementary data filed as part of Item&#160;8 hereof&#58;</font></div></td></tr><tr style="height:6pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Reports of Independent Registered Public Accounting Firm</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Consolidated Balance Sheets &#8212; December 31, 2022 and 2021</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Consolidated Statements of Operations &#8212; For the years ended December 31, 2022, 2021 and 2020</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Consolidated Statements of Comprehensive Income &#8212; For the years ended December 31, 2022, 2021 and 2020</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Consolidated Statements of Changes in Equity &#8212; For the years ended December 31, 2022, 2021 and 2020</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Consolidated Statements of Cash Flows &#8212; For the years ended December 31, 2022, 2021 and 2020</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Notes to Consolidated Financial Statements</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Schedule II - Valuation and Qualifying Accounts and Reserves &#8212; For the years ended December 31, 2022, 2021 and 2020</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">All other schedules are omitted because they are not applicable, or not required, or because the required information is included in the Consolidated Financial Statements or notes thereto.</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(a) (3)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:underline">Exhibits, Including Those Incorporated by Reference</font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">. The exhibits to this Report are listed on the accompanying index to exhibits and are incorporated herein by reference or are filed as part of this Amendment No. 1.</font></div></td></tr></table></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><div id="i79c4cf60f9bf458db241d597a5887ebe_39"></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="-sec-extract:summary"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">EXHIBIT INDEX</font></div><div style="margin-bottom:12pt;margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">The following is a list of exhibits filed as part of this Amendment No. 1 to Form 10-K. </font></div><div style="margin-bottom:12pt;margin-top:14pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:93.888%"><tr><td style="width:1.0%"></td><td style="width:12.657%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:2.894%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:1.723%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:79.226%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.1</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(P)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Articles of Incorporation of the Registrant as amended on January&#160;21, 1983. (Incorporated by reference to exhibit 3.1 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 1982.)</font></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.1.2</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(P)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Amendment to Articles of Incorporation of the Registrant, dated May&#160;21, 1992. (Incorporated by reference to exhibit 3.1.2 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 1992.)</font></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.1.3</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(P)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Amendment to Articles of Incorporation of the Registrant, dated May&#160;26, 1994. (Incorporated by reference to exhibit 3.1.3 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 1994.)</font></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.1.4</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(P)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Amendment to Articles of Incorporation of the Registrant, dated November&#160;21, 1996. (Incorporated by reference to exhibit 3.1.4 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 1996.)</font></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.1.5</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000103605001000535/0001036050-01-000535-0002.txt" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Amendment to Articles of Incorporation of the Registrant, dated February&#160;14, 2001. (Incorporated by reference to exhibit 3.1.5 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2000.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">3.2</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089422000014/seic993seiinvestmentscom.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Amended and Restated By-Laws. (Incorporated by reference to exhibit 99.3 to the Registrant&#8217;s Current Report on Form 8-K dated March 31, 2022.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 12.25pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">4.2</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312509001551/dex31.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Statement with Respect to Shares of a Domestic Corporation amending the designations of Series A Junior Participating Preferred Shares as a series of the Series Preferred Stock of the Company, dated January&#160;6, 2009. (Incorporated by reference to exhibit 3.1 to the Registrant&#8217;s Current Report on Form 8-K dated January&#160;6, 2009.)</a></font></div></td></tr><tr style="height:3pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="6" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Note&#58; Exhibits 10.1 through 10.13 constitute the management contracts and executive compensatory plans or arrangements in which certain of the directors and executive officers of the Registrant participate.</font></td></tr><tr style="height:3pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="6" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.1</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089422000037/seic-630202210qex101.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">2014 Omnibus Equity Compensation Plan Restricted Stock Unit Agreement. (Incorporated by reference to exhibit 10.1 to the Registrant's Quarterly Report on Form 10-Q for the quarterly period ended June 30, 2022.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.2</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089423000012/exhibit102-2014omnibuseq.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">2014 Omnibus Equity Compensation Plan Stock Option Grant Agreement.</a></font><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"> </font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.4</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000104746903041116/a2124967zex-99_1.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">1998 Equity Compensation Plan, Amended and Restated as of April&#160;8, 2003. (Incorporated by reference to exhibit 99.1 to the Registrant&#8217;s Registration Statement on Form S-8 (No. 333-111224) filed December&#160;16, 2003.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.4.1</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312507038332/dex1041.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Amendment 2006-1 to the 1998 Equity Compensation Plan, Amended and Restated as of April&#160;8, 2003. (Incorporated by reference to exhibit 10.4.1 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2006.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.5</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312508120013/dex1011.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Employee Stock Purchase Plan as Amended and Restated on May&#160;20, 2008. (Incorporated by reference to the Registrant&#8217;s Current Report on Form 8-K dated May&#160;20, 2008.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.6</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/0001036050-97-001106-index.html" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">SEI Capital Accumulation Plan. (Incorporated by reference to exhibit 99(e) to the Registrant&#8217;s Registration Statement on Form S-8 (No. 333-41343) filed December&#160;2, 1997.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.10</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312507078563/dex1010.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">2007 Equity Compensation Plan. (Incorporated by reference to exhibit 10.10 to the Registrant&#8217;s Current Report on Form 8-K dated April&#160;11, 2007.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.11</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000035089414000038/form8-k5x21x14exhibit1011.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">2014 Omnibus Equity Compensation Plan. (Incorporated by reference to exhibit 10.11 to the Registrant&#8217;s Current Report on Form 8-K dated May 21, 2014.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.12</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000035089419000012/seic-12311810kex1012.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Employment Agreement, dated May 2, 2018, between Michael N. Peterson and the Registrant. (Incorporated by reference to exhibit 10.12 to the Registrant's Annual Report on Form 10-K for the fiscal year ended December 31, 2018.)</a></font></div></td></tr></table></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div style="margin-bottom:12pt;margin-top:9pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:93.888%"><tr><td style="width:1.0%"></td><td style="width:12.657%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:2.894%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:1.723%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:79.226%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.13</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089422000014/seic991hickeemploymentag.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Employment Agreement, dated March 31, 2022, between Ryan Hicke and the Registrant. (Incorporated by reference to exhibit 99.1 to the Registrant's Current Report on Form 8-K dated March 31, 2022.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.22</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312506056025/dex1022.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Credit Facility, dated January&#160;14, 2003 between Royal Bank of Canada and SEI Investments Canada Company, a subsidiary of SEI Investments Company. (Incorporated by reference to exhibit 10.22 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2005.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.22.1</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312506056025/dex10221.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">First Amendment, dated June&#160;15, 2005 to Credit Facility, dated January&#160;14, 2003 between Royal Bank of Canada and SEI Investments Canada Company, a subsidiary of SEI Investments Company. (Incorporated by reference to exhibit 10.22.1 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2005.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.22.2</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312506056025/dex10222.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Second Amendment, dated February&#160;20, 2006 to Credit Facility, dated January&#160;14, 2003 between Royal Bank of Canada and SEI Investments Canada Company, a subsidiary of SEI Investments Company. (Incorporated by reference to exhibit 10.22.2 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2005.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">10.27</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089421000023/sei-executioncreditagree.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Credit Agreement, dated as of April 23, 2021 among SEI Investments Company, the Lenders, U.S. Bank National Association, as Syndication Agent, Bank of America, N.A., Citizens Bank, N.A., Manufacturers and Traders Trust Company and Regions Bank, as Documentation Agents, and Wells Fargo Bank, National Association, as Administrative Agent (Incorporated by reference to exhibit 10.27 to the Registrant&#8217;s Quarterly Report on Form 10-Q for the quarterly period ended March 31, 2021.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">14</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="http://www.sec.gov/Archives/edgar/data/350894/000119312504041807/dex14.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Code of Ethics for Senior Financial Officers. (Incorporated by reference to exhibit 14 to the Registrant&#8217;s Annual Report on Form 10-K for the fiscal year ended December&#160;31, 2003.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">21</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089423000012/seic-1231202210kex21.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Subsidiaries of the Registrant.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">23.1</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089423000012/seic-1231202210kex231.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Consent of KPMG LLP.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">23.2</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089423000012/seic-1231202210kex232.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Consent of KPMG LLP relating to the financial statements of LSV Asset Management.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">31.1</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="seic-1231202210kaex311.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Rule 13a-15(e)&#47;15d-15(e) Certification of Principal Executive Officer.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 7.75pt 2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">31.2</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="seic-1231202210kaex312.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Rule 13a-15(e)&#47;15d-15(e) Certification of Principal Financial Officer.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">99.10</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089420000012/seic-12311910kex9910.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Financial Statements of LSV Asset Management dated December 31, 2019 and 2018. (Incorporated by reference to exhibit 99.10 to the Registrant's Annual Report on Form 10-K for the fiscal year ended December 31, 2019.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">99.11</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089421000010/seic-1231202010kex9911.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Financial Statements of LSV Asset Management dated December 31, 2020 and 2019. (Incorporated by reference to exhibit 99.11 to the Registrant's Annual Report on Form 10-K for the fiscal year ended December 31, 2020.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">99.12</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089422000007/seic-1231202110kex9912.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Financial Statements of LSV Asset Management dated December 31, 2021 and 2020. (Incorporated by reference to exhibit 99.12 to the Registrant's Annual Report on Form 10-K for the fiscal year ended December 31, 2021.)</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">99.13</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%"><a href="https://www.sec.gov/Archives/edgar/data/350894/000035089423000012/seic-1231202210kex9913.htm" style="-sec-extract:exhibit;color:#0000ff;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:none">Financial Statements of LSV Asset Management dated December 31, 2022 and 2021.</a></font></div></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.INS</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Instance Document - the instance document does not appear in the Interactive Data File because its XBRL tags are embedded within the Inline XBRL document.<br></font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.SCH</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Taxonomy Extension Schema Document</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.CAL</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Taxonomy Extension Calculation Linkbase Document</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.LAB</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Taxonomy Extension Label Linkbase Document</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.PRE</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Taxonomy Extension Presentation Linkbase Document</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:right;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">101.DEF</font></td><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:8pt;font-weight:400;line-height:100%">&#160;&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">XBRL Taxonomy Extension Definition Linkbase Document</font></td></tr></table></div><div><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:94.861%"><tr><td style="width:1.0%"></td><td style="width:2.853%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:94.947%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">(P)</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Paper Exhibit</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:center;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">*</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Previously filed with our 2022 Form 10-K, originally filed with the Commission on February 21, 2023, which is being amended hereby</font></td></tr></table></div><div style="margin-bottom:12pt;margin-top:9pt"><font><br></font></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div><div id="i79c4cf60f9bf458db241d597a5887ebe_47"></div><hr style="page-break-after:always"><div style="min-height:42.7pt;width:100%"><div><font><br></font></div></div><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">SIGNATURES</font></div><div style="margin-top:9pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">Pursuant to the requirements of Section&#160;13 or 15(d) of the Securities Exchange Act of 1934, the Registrant has duly caused this Amendment No. 1 to Form 10-K to be signed on its behalf by the undersigned, thereunto duly authorized.</font></div><div style="margin-top:5pt"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:100.000%"><tr><td style="width:1.0%"></td><td style="width:4.447%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:34.822%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:2.435%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:2.783%"></td><td style="width:0.1%"></td><td style="width:0.1%"></td><td style="width:2.435%"></td><td style="width:0.1%"></td><td style="width:1.0%"></td><td style="width:48.278%"></td><td style="width:0.1%"></td></tr><tr style="height:15pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="9" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">SEI INVESTMENTS COMPANY</font></td></tr><tr style="height:9pt"><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="6" style="padding:0 1pt"></td><td colspan="6" style="padding:0 1pt"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Date&#58;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><div><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%;text-decoration:underline">February&#160;24, 2023</font></div></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">By&#58;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#47;s&#47; Dennis J. McGonigle</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Dennis J. McGonigle</font></td></tr><tr><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:0 1pt"></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#160;</font></td><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:top"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Chief Financial Officer</font></td></tr></table></div><div style="margin-top:4pt"><font><br></font></div><div style="height:42.75pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div></body></html>
+</TEXT>
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-31.1
+<SEQUENCE>2
+<FILENAME>seic-1231202210kaex311.htm
+<DESCRIPTION>SECTION 302 PRINCIPAL EXECUTIVE OFFICER CERTIFICATION
+<TEXT>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<!-- Document created using Wdesk -->
+<!-- Copyright 2023 Workiva -->
+<title>Document</title></head><body><div id="ic2c52cf0fd3a46a5b2343a98df927f39_1"></div><div style="min-height:45pt;width:100%"><div><font><br></font></div></div><div style="margin-bottom:5pt;margin-top:5pt;text-align:right"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">EXHIBIT 31.1 </font></div><div style="margin-bottom:5pt;margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">CERTIFICATIONS </font></div><div style="margin-bottom:5pt;margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">I, Ryan P. Hicke, certify that&#58; </font></div><div style="margin-bottom:5pt;margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">1. I have reviewed this Amendment No. 1 to Annual Report on Form 10-K of SEI Investments Company&#59; and</font></div><div style="margin-bottom:5pt;margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">2. Based on my knowledge, this report does not contain any untrue statement of a material fact or omit to state a material fact necessary to make the statements made, in light of the circumstances under which such statements were made, not misleading with respect to the period covered by this report&#59; </font></div><div style="margin-bottom:6pt;margin-top:6pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">Date&#58; February&#160;24, 2023 </font></div><div style="margin-top:5pt;text-align:right"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:55.555%"><tr><td style="width:1.0%"></td><td style="width:98.900%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#47;s&#47; Ryan P. Hicke</font></td></tr><tr><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Ryan P. Hicke</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Chief Executive Officer</font></td></tr></table></div><div style="margin-bottom:5pt;text-align:right"><font><br></font></div><div><font><br></font></div><div style="height:45pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div></body></html>
+</TEXT>
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>EX-31.2
+<SEQUENCE>3
+<FILENAME>seic-1231202210kaex312.htm
+<DESCRIPTION>SECTION 302 PRINCIPAL FINANCIAL OFFICER CERTIFICATION
+<TEXT>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<!-- Document created using Wdesk -->
+<!-- Copyright 2023 Workiva -->
+<title>Document</title></head><body><div id="ia6307b5d0b284f18ab1c4580e964dd45_1"></div><div style="min-height:45pt;width:100%"><div><font><br></font></div></div><div style="margin-bottom:5pt;margin-top:5pt;text-align:right"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">EXHIBIT 31.2 </font></div><div style="margin-bottom:5pt;margin-top:5pt;text-align:center"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:700;line-height:120%">CERTIFICATIONS </font></div><div style="margin-bottom:6pt;margin-top:6pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">I, Dennis J. McGonigle, certify that&#58; </font></div><div style="margin-bottom:5pt;margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">1. I have reviewed this Amendment No. 1 to Annual Report on Form 10-K of SEI Investments Company&#59; and</font></div><div style="margin-bottom:5pt;margin-top:5pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">2. Based on my knowledge, this report does not contain any untrue statement of a material fact or omit to state a material fact necessary to make the statements made, in light of the circumstances under which such statements were made, not misleading with respect to the period covered by this report&#59; </font></div><div style="margin-bottom:6pt;margin-top:6pt"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:120%">Date&#58; February&#160;24, 2023</font></div><div style="margin-bottom:6pt;margin-top:11pt;text-align:right"><table style="border-collapse:collapse;display:inline-table;margin-bottom:5pt;vertical-align:text-bottom;width:55.555%"><tr><td style="width:1.0%"></td><td style="width:98.900%"></td><td style="width:0.1%"></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">&#47;s&#47; Dennis J. McGonigle</font></td></tr><tr><td colspan="3" style="border-top:1pt solid #000000;padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Dennis J. McGonigle</font></td></tr><tr><td colspan="3" style="padding:2px 1pt;text-align:left;vertical-align:bottom"><font style="color:#000000;font-family:'Arial',sans-serif;font-size:10pt;font-weight:400;line-height:100%">Chief Financial Officer</font></td></tr></table></div><div style="margin-bottom:6pt;margin-top:1pt;text-align:right"><font><br></font></div><div style="margin-bottom:5pt;margin-top:5pt;text-align:right"><font><br></font></div><div><font><br></font></div><div style="height:45pt;position:relative;width:100%"><div style="bottom:0;position:absolute;width:100%"><div><font><br></font></div></div></div></body></html>
+</TEXT>
+</DOCUMENT>
+<DOCUMENT>
+<TYPE>GRAPHIC
+<SEQUENCE>4
+<FILENAME>seilogo.jpg
+<DESCRIPTION>GRAPHIC
+<TEXT>
+begin 644 seilogo.jpg
+M_]C_X  02D9)1@ ! 0$ 2 !(  #_VP!#  $! 0$! 0$! 0$! 0$! 0$! 0$!
+M 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0'_
+MVP!# 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0$!
+M 0$! 0$! 0$! 0$! 0$! 0$! 0$! 0'_P  1" (  @ # 1$  A$! Q$!_\0
+M'P !  (" P$! 0$           H+!0D&!P@$ 0(#_\0 0A   00" @ "!P,+
+M @4#!0    (#! 4!!@<("1H*$1(3::CH%#EU%1<A-E=XE[2VN-46(ADC,3+8
+M)%AA&#-!0G+_Q  9 0$  P$!                 @,$ 07_Q  Z$0$  0$"
+M"P@ !00" P$      0(1$P,A,4%186)QH>'B$C*!D:*QT? B,U*RP11R@O$$
+MDD)3PM+_V@ , P$  A$#$0 _ (=YZ#.
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M
+M                    &S+KSX-OB<=I::!LG#W3SE.=JUJTQ*K-KWA&O\0Z
+MU:U\EAJ4S:4MSRW>:1"OJQ^,ZA^/.HG;*/+3GV(BI#RL-9C5713EJCPQ^UOF
+M13-48K=]EG[GJC8/1K_&)H:M=HWU@I[_ -RWEU^NU_G+@J7:-MI1[:\HB2^1
+M8.)CB?\ LQ'KW)<EU>/989=]>,YC>X/]7"KX=NYT3_VGY:EN=.LG8CK%LJ-0
+M[#\)<G\+[$^E3D*OY'TN^U7%M'0I2,S**9:PH\"_K_;0M";&FE3H*U(6E$A6
+M4*QBR*J9R63_ &S_ +<QQEBSX\8AT<
+M                                      '.>,N,N0.9^0=/XIXKU*ZW
+MOD7?KZ!K.GZCKL-4VXO;NR=PS%AQ&,92A"?7E3TJ7(<9A0(;4B;/D1H4:1(;
+M[,Q9;.*FG7IQSC^YL1EUK*CPF/1[NM_1#6M<Y/Y]H-/[$=M7FHUI,VJ_J$77
+M'?$\]:8TA-+Q5KEXR[#>LZ>2UA&>3;>M;VF:^AR111]2@2I%6[CPF%FO%&*G
+MC.^?:,F^5M-$1CG'/MDR>21.5)@'5G,_"'$/8GCR]XGYRXZU/E/CG96DM7&H
+M[E3QKBIDK;PO[/,9;?3[ZOLX2EJ=KK>N>B6E;(SB1 F1G\)<QV)F)MB;)<F(
+MG%*NH\=#P&+;P]7)/9;K:Y=[CU!V"^8K[FEL5S+?;.OUS</M1ZBJV*W<]Z]?
+M\?7-B\FJU?<9RTV4"R>@:OM3DNUFT][LNK!87M_AJM[5MN+/[X\:JJF*8MC%
+M$</OW7&A+40
+M                 G*>B4=!:551R?XB'(&O1I=YBWN.$^OC]G'0\NGB1X$-
+MSE;?:5#\=2(TRT_*,7CJMO83Z9S4"+R+0KPU!M929M&'KR41OG=;,Q'GCQZE
+ME$9_"/E-T,RP   .!\H\9:-S1QQO/$G)FO0=LX]Y(U6\TO<M;LD97#N-=V*O
+M?K+2$YE.4N,N.1I"\QY;"VY4*2EJ7$>9DLM.H[$S$Q,98FT4]W??JK==).XO
+M8+JY=NS)F.)>0;&HUVUL&VFIM_H5LQ%V;CG993;&<L-2=CT.[UV[DLLYRW'D
+M3G8^,XRUG&-]%=M,5?JB8RY)S\?MK-99,TZ/F?AY$#H
+M                                                MF/ AT2JX]\)
+M'I'3U++33=QQ;,WN:MO&/;DVO(NY[1O5D\^Y[MM;KN)6P+CXROV\M,,,Q6W%
+ML,-9,>%QX2KPX1$+J.['C[RVX%:0    *WOTM71J[6/$OT+:("&D/<D=4>-M
+MBNO9PI+KMU2[_P L:3AYW]'L+3FAUJ@8:<]KV\_9UMJ;2EIM;NS 53%$QHJF
+MS_K$?S:JKRQN_F47LL0
+M                        %J!Z.7S=5<T^$GUO8B2XS]YPX]O7".WQ([OO
+M<U=KINW6=C01)'Z,*:E2N.]BT>Z<:5C_ &IM493E3:D.*R8:+,).N(GSC'QM
+M743;3&K%Y-Y!4D    "LA]*-YKK.6_%6VO5ZF6B;&X X9XNX8E.L_I83<>K8
+M.5[=A*L--I<?@S.4UUDQ25/J;EP78JGL9B_9V-F!BS!QKF9XV?\ RIKFVJ=6
+M+SQ_S".J6(@
+M               "3)Z-5XH^M])NQ.P]<^<-F:U[KSV>L*2/$V6WF9CZ]QES
+M1 2JLUG9;1Q:%L5>O;M >:T[;+AW,>)72(NFW5U-@T%!9RV:L+@^U':B<=/A
+MVH\=&7Q2HJF)QY)CRG[_ #J64AD7   !X*\2/OQQ=X<G5C>NPO(DNOEW<:,]
+MK_$VAR)66+#DSE&RARG-:U. TUG[5F'A<=ZXV:P93[-/K%;;62E9=989>G11
+M-=41'C.B-+E4V1;Y;U1+RAR3N7,G)._\M\B7#NP;]R?N>S;_ +I>OH0TY;;3
+MM]S,OKVPRRTE++"95G/DNHCL(0Q';4EAAM#3:$8W68HB.[$]FG-PUL\_BMG3
+M&7?_ +<&..@
+M                !*\\(_TF'D+J?KFM]>>[59N'.?!E$S%IM)Y0I'XMIS%Q
+M=21V8L*NU^PBV\NOC\CZ33M,Y^PMSKB'N&O5ZG(E=/V"MA4FLPJL)@8JLFFR
+M)LMF,T_%6G_4)1A.SWLFF<L_=&7+9BA-5Z_>*-X>G:&LK;#A?M[P=L,VT;:7
+M&U.[W:KT/D)M3OK3AJ5QUOKFM;Q%<PYA36<NT"6U+Q_RG'$J0I6>K!UTY:9L
+MTQCCSC$LBNF<E4/46P\[<(:C62+K:^9.*M8IHB%.RK;8>0]1I:R,TCU>TY(G
+MV5Q&BLH3[2?:6XZE./:QZ\X]>"-DZ)\I2:1.\GI)GAY=4*2UJN*-WB]N^7D,
+M.MU.G<+VC,W0X\SU+2P]M/,6(TW3H=9[Q"T/HU%6ZWK2TH2[2,,O(E)LIP-5
+M6.?PQKR^5MOW&A-<1DQSJ^?]J_/O_P"(OV7\2+F-SEOL-M#+T6J3,@\><::V
+MF97\<<6T,Q;"I%3I]'*ES7DR;!42*]?[#:3+#8=@DQHN;*Q=AP*J%7ZJ:*:(
+MLHQQGG';._[G5553,Q,Q[8ON//P>$SH
+M
+M
+M
+M
+M
+M
+M
+M           !.$\F?\1[Y0/JB,]_L>KI67>OAS/)G_$>^4#ZHA?['JZ2[U\.
+M9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_P"(]\H'U1"_
+MV/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?*!]40O\ 8]727>OAS/)G
+M_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2
+M[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_P"(]\H'
+MU1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?*!]40O\ 8]727>OA
+MS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?[
+M'JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_P"(
+M]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?*!]40O\ 8]72
+M7>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#Z
+MHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,
+M_P"(]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?*!]40O\
+M8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>
+M^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ2[U\
+M.9Y,_P"(]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?*!]4
+M0O\ 8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)
+MG_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?['JZ
+M2[U\.9Y,_P"(]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS_B/?
+M*!]40O\ 8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>O
+MAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#ZHA?
+M['JZ2[U\.9Y,_P"(]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7PYGDS
+M_B/?*!]40O\ 8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]7
+M27>OAS/)G_$>^4#ZHA?['JZ2[U\.9Y,_XCWR@?5$+_8]727>OAS/)G_$>^4#
+MZHA?['JZ2[U\.9Y,_P"(]\H'U1"_V/5TEWKX<SR9_P 1[Y0/JB%_L>KI+O7P
+MYGDS_B/?*!]40O\ 8]727>OAS/)G_$>^4#ZHA?['JZ2[U\.:<(9U@
+M
+M
+M
+M
+M                                                  0>_.8?#A^;
+M_P"ETT7&WZ>I7>:N/(\YA\.'YO\ Z71<;?IZB\U<>1YS#X</S?\ TNBXV_3U
+M%YJX\CSF'PX?F_\ I=%QM^GJ+S5QY'G,/AP_-_\ 2Z+C;]/47FKCR/.8?#A^
+M;_Z71<;?IZB\U<>1YS#X</S?_2Z+C;]/47FKCR/.8?#A^;_Z71<;?IZB\U<>
+M1YS#X</S?_2Z+C;]/47FKCR/.8?#A^;_ .ET7&WZ>HO-7'D><P^'#\W_ -+H
+MN-OT]1>:N/(\YA\.'YO_ *71<;?IZB\U<>1YS#X</S?_ $NBXV_3U%YJX\CS
+MF'PX?F_^ET7&WZ>HO-7'D><P^'#\W_TNBXV_3U%YJX\CSF'PX?F_^ET7&WZ>
+MHO-7'D><P^'#\W_TNBXV_3U%YJX\CSF'PX?F_P#I=%QM^GJ+S5QY'G,/AP_-
+M_P#2Z+C;]/47FKCR/.8?#A^;_P"ET7&WZ>HO-7'D><P^'#\W_P!+HN-OT]1>
+M:N/(\YA\.'YO_I=%QM^GJ+S5QY'G,/AP_-_]+HN-OT]1>:N/(\YA\.'YO_I=
+M%QM^GJ+S5QY'G,/AP_-_]+HN-OT]1>:N/(\YA\.'YO\ Z71<;?IZB\U<>1YS
+M#X</S?\ TNBXV_3U%YJX\CSF'PX?F_\ I=%QM^GJ+S5QY'G,/AP_-_\ 2Z+C
+M;]/47FKCR/.8?#A^;_Z71<;?IZB\U<>1YS#X</S?_2Z+C;]/47FKCR/.8?#A
+M^;_Z71<;?IZB\U<>1YS#X</S?_2Z+C;]/47FKCR/.8?#A^;_ .ET7&WZ>HO-
+M7'D><P^'#\W_ -+HN-OT]1>:N/(\YA\.'YO_ *71<;?IZB\U<>1YS#X</S?_
+M $NBXV_3U%YJX\CSF'PX?F_^ET7&WZ>HO-7'D><P^'#\W_TNBXV_3U%YJX\C
+MSF'PX?F_^ET7&WZ>HO-7'D><P^'#\W_TNBXV_3U%YJX\CSF'PX?F_P#I=%QM
+M^GJ+S5QY'G,/AP_-_P#2Z+C;]/47FKCR/.8?#A^;_P"ET7&WZ>HO-7'D><P^
+M'#\W_P!+HN-OT]1>:N/(\YA\.'YO_I=%QM^GJ+S5QY'G,/AP_-_]+HN-OT]1
+M>:N/(\YA\.'YO_I=%QM^GJ+S5QY'G,/AP_-_]+HN-OT]1>:N/(\YA\.'YO\
+MZ71<;?IZB\U<>1YS#X</S?\ TNBXV_3U%YJX\CSF'PX?F_\ I=%QM^GJ+S5Q
+MY'G,/AP_-_\ 2Z+C;]/47FKCR/.8?#A^;_Z71<;?IZB\U<>1YS#X</S?_2Z+
+MC;]/47FKCR/.8?#A^;_Z71<;?IZB\U<>1YS#X</S?_2Z+C;]/47FKCR/.8?#
+MA^;_ .ET7&WZ>HO-7'D><P^'#\W_ -+HN-OT]1>:N/(\YA\.'YO_ *71<;?I
+MZB\U<>1YS#X</S?_ $NBXV_3U%YJX\CSF'PX?F_^ET7&WZ>HO-7'D><P^'#\
+MW_TNBXV_3U%YJX\GVUGID?Y2LJ^N_P"'+[G[?.APO??_ %>>\]U]JD-L>\]W
+MGJ^CWGL>\]KV/;1[7J]GVTYSZ\+C;]/47FKCR0;C0K
+M                                                      &<UC]9
+M=>_'*G^?C@8,
+M                         SFL?K+KWXY4_P _' P8
+M                                                        !G-8
+M_677OQRI_GXX&#
+M                           ,YK'ZRZ]^.5/\_' P8
+M                                                         !G-
+M8_677OQRI_GXX&#
+M                            ,YK'ZRZ]^.5/\_' P8
+M                                                          !G
+M-8_677OQRI_GXX&#
+M                             ,YK'ZRZ]^.5/\_' P8
+M                                                           !
+MG-8_677OQRI_GXX&#
+M                              ,YK'ZRZ]^.5/\ /QP,&
+M      9:AU^^VJYKM=U>DM]DV"WDHAU-%0ULRXN;28YC.6XM=65[,B;-DKPE
+M64,1F'7583GU)SZLY VU<%> IXL/8!B+8ZWU!WK1J*2E+BKOFR?KO"R6&EH4
+MMIY6O<BV]!NDMI[U)PVJLU>?^AQ#JTH85[W$:L)@HGO6Z8C\7MBL\=+L4U:)
+M\<39]Q]Z(?WTO8[,KD3GGJ[Q\EYO"\U]5<\E;Q<159]UG#4QIGCW7J;"\>T]
+MA685[.:PII&$N+2[E34)_P"1&.SMSY1_/!+L3ICC\/0D7T.'E9;.%3N]?'L=
+M_P!I7K;B\&[),9PG'_:K#[W)$%>59Q_W)^SIPG/_ $4KU^LC?Q^F?.';O7PY
+MN+[/Z'9V*B-K5IG<OA6_>Q_]M&S\>;SJ+:_]K><^V[53]V4W_O4\G_:RY_M0
+MVO\ ZNJ0ROX_3/G#G8G3''X>+.4_15_%5T!E]_3JS@#G'W:UX8A\;<OMTEA(
+M:PU[UM>4\R:[Q57LN+SZHZFU6:DHDX5ZG5Q<)F*G?T599F-\9?*WBYV*HU_?
+M!J%[!>'7WIZK,S9W8#JES?QM0UZ<JF;C::+<67'[6$_]_JY#U]FWT9Q2/6G*
+MT-; XM"5(4M.$K0I5D5Q5DJIG9[4V^$6VXG)B8RQJU/&0<          #]0E
+M2U)0A*EK4K"$)3C*E*4K.,)2E.,>M2E9SC&,8QG.<_HQ_P#(;&^!/"(\2_LN
+MB)*XDZ9<VV%/.]C,':-SUMOB?3Y[2LNIR_7[?RO+TK6K)AI3+B'G:^TE):=3
+M[E?LO+;;7R<)31..J/"8F>$3]MUNQ$SDB?NO)Q;0.//11O%*W)MA[:)76OB7
+M#GN5/QMYY:N+>='0M.5NIPCC#1>0H+S[/L^[]A-BEAQY:,)D^X]X^W7.'HMR
+MU3KB/F8=[%6CC'R]*5/H?'<)YJ,J][5]:ZY]7L_;&ZFMY0NFF/\ ;CVOLSTS
+M5:!<KV5>O"?>L0_:3C"L^SG/LIY_41^GA3\.]B=,<?A_E;>A\]R&4.YHNTW6
+M:Q<PI[W*;:'RG2H<2G"OL^75P].O\LJ=SA.'DH;?Q'PI2D*DY3A*W]1'Z>%/
+MP=B=,<?AY>Y(]%4\572(\E_5H/7KF)3/O,LP^/.8%U,R7A&$Y1AK\[.J\8P6
+MUNX5G"<2)[2$K0O"W$H]VMR5]@Y_53OQ^T.=BK1QCY:K>P7A:>(AU;CSK'G#
+MJ!S;J5!6>K-EN%;J;V]:%!]>%93]KY X]>VK28_MX0O+?O;]/O,(5E'M83G.
+M)Q715.*J+./E,VN3$QEB?NO)Q>!SK@       ![5XI\-[OQSIH&O<J\.=0.P
+M7)?&VV(GNZSN^G<8[->:U>M5-M/H;)RKM84!V+,1"N:NQK9"V7%);F0GV<Y]
+MIM1R:Z(GLS5%,Z)GEN^R1$SCLJR9/'W=B?\ "%\43_V#=J?X.;C_ (T[VZ?_
+M &T_]I.Q.BKSJ^3_ (0OBB?^P;M3_!S<?\:.W3_[:?\ M)V)T5>=7R?\(7Q1
+M/_8-VI_@YN/^-';I_P#;3_VD[$Z*O.KY<2WOPP/$2XOTW9^1>1.EO8[2]$TN
+MEG['MNV[)Q9M-50ZY0U;"Y5E;V]E*@-QH-?!BMK?DR7UI::0E2UJPG!R*Z)F
+MSM1,SD_%&GC]EVR=$^4O"9UP           &<UC]9=>_'*G^?C@8,
+M       #D.I:CM6_;-1:5HVM7VX[AM%G$I=;U75ZF??;%?W$]U+$&KIJ:K8E
+M6-E82WE):CQ(<=Z0\O.$H0K/Z#MEEDS;$:?O\[Q,5\.3T4+<M\K-:Y7\0_>+
+M7C"EGMQ[6/UQXWDUSW(<B&Y[+\:-R+O[F+.DTYQ]"$_E#6=7K]@O$PI66)&S
+M:G>QI$.-17AXC%1%N7'.3PCY\ZLTZ<'BT1HS_=Z9/U@Z/=2>F.NXUKK'P%QW
+MQ'%<C(BV%OK]*B3N-ZTA$=&,;+OERY9[KLJL_96%Y5>WUA_S&\.8]2\YSG/5
+M555WIF=6;RC$LB(C)#U61=    !_FZTT^TXR\VV\R\VMIUIU"7&G6G$Y0XVX
+MVO&4.-N(SE*T*QE*TYRE6,XR!J5[>^!WX:W<V/;3M^Z[ZYQYR!:KS)SRQP8U
+M%XJWI,]6&DKL++%!#_TGMTMYEI,=US>-6V;*6<Y5'S'E)9DM3IPE=.2<6B<<
+M?,>$PC-%,YK-WVQ#-\2'T9+MEU%@7_*?6FSD]M.#:IF?:V4.BI<U?.&CT\1O
+M,IUZ]T**],C;M7PHV?=N7F@2I=G)S&EV,_1]<KT86::,/35BJ_#/"=\_,9\N
+M=751,3;$1,1J_%YV_=2,R\TZRZXR\VXR\RXMIUIU"FG6G6U*0XVXVM.%(<;5
+MZTK0K&%)5C.,XQG'J+$7\@    !R?2M'W/DG:Z'0^.]2V7>]VVFP:J=:T_3Z
+M.SV79]@M'\*RS7TM%3QIMG9S'$H6I,:'%>=RA"U^S["%9QV9BG'99&7'DL$N
+MCP^O1/.7^2&Z#D;O]OZ^$M1E(B62>#N-955?<NV,5U*'L0MMW!YJSTOC]:T9
+M3[Z'51M\M_=K>AR_]-V36<M4UX>F,5$6ZYR6_P [XBGQL3IP>.VK5BMR>UGO
+MN2_^IGA>]#NDD&N3UYZW<>:QLU>PRTKDN\JD;IRM-=:7AUR2_P C;;FWVF)]
+MHDX^UNP*BPK*9IY+6(=9%9C166<]5=5669W1BCR613$9//.]]$'0     -7_
+M '(\&_P\.\D>VF\R=?-8I>0;5B0C\\?%+$7C7E1B8_C'LVDS8*&&FOVZ=%RG
+M&8B.0*7;Z]G&5H^P*:<<0N=.$KIR3-GZ9QQ]W2C--,Y8B4)'Q+_1HNU?32KV
+M#EOKG86';+@2G2]96Z->UY<+FS0*9*E+<F;+H%<]8)W"EJ65-XLMIT1R5(9C
+M-3;^[T[5J"%,F1=%&&IJQ53V9Q9OPS9KS>/C.=751,3;$1,1J_%YV_=2-*6H
+M@     6L7H[_ -S=TM_ ^8?[B.73'A?S*O#]L+J.['C[RW3%:0  UR^+W]UU
+MWY_=7YB_I"Q)X/OT[W*LD[I]E0B;5            ,YK'ZRZ]^.5/\_' P8
+M            .P>*.*N0N<>2M'X?XGU:SW;DCD?9:K4=-U:H;0[/N;VXDHBP
+MXZ5NK:C1(R%+S(GV4Y^-6U<!F5964N) BR9+79F(B9G\,19VL<Z]/\N1$3'9
+MC7&+BM!?!Z\%'A+PRM J]RV&'1\F]O\ 9J/+/(7,3D9<F%JK=FTVJPT'B5J>
+MRV]1:K$QC$&RV#,:)LF[NMO3K?-?4/5NK4F+"86:YLR4YJ>%LZ\EN:.*^FFS
+M>WA%:0          1D/&L]'WXT[MT&S]B.J&NZYQAW"@,2+FYIX66*#1^PK<
+M6*XMRGV&-A3%)K?)4I3:<4>_I:A1;J8O-9O[ST63"V?5KL'A9ILBK'3QCEJ\
+MIA"JB)QQ&/W5PVW:EL^@[3L6D;MK]OJFX:C=6>N;1K-_ D5=W07U-,=@6M1;
+M5TMMJ3"L*^:P]&E1GVT.LO-K0I/KP:XF++8QTU:]&.,?W/B5./G   >U^A?0
+M+L1XBW.=9P;U[UQJ7-2TU;;QO5[F5#T/C'4_?I8D;1NEQ&BRW(L;+F<QZJJA
+M1YEYL%AZH--7RW4OY8Y75%$6S;'Z8SSN^2(F9LC_ %]^,4VK-OPS/"$ZK>&1
+MHD6+QI0L;WSA;5347D3L-MU5!5O>ROO,Q\V=5K2<9E)T#0W)C&'86GTDQW+C
+M341>RW&SVT;%NO)7A*JYQXHS4QD\=,ZY74TQ3OSS]^XFU8K2          "*
+MMXW'H\FE]NH6T=H.E]!KO'G:..U:[#O'&\%F)1:7V(DJ]]839+?LJC5>J<NV
+M$C+JVMA=3&HMTL'_ '>X.P+&4[MK%^"PW9_#5CIS3&6/F+-\QEC1-=5%N.,N
+MC3\??&NPN*>VUVWM=?V"KL:*^HK&=3W=)<09-9<4]O62785E56M;-:CS*^QK
+MYD=Z).@RV69,22RZP^TVZVM&-*MCP   !:Q>CO\ W-W2W\#YA_N(Y=,>%_,J
+M\/VPNH[L>/O+=,5I  #7+XO?W77?G]U?F+^D+$G@^_3O<JR3NGV5")M4
+M        SFL?K+KWXY4_S\<#!@             L#O19?#%KN)^'7?$.Y8H6
+MG>3N;ZNQH>!8=G%SB5HW$+-A+K;K;HS$A"51+KE.P@*3 G);P^C0*^"]6R_R
+M;NUHR_GP]=L]B,D99TS]GPR9D\'%L=J<^3=DS:=$VV:4OHSK0
+M<#Y/Y0X\X5X^VWE;EG<M?X^XYT2FDW^W;EM%BS5T5%51?92N3,EOJQC*WGG&
+M8D*(REV;8SY$6NKX\F=*CQW>Q$S-D1;,YH%5)XU7?'@_Q#NZNQ<Y\#<.,<::
+MG"U^NTE[<IWO8FZ\XO:X_*CU_)6[T;*\55%.53J@:_1P4HF; C6J>I3LET^\
+MB%1:WMP=$T4]F:HFS\5EN*-4??*;6>NRJ>U$6XM6/%XXO]M1Q( /373SJ5S#
+MWA[#\>]:^#*9NUWG?[)QK,Z<IUC7]3UVM97.V/<]KL&FG\UNN:W5-/SISV&W
+M94Q[$6GJ8T^[LZROEJJHIB:I[L<<<64Z,D8B(F9B(B++/GR6Q?A^>']P)X<?
+M7^BX)X-IDJ7A,:UY&Y%LXL=&Y<K;MB*EB?MFTRVLKRA.<^\8H:!AY=5K%1[N
+MLK4JS]JES,-54US;/A&:(74TQ3%D/<9%(            "%UZ3SX0U9L^JW?
+MB3=>-5;B;CJK$3':G4Z"O]2-IU-G'V2-S<S#B(RK.P:HG[%7<A/-M^ZL-33'
+MVV<N(YJ]]-M]. PED]BK'$]W?CLB=6CQMS*JZ;/Q199GS>/WY0/"]    +6+
+MT=_[F[I;^!\P_P!Q'+ICPOYE7A^V%U'=CQ]Y;IBM(  :Y?%[^ZZ[\_NK\Q?T
+MA8D\'WZ=[E62=T^RH1-J@           &<UC]9=>_'*G^?C@8,
+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
+M3&O[ZO2[&&WEB:FJA6>SSDHAQ9%G*+L#595-.:K'XQRM0KC%;HR[E=*:E0
+MM8O1W_N;NEOX'S#_ '$<NF/"_F5>'[874=V/'WENF*T@ !KE\7O[KKOS^ZOS
+M%_2%B3P??IWN59)W3[*A$VJ            9S6/UEU[\<J?Y^.!@P
+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
+MX?MA=1W8\?>6Z8K2  &N7Q>_NNN_/[J_,7](6)/!]^G>Y5DG=/LJ$3:H
+M       !G-8_677OQRI_GXX&#             ![>\/GOSS?X<G8S6^PG"<U
+MJ2[':_('(.A6K[K.L<H<?3)L27=:7L.&D.N1DR7(4:=2W<=EV=KU[#K[>,U)
+M3'D09G*J(KBR<F*(G1/+/I(FR;8^Y(_A:<^'[XC'6OQ'^&H'*_ >VQG+>%"K
+M4\D\4V\R$WR+Q/?SDR48IMOI675.IARI$&?_ *>V:(ARAV>'$=E5<I3K$Z)"
+MQUT5439,;IS2NIJBJ+8>\2"0       !TYSIU[X.[-:!9<6]@>*M'Y>T"U]:
+MY&L[U00;V%'E^[<::M:EV4UF917D)+JU5U_22:^ZK'<X?KY\9]*7,=B9IFV)
+MF)TPY,1.6$"_Q>/1G=]ZTUFR]A^AR=HY@X-J(TJ[W;ANS?;N>6N+JJ,U,FV5
+MUK<E"(LCDO2*QEIE#D.-%D<@4L9:94R-M%=&M]@KM-&&BK%7-DXHB<TZL>3V
+M55468XR1FT</Y_E$J+D0#VMX:T*/9>(QT#KI:/>19_=;JM"DH_1_S(\KG31&
+M'D?IPK'^YMQ6/TXSC]/Z<9_21K[E7]M7M)3WX_Q]Y7&1A:
+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
+M[.6Y#66L>O#WKU?\>;8JC1,SYT]*G"61,3.B9CPR^Z'\7(@
+M  "UB]'?^YNZ6_@?,/\ <1RZ8\+^95X?MA=1W8\?>6Z8K2  &N7Q>_NNN_/[
+MJ_,7](6)/!]^G>Y5DG=/LJ$3:H           !G-8_677OQRI_GXX&#
+M                 ]==5>^G<#I)L>-DZO\ /V_\5.//ID66NUEFW;:%L#B,
+M_P"U6S<<[&Q<:+L2T)RM#+]QKTV5$PZZJ&_'<<6O*JFFJ?QQ$[LOG/XJ2V8R
+M3,+#+P/O'*H?$UJ[OACF.@H>..V7'^NIV.=6Z\X^QI?+6GPEP*^SW'2XEA*E
+M3Z:ZJ+&9'QM.F/R[%,2).A7='8SJU=O!UO+A<%V,<3;3/"W-.9;35;BG+[I#
+MA2F   %9OZ5)Q?!X_P#%:N=IALMLN\V\ \.\H6.4>U_ZB=6HV7ASWRTY2E*7
+M%0^)8:%>[RI*O=X<4K+JW,8V8''@_P"VJSSME379VIMSQ''%'G8C?EB*WX\)
+MCG5GLCX;/3'EG$[\I6=GP1IFJ;1-RXTM<G=^,8BN,=Y?=PRMQ#3DC;M/NG\L
+MYSA;.'4H<0A>%(QBPD65U1KF?/'_ "NHFVF)C1[8FQ @D  (ZWI-O32;V@\.
+M6[Y-U&H?M>2.I6SL<S5;$"&N9:6/',F-G7.7:AC&%X2Q!K]>EU_)-H]A#CRH
+M_&J(S"<JD90N[ U1379.2K%XYO/)XH5TVQKB;?#/YPK(#4J        /Z::=
+M>=;99;<>>><;:9::1EQUYUQ24-MMMH3E:W%KSA*$)QE2U*PE.,JSC ';/-/
+M?-O7#=I7''/G%&_\/;U$8:EN:OR)JUQJML[ ?]>(UE"CV\6-^4:J5[*LQ+6O
+M5)KI:4Y5&DNXQG)VV*L<33-N:FV=^JW3CTF.,L6?'C$.I#@    "UB]'?^YN
+MZ6_@?,/]Q'+ICPOYE7A^V%U'=CQ]Y;IBM(  :Y?%[^ZZ[\_NK\Q?TA8D\'WZ
+M=[E62=T^RH1-J@           &<UC]9=>_'*G^?C@8,              "0+
+MX</H\_:GO_U^Y![%/W$/A'3U:G:R>N\?=*>0J;SSN41IQR$F,A<N"YJ_&;\B
+M/FJ7R%*9GMS+&4VY0U%S K[25&A5A::)C/-N.RS%'SEQ:./::)F+8QV9)T[M
+M7#0T8\E\:;_PWO\ MW%G*>HWFA\B:'>3M;V_4-D@NUUU0W5<[EJ3"FQG<?\
+M\O1Y#*G8DV(ZQ-A/R(<AA]RR)BRV,=-6O1CC']SXG,FIP@X     VG^"/O\
+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
+M\'V(MGO3BG5&C%Q9ZZNW-D3-D:L4Q.>)TZ-<9$?8L "UB]'?^YNZ6_@?,/\
+M<1RZ8\+^95X?MA=1W8\?>6Z8K2  &N7Q>_NNN_/[J_,7](6)/!]^G>Y5DG=/
+MLJ$3:H           !G-8_677OQRI_GXX&#           'K#HWS]QYU<[7<
+M*<]\J\+:YV!T/C;<8=]?\8[.MU,2T8;0ZRS;UK>7FZN3L>KR76=CUJ+L4:RU
+MR5=UD%FX@.Q5J>856U4U4Q-DU9[;/#19E<MLFF8IMUQP^RMV>L/9[A3N)PII
+M?8#K_ND'=^-]W@XD0)\?.&;*GLF<(3;:OM%2I:I5!M5!*5F%=4LW"9$20E+C
+M:GX4B+*D8*J9IF8F+)AHB8F+8R._SCH            $-3TIOQ2*S2./H_AP
+M<+[&U)WWD1JKV;LQ:U$]IS_2''3:DV&K\5ROLZ'<L[#O]@W#V?88RY4*94:9
+M44\:5!L*_D-MZ!HP%&/MSDBVS'GR6^&55A*O_'3E]_N^$"(T(  #L[A?F;DW
+MKQRMH?-O#>W6>B\G<:[#"V?3MIJ%HQ+K+2'E2%(=8>0[$L:NQB.R:N[IK%B5
+M57E--GT]M#F5DZ7%>[BFV)BV)RQPX6YR,4VQE^ZITZ%JAX1WBO\ $'BA\#P]
+MBJI-5J/8;1*JKA\\<.8DY1+H+I;:8JMQU*/*>=F6G&NT3&W)%'8>]ER*-]U6
+MLWTA5I#1*L<6$HFB=4Y)CVWKJ:HJC7GC[F;:BM(            #X;.SK:2M
+ML+FYL(-13U$&79VUM9RX\"MJZV!'<E3K"PG2G&HL*#"BM.R9<N2ZU'C1VG'G
+MG$-H4K 5\OC]>/G#[3QMAZ6=+]BF(Z]1K!R#S)S+6ORZ][G&76RG6\Z;IJV7
+M6G?S/,R&FY-I;2$8=Y'E-QFXC$;38>7MRU8+!=G\57>S1HY^V]377;BC'3.6
+M?N*SW\HJB/ER(  M8O1W_N;NEOX'S#_<1RZ8\+^95X?MA=1W8\?>6Z8K2  &
+MN7Q>_NNN_/[J_,7](6)/!]^G>Y5DG=/LJ$3:H           !G-8_677OQRI
+M_GXX&#            #8MX<_BA=HO#.Y2_USP7LF+32KZ3'_ #E\)[7*M)/&
+M7(\%K"6??6=3$EQ\U&V0(N%)U[=JGW-W4+_]*_FTH)-I0V?*Z::XLG3BF<M,
+M?;,F6(W04S-.31D^^_-9)>&]XR'3OQ*=9KXW&NWQ./\ G-FMQ*VOKKOEK!A\
+M@U;T=AI=G,U-:\0XO)&JQ'5YQC8]796[%CJC.;)3:U+EM0#)7@ZJ)QV3'ZHQ
+MPNIJBK5.AM@*T@          CO\ C/\ CQ\1^'EK&S<)\(V=%RCW3M*S$6!K
+M+"F;?4^$?RG']N/M7*3S#ON%7T>(ZW9:]QSAS-K9Y<K['8FZG7)<1ZWNP>"F
+MO'.*GC5NC^4*JXIQ9_:-?E]SUHF_;[N7*>\;=R5R)LEKN&^[[L=SMVX[5>25
+M3;?8=EV">_9W-O8R58Q[V5/GR7Y#N4I0VE2_8:0VVE"$ZXB(BR)LBG'3%GQG
+MQ1[Z5676XD<    [LZ\=CN;>J/+&L\W]?.1-@XQY-U)]3E5L>OR$)R_$>4W]
+MNI;NME-R*K8M<M6VT,7.NWL*PI;6/C#,Z"^A*<8[,=JGLS3VHC1YZ_8B9B8F
+M)BRSY\UCSX2_I"/77OW7:UQ'S;*U[KWVU=2S5_Z0M+14?CWEBP9BM97:<6['
+M:Y:;BVEJ\F0]CC:\F.[#!5ZHE)9[>RT[/1DPF"FFV8QTVV:XW_/PMIKB<4XI
+MQ8OOW1,I$92F          'D;N%WJZL]#N.7>3.SW+6O<>U;S4K.MZXX_BRW
+MW>YL3+*':O0]'@J=V':)C3DJ*B:] AJK*9N2U.OK"JK<.36YT455S93$SKS1
+MOG)#DS$95=OXN'C^]@?$:7;<0<:1+7@'J4B<\G''\&S]>]\K1F7\XKY_,5]6
+MOYB.P?=H;F,<<T+SFJUTYY6;BRW:96TUS!TX/!Q1CG'5IT?V_*FJJ:L48HRQ
+MKU3RTY[$?@L<   "UB]'?^YNZ6_@?,/]Q'+ICPOYE7A^V%U'=CQ]Y;IBM(
+M:Y?%[^ZZ[\_NK\Q?TA8D\'WZ=[E62=T^RH1-J@           &<UC]9=>_'*
+MG^?C@8,             &4HKV\UBYJ]CUJYM==V&DG1K2EO:*QEU-S464-U#
+M\.QJ[2O>CS:^=$>0AZ-+B2&I##J4N-.)6G&<!)=Z+^E(]X.MD*ET;LA5U7<3
+MC:O<BQL7&Y6C^K\X5=6VG+2FH_)T*%91=M<;]M4UU_D+6MDV.S?;3$=V^OCK
+M2ZQ55@::L<?AG59E_MR^5B5Y-.7''W/DT94L/JAZ1?X7G:/%;4S^9G^N6]3_
+M +(RK4.QM>QH,+[8^A&'DQ.1H\ZXXO<B-RU9CQUV6X4]E*1[#^:B.E2T-4U8
+M&NG-;NR^659%=,Y[-_O;DXMVFK[9JV[TD+9=+V77]OURR1[VNO\ 5[FNOZ2>
+MUZL9]Y"M:J3+@2D?IQGVV'W$^K./T_I*K)C+%B3D     _AUUIAIQYYQMEEE
+MM;KKKJTMM---IRMQQQQ><(0VA&,J6M6<)2G&5*SC&,Y U3=K/&V\,_J!&FL<
+MB]G-*W3<8GVIM'&O"4N/R_O+DV&XRW(K9\;3Y$V@U.<G+V,H;WK8=5:>]T^E
+MEYQQAU";(P5=6:R)SSBY^4(S73&>W=C0[O$*]*5[6=CH^P\<=0J%?4[B>R;E
+M5KNYM3V+SL#L58[A32G<;3'3BCXS^UL9PO,;2XTW9JI_&<P>0W6U>K.BC T4
+MXZOQ3OB(\IB;=TX]2JK"3,V1-D63_=J_M\=R+?8V-A<6$^VMI\RTM;29*L;.
+MSL93\VPL+":^N3-GSYLE;TF7,ER77)$J5(<<???<6ZZM;BU*S8X^0      '
+MZA2D*2M"E(6E6%H4G.4J2I.<92I*L9]:5)SC&<9QG&<9_3C_ . D(^'UZ2'W
+MMZ6M4&B<EVR.VG!52B)7M:7RQ<3&^0M<IXR4,MQ-&YA1'L]BAH8CM,1(-;NT
+M#?=?K*^.B!25-,A6'VX5X&BK''X9TQDWS'S$3KG&45V1BFV(TQYX\7W*F(=2
+M?2//##[1L0*O8.69?6/?)C[,16H]BX<;3:I3[JUMYD0^3:^;<\8IKO;2CW;U
+M]M6O6&4/-K>JF/4[AK/5@JZ<D=J-,9?++Y6KHKIG5OQ??%O#U3<=1WRCA[/H
+MVTZYN>M6*$NU^PZI>5FQ4<]M;:'4.0[:HE3($I"FG6W$K8D+2IMQ"\9RE:<Y
+MKF)C%,3$Z)BQ)R,X   !C;>YJ-?K)MU?6M;24U:PJ58VUO.BUM9 C(]7MR)L
+M^:ZS%BL(]>/:=?=;;3Z\>M6/7@#4SV6\=KPM>KL>S9VOM3I7(^TUWM-HT;@5
+M:^9MAF348];E;^4=+S.TFEG,XPO#[>U[=K[3#R%17GVY>41U64X+"5?^,QO^
+MV\$9KIC/;NQHOG=;TM_G3?4W&H]&N&ZC@O7GE2HL7EKES%9R!RK(B+PC,2RI
+M]'B^^XVTBS;S[QN1#N97+D-U'LN1Y$5WU>Q?'_&BGO3;JBR,63)EGPL0G"3F
+MBS7-GW?BG@BB<R\W\P=B.0+GE3G3DK<^5^1+]2?RIM^]7]AL-R\PTIQ46O8D
+M3WG<5]1 PZXU5TU>B+4U4?.(M="BQDI:1=%D19$1$:HQ\90FV<OXONN75IP
+M   !:Q>CO_<W=+?P/F'^XCETQX7\RKP_;"ZCNQX^\MTQ6D  -<OB]_===^?W
+J5^8OZ0L2>#[].]RK).Z?94(FU0           #.:Q^LNO?CE3_/QP/_9
+
+end
+</TEXT>
+</DOCUMENT>
+</SEC-DOCUMENT>

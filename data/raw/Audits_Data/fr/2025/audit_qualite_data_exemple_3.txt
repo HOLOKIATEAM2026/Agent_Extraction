@@ -1,0 +1,43 @@
+Titre: Audit de qualité des données — Exemple 3
+Organisation: Administration B (exemple pédagogique)
+Périmètre: Données open data (catalogue + jeux prioritaires)
+Période analysée: 2023 → 2024
+
+Résumé exécutif
+L’audit montre un bon niveau de publication, mais une qualité variable selon les jeux (métadonnées incomplètes, incohérences d’unités, absence de versioning). Les utilisateurs consomment difficilement les jeux faute de documentation.
+
+Constats clés
+1) Existence des données
+- Jeux publiés: 120
+- Jeux prioritaires analysés: 10
+- Données disponibles: oui, mais hétérogènes selon sources métiers
+
+2) Qualité
+- Complétude métadonnées (licence, fréquence, description, schéma): 64%
+- Taux d’erreurs de format (dates, séparateurs, encodage): 8% des fichiers
+- Incohérences d’unités (€, k€, M€): fréquentes sur 3 jeux
+
+3) Accessibilité
+- Accès public: oui
+- Découvrabilité: moyenne (tags et mots-clés trop génériques)
+
+4) Volumétrie & historisation
+- Versioning: absent sur 70% des jeux
+- Historisation: non documentée
+
+5) Conformité & documentation
+- Licences: parfois manquantes
+- Documentation des champs: souvent absente
+
+Recommandations prioritaires
+- Ajouter un schéma/description des champs pour les jeux prioritaires.
+- Normaliser les formats (UTF-8, séparateur, ISO dates) et publier des règles de qualité.
+- Mettre en place un versioning simple (v1, v2) et un changelog.
+
+Indicateurs de maturité (0–5)
+- Existence des données: 4
+- Qualité: 2
+- Accessibilité: 3
+- Volumétrie & historisation: 1
+- Conformité & documentation: 2
+

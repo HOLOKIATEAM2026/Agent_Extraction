@@ -1,0 +1,43 @@
+Titre: Audit de qualité des données — Exemple 2
+Organisation: Entreprise A (exemple pédagogique)
+Périmètre: Données RH + Données paie
+Période analysée: 2024
+
+Résumé exécutif
+L’audit montre une qualité correcte sur les données “paie”, mais une qualité faible sur le référentiel “effectifs” (identités, mouvements, rattachements). L’absence d’un dictionnaire de données partagé génère des interprétations divergentes.
+
+Constats clés
+1) Existence des données
+- Sources: SIRH, exports paie mensuels, fichiers de suivi internes
+- Couverture: bonne pour les salaires, moyenne pour l’historique des postes
+
+2) Qualité
+- Complétude matricule: 99%
+- Complétude rattachement organisationnel: 81%
+- Incohérences “date d’entrée / date de sortie”: 4% des dossiers
+- Valeurs manquantes sur catégorie socio-professionnelle: 17%
+
+3) Accessibilité
+- Accès aux données: restreint (conforme) mais processus de demande lent
+- Documentation des extractions: absente
+
+4) Volumétrie & historisation
+- Historisation des postes: partielle (mouvements non tracés pour 2021–2022)
+- Historisation paie: complète (archivage mensuel)
+
+5) Conformité & documentation
+- Données sensibles: présentes (conforme) mais règles de minimisation à préciser
+- Dictionnaire de données: à créer
+
+Recommandations prioritaires
+- Standardiser les référentiels (niveaux, CSP, unités) + contrôle de cohérence.
+- Mettre en place un dictionnaire de données (définitions + propriétaires + règles).
+- Automatiser des contrôles mensuels (cohérence des dates, rattachements).
+
+Indicateurs de maturité (0–5)
+- Existence des données: 4
+- Qualité: 2
+- Accessibilité: 2
+- Volumétrie & historisation: 3
+- Conformité & documentation: 2
+

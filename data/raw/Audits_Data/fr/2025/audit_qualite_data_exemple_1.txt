@@ -1,0 +1,42 @@
+Titre: Audit de qualité des données — Exemple 1
+Organisation: Holokia (exemple pédagogique)
+Périmètre: Données CRM + Données ventes + Référentiels produits
+Période analysée: Jan 2024 → Déc 2024
+
+Résumé exécutif
+L’audit met en évidence une maturité intermédiaire. Les principaux risques proviennent de la duplication client, de champs critiques non renseignés et d’une faible traçabilité des corrections.
+
+Constats clés
+1) Existence des données
+- Sources identifiées: CRM, ERP, exports Excel métiers
+- Redondance: élevée (mêmes entités présentes dans CRM et fichiers locaux)
+
+2) Qualité (complétude / exactitude / cohérence)
+- Complétude des champs critiques (email, téléphone, pays, segment): 78%
+- Doublons clients estimés: 9–12%
+- Incohérences pays/monnaie: 3% des lignes
+
+3) Accessibilité
+- Accès: hétérogène (droits différents selon équipes)
+- Délai moyen pour extraire un reporting fiable: 1 à 2 jours
+
+4) Volumétrie & historisation
+- Historisation: partielle (pas de suivi des changements pour les champs segment et statut)
+- Journaux de modification: non centralisés
+
+5) Conformité & documentation
+- Dictionnaire de données: incomplet
+- RGPD: consentements présents mais non systématiquement à jour
+
+Recommandations prioritaires
+- Mettre en place une déduplication (règles + rapprochement fuzzy) sur l’entité client.
+- Définir un “golden record” et des règles de validation à l’entrée (format email, pays ISO, etc.).
+- Mettre en place un suivi des modifications (audit trail) sur les champs critiques.
+
+Indicateurs de maturité (0–5)
+- Existence des données: 3
+- Qualité: 2
+- Accessibilité: 2
+- Volumétrie & historisation: 1
+- Conformité & documentation: 2
+

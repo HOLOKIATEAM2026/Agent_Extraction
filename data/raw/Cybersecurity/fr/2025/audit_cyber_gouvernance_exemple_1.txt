@@ -1,0 +1,35 @@
+Titre: Audit cybersécurité & gouvernance — Exemple 1
+Organisation: Holokia (exemple pédagogique)
+Périmètre: Gouvernance sécurité, gestion des accès, sauvegardes, réponse à incident
+Période analysée: 2024
+
+Résumé exécutif
+Le dispositif de cybersécurité est présent mais insuffisamment formalisé. Les priorités sont la gouvernance (rôles, politiques), la gestion des identités et la préparation aux incidents.
+
+Constats clés
+Gouvernance
+- Politique SSI: partielle (non versionnée, diffusion incomplète)
+- Responsabilités: définies mais pas de RACI formel
+- Gestion des risques: réalisée ponctuellement, pas de cadence
+
+Protection
+- MFA: activé sur les comptes admin, pas généralisé aux utilisateurs
+- Revue des droits: irrégulière
+- Sauvegardes: existantes, tests de restauration non documentés
+
+Détection & réponse
+- Journalisation: hétérogène (sources cloud ok, serveurs partiel)
+- Plan de réponse à incident: brouillon, pas de simulations
+
+Recommandations prioritaires
+- Formaliser une gouvernance (RACI, politiques versionnées, comité mensuel).
+- Généraliser MFA et mettre en place une revue trimestrielle des accès.
+- Mettre en place un plan d’incident testable (exercices, playbooks).
+
+Indicateurs de maturité (0–5)
+- Gouvernance: 2
+- Gestion des risques cyber: 2
+- Contrôles d’accès: 2
+- Détection: 1
+- Réponse à incident: 1
+
