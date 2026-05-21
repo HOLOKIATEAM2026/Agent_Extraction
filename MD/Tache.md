@@ -127,21 +127,22 @@ Tester et comparer plusieurs méthodes d'extraction — exigence explicite de la
 - [x] **T3.2** — Implémenter **Approche B : RAG classique** (`benchmark/approach_b.py`, `run_approach_b.py`)
   - Chunking → Vectorisation → Retrieval → Génération
   - Avantages : scalable / Limites : dépend de la qualité du retrieval
-- [ ] **T3.3** — Implémenter **Approche C : Agent IA autonome**
+- [x] **T3.3** — Implémenter **Approche C : Agent IA autonome** (`benchmark/approach_c_agent.py`, `run_approach_c.py`)
   - Agent avec outils : `search_document`, `extract_section`, `validate_data`
   - Raisonnement multi-étapes (ReAct ou tool-calling)
   - Avantages : flexible / Limites : plus complexe, plus lent
-- [ ] **T3.4** — Implémenter **Approche D : Combinaison**
+- [x] **T3.4** — Implémenter **Approche D : Combinaison** (`benchmark/approach_d_combo.py`, `run_approach_d.py`)
   - RAG pour le retrieval + Agent pour la validation
-- [ ] **T3.5** — Tableau comparatif des approches :
-  | Critère              | Approche A | Approche B | Approche C | Approche D |
-  | -------------------- | ---------- | ---------- | ---------- | ---------- |
-  | Précision extraction | <br />     | <br />     | <br />     | <br />     |
-  | Vitesse              | <br />     | <br />     | <br />     | <br />     |
-  | Coût estimé          | <br />     | <br />     | <br />     | <br />     |
-  | Gestion docs longs   | <br />     | <br />     | <br />     | <br />     |
-  | Complexité impl.     | <br />     | <br />     | <br />     | <br />     |
-- [ ] **T3.6** — Sélectionner l'approche finale et justifier le choix à Samad
+- [x] **T3.5** — Tableau comparatif des approches : (`benchmark/comparison.md`)
+  | Critère                                                                                                                                            | Approche A                               | Approche B                  | Approche C                          | Approche D                                              |
+  | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | --------------------------- | ----------------------------------- | ------------------------------------------------------- |
+  | Précision extraction                                                                                                                               | Faible (souvent `null` si texte tronqué) | Bonne (dépend du retrieval) | Variable (dépend du pilotage agent) | Bonne + contrôle citations (issues détectées/corrigées) |
+  | Vitesse                                                                                                                                            | Rapide                                   | Moyenne                     | Lente                               | Moyenne → lente                                         |
+  | Coût estimé                                                                                                                                        | Élevé (beaucoup de contexte au LLM)      | Moyen                       | Élevé (multi-steps)                 | Moyen (retrieval) → élevé si fix passes                 |
+  | Gestion docs longs                                                                                                                                 | Faible                                   | Bonne                       | Bonne                               | Bonne                                                   |
+  | Complexité impl.                                                                                                                                   | Faible                                   | Moyenne                     | Élevée                              | Élevée                                                  |
+  | **Mesure auto (sur** **`Maroc_Telecom_RFA_2024.pdf`) :** cf. `benchmark/comparison.md` (A: 0/12, B: 7/12, C: 0/12, D: 6/12 + 2 issues validation). | <br />                                   | <br />                      | <br />                              | <br />                                                  |
+- [x] **T3.6** — Sélectionner l'approche finale et justifier le choix à Samad (`benchmark/rapport_comparatif.md`)
 
 **Livrable :** `benchmark/` — code des 4 approches + rapport comparatif
 
