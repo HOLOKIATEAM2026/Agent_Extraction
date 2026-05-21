@@ -85,13 +85,13 @@
 
 ### Semaine 5 — Module de retrieval (T3.1)
 
-- [ ] **T3.1** — Développer le module de recherche contextuelle
+- [x] **T3.1** — Développer le module de recherche contextuelle
   - Recherche par similarité vectorielle (cosine similarity)
   - Tester différents paramètres (top-k, seuil de similarité)
   - Implémenter le re-ranking si les résultats sont insuffisants
   - Tester sur 5 rapports avec des requêtes financières simples
 
-**Livrable :** `agent/retrieval.py` fonctionnel
+**Livrable :** `agent/retrieval.py` fonctionnel ✅
 
 ***
 
