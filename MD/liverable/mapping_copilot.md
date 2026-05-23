@@ -35,5 +35,29 @@ Ce document fait le pont entre les données extraites par l'Agent RAG (depuis le
 
 ---
 
+## 4. Axe Maturité Data (Priorité 4)
+
+| Champ extrait par l'Agent RAG | Question correspondante dans Copilot Strategy IA | Objectif d'analyse |
+| :--- | :--- | :--- |
+| **Existence des données** | *« Les données nécessaires au diagnostic sont-elles disponibles et couvrent-elles les besoins clés ? »* | Évaluer la couverture data |
+| **Qualité** | *« Quel est le niveau de qualité des données (complétude, exactitude, cohérence) ? »* | Fiabilité des analyses |
+| **Accessibilité** | *« Les données sont-elles accessibles facilement (outils, self-service, délais) ? »* | Vitesse d'exécution et autonomie |
+| **Volumétrie** | *« Les volumes et la variété des données sont-ils maîtrisés ? »* | Scalabilité data |
+| **Historisation** | *« Existe-t-il une historisation et une traçabilité des données (rétention, lineage) ? »* | Auditabilité et continuité |
+| **Conformité** | *« Les exigences de conformité (RGPD, policies) sont-elles respectées ? »* | Risque réglementaire |
+| **Documentation** | *« Les données sont-elles documentées (catalogue, dictionnaire, règles de gestion) ? »* | Gouvernance et partage |
+
+---
+
+## 5. Axe Cybersécurité & Gouvernance (Priorité 5)
+
+| Champ extrait par l'Agent RAG | Question correspondante dans Copilot Strategy IA | Objectif d'analyse |
+| :--- | :--- | :--- |
+| **Risques cyber identifiés** | *« Quels risques cyber majeurs sont identifiés (menaces, incidents, impacts) ? »* | Exposition au risque |
+| **Conformité NIST / ISO** | *« Quel est le niveau de conformité aux référentiels (NIST CSF, ISO 27001) ? »* | Maturité cyber |
+| **Gouvernance des données** | *« La gouvernance data est-elle structurée (rôles, comités, processus) ? »* | Pilotage et responsabilités |
+
+---
+
 > **Note technique pour l'intégration :** 
-> Le JSON final généré par l'agent RAG utilisera les clés (ex: `taille_marche`, `intensite_concurrentielle`) pour auto-remplir les champs de l'interface frontend de Copilot via l'API. Si un champ RAG retourne `null` ou une confiance < `0.60`, la question Copilot restera vide pour saisie manuelle par l'utilisateur.
+> Le JSON final généré par l'agent RAG utilisera les clés (ex: `taille_marche`, `intensite_concurrentielle`, `diagnostic_data.qualite`, `diagnostic_cyber_gouvernance.conformite_nist`) pour auto-remplir les champs de l'interface frontend de Copilot via l'API. Si un champ RAG retourne `null` ou une confiance < `0.60`, la question Copilot restera vide pour saisie manuelle par l'utilisateur.

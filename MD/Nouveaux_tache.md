@@ -51,16 +51,16 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 - [x] T1.4 — Validation Samad
 
 > 🆕 **À compléter (réunion 18/05)** : élargir le catalogue avec les nouveaux champs data/cyber
-- [ ] **T1.5** — Ajouter au catalogue les métriques **maturité data** :
+- [x] **T1.5** — Ajouter au catalogue les métriques **maturité data** :
   - Existence des données
   - Qualité & accessibilité
   - Volumétrie & historisation
   - Conformité & documentation
-- [ ] **T1.6** — Ajouter les métriques **cybersécurité & gouvernance** :
+- [x] **T1.6** — Ajouter les métriques **cybersécurité & gouvernance** :
   - Évaluation des risques cyber identifiés
   - Conformité NIST / ISO
   - Gouvernance des données
-- [ ] **T1.7** — Mettre à jour `mapping_copilot.md` avec les nouveaux champs
+- [x] **T1.7** — Mettre à jour `mapping_copilot.md` avec les nouveaux champs
 
 ---
 
@@ -78,13 +78,13 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 - [x] T2.8 — Diagramme d'architecture
 
 > 🆕 **À compléter (réunion 18/05)** : migration base de données + sécurité
-- [ ] **T2.9** — Remplacer SQLite par **Supabase** comme base de données officielle du projet
+- [x] **T2.9** — Remplacer SQLite par **Supabase** comme base de données officielle du projet
   - Stocker les résultats d'extraction JSON
   - Stocker les métadonnées des documents ingérés
   - Configurer les accès via variables d'environnement
-- [ ] **T2.10** — Mettre à jour `architecture.md` avec Supabase + stack frontend (React / Netlify / Render)
-- [ ] **T2.11** — Veille sécurité : vérifier les dépendances Python (Axios équivalent, versions à jour)
-- [ ] **T2.12** — Verrouiller le dépôt GitHub (branches protégées, secrets hors du code)
+- [x] **T2.10** — Mettre à jour `architecture.md` avec Supabase + stack frontend (React / Netlify / Render)
+- [x] **T2.11** — Veille sécurité : vérifier les dépendances Python (Axios équivalent, versions à jour)
+- [x] **T2.12** — Verrouiller le dépôt GitHub (branches protégées, secrets hors du code)
 
 ---
 

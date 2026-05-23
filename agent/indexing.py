@@ -81,6 +81,7 @@ def build_chroma_index(
     batch_size: int = 32,
     max_chunks_per_file: Optional[int] = 300,
     limit_files: Optional[int] = None,
+    enable_supabase: bool = False,
 ) -> Dict[str, Any]:
     config = load_config(config_path)
     vs_cfg = config.get("vectorstore", {}) or {}
@@ -104,12 +105,27 @@ def build_chroma_index(
     total_chunks = 0
     skipped_files = 0
 
+    sb = None
+    if enable_supabase:
+        try:
+            from agent.supabase_store import SupabaseStore
+
+            sb = SupabaseStore()
+        except Exception as e:
+            print(f"[WARN] Supabase disabled: {e}")
+            sb = None
+
     for path in iter_document_paths(data_dir):
         if limit_files is not None and processed_files >= limit_files:
             break
         processed_files += 1
         try:
             print(f"[INFO] Indexing: {path}")
+            if sb is not None:
+                try:
+                    sb.upsert_document(path)
+                except Exception as e:
+                    print(f"[WARN] Supabase upsert_document failed for {path}: {e}")
             chunks = chunk_document(path, max_chars=max_chars, overlap_chars=overlap_chars)
             if max_chunks_per_file is not None and len(chunks) > max_chunks_per_file:
                 chunks = chunks[:max_chunks_per_file]

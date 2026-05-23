@@ -377,3 +377,9 @@ def save_result(result: ApproachCResult, output_path: str) -> None:
     }
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
+    try:
+        from agent.supabase_store import persist_extraction_payload
+
+        persist_extraction_payload(payload)
+    except Exception:
+        pass

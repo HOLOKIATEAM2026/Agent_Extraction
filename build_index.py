@@ -12,6 +12,7 @@ def main() -> None:
     parser.add_argument("--overlap-chars", type=int, default=200, help="Overlap characters between chunks")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size for vectorstore inserts")
     parser.add_argument("--max-chunks-per-file", type=int, default=300, help="Limit number of chunks per file (avoid huge EDGAR files)")
+    parser.add_argument("--supabase", action="store_true", help="Upsert document metadata into Supabase during indexing")
     args = parser.parse_args()
 
     result = build_chroma_index(
@@ -22,6 +23,7 @@ def main() -> None:
         overlap_chars=args.overlap_chars,
         batch_size=args.batch_size,
         max_chunks_per_file=args.max_chunks_per_file,
+        enable_supabase=args.supabase,
     )
 
     print("\n✅ Indexation terminée")

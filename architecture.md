@@ -11,6 +11,10 @@ Ce document décrit l’architecture technique actuelle du projet : ingestion do
   - `embeddings.*` : configuration embeddings (Ollama `nomic-embed-text`)
   - `vectorstore.*` : configuration base vectorielle (Chroma persistée)
 - `.env` : clés API (ex: `GROQ_API_KEY`)
+  - `SUPABASE_URL`
+  - `SUPABASE_SERVICE_ROLE_KEY` (backend)
+  - `SUPABASE_ANON_KEY` (frontend)
+  - `SUPABASE_ENABLED=1` (active l’écriture vers Supabase)
 
 ### 2) Ingestion & Parsing
 
@@ -55,6 +59,19 @@ Ce document décrit l’architecture technique actuelle du projet : ingestion do
   - `LLMProvider(provider=..., model=...)`
   - bascule Groq / Ollama via config sans changer le code métier
 
+### 8) Persistence (Supabase)
+
+- `agent/supabase_store.py`
+  - upsert métadonnées document (`documents`)
+  - stockage des résultats JSON (`extractions`)
+  - activable via `SUPABASE_ENABLED=1`
+
+### 9) Stack Frontend / Déploiement (cible)
+
+- Frontend : React
+- DB : Supabase
+- Déploiement : Netlify (frontend) + Render (backend)
+
 ## Diagramme (Mermaid)
 
 ```mermaid
@@ -92,6 +109,10 @@ flowchart TD
     CHROMA["ChromaDB"]
   end
 
+  subgraph DB[Persistence]
+    SUPA["Supabase Postgres<br/>documents + extractions"]
+  end
+
   subgraph RET[Retrieval]
     SIM["similarity_search"]
   end
@@ -115,6 +136,10 @@ flowchart TD
   ENV --> LLM
   LLM --> GROQ
   LLM --> OLL_LLM
+  PPDF --> SUPA
+  PDOCX --> SUPA
+  PTXT --> SUPA
+  LLM --> SUPA
 ```
 
 ## Commandes de vérification (venv)
@@ -126,4 +151,3 @@ flowchart TD
 .\venv\Scripts\python.exe build_index.py --reset --data-dir data/raw/EDGAR --limit-files 1 --max-chars 800 --overlap-chars 80 --batch-size 4 --max-chunks-per-file 40
 .\venv\Scripts\python.exe test\test_retrieval.py
 ```
-
