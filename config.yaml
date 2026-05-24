@@ -6,7 +6,7 @@ embeddings:
   model: "nomic-embed-text"
   base_url: "http://localhost:11434"
   sync_client_kwargs:
-    timeout: 60.0
+    timeout: 300.0
 
 vectorstore:
   type: "chroma"

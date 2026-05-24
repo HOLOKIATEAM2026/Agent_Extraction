@@ -64,6 +64,15 @@ def _dedupe_by_chunk_id(items: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]
     return out
 
 
+def _norm_path(p: Optional[str]) -> Optional[str]:
+    if not p:
+        return p
+    try:
+        return os.path.normpath(p).replace("\\", "/")
+    except Exception:
+        return str(p).replace("\\", "/")
+
+
 def _similarity_search_safe(
     vs,
     *,
@@ -71,14 +80,34 @@ def _similarity_search_safe(
     k: int,
     file_path: Optional[str],
 ):
-    if file_path:
+    if not file_path:
+        return vs.similarity_search(query, k=k)
+
+    candidates = []
+    raw = str(file_path)
+    candidates.append(raw)
+    candidates.append(raw.replace("/", "\\"))
+    candidates.append(raw.replace("\\", "/"))
+    try:
+        candidates.append(os.path.normpath(raw))
+    except Exception:
+        pass
+
+    for fp in candidates:
         try:
-            return vs.similarity_search(query, k=k, filter={"file_path": file_path})
+            docs = vs.similarity_search(query, k=k, filter={"file_path": fp})
+            if docs:
+                return docs
         except TypeError:
-            pass
+            break
         except Exception:
-            pass
-    return vs.similarity_search(query, k=k)
+            continue
+
+    docs = vs.similarity_search(query, k=max(k * 5, k))
+    want = _norm_path(file_path)
+    if want:
+        docs = [d for d in docs if _norm_path((d.metadata or {}).get("file_path")) == want]
+    return docs[:k]
 
 
 def _format_chunk(d) -> Tuple[Dict[str, Any], str]:
@@ -111,6 +140,7 @@ def _build_prompt(context: str) -> str:
         "Réponds uniquement en JSON valide (aucun texte autour).\n"
         "Ne jamais inventer: si absent => valeur=null, source=null, confiance=0. Pour les listes => valeur=[].\n"
         "Si la page est identifiable => page=int sinon page=null.\n"
+        "Tu DOIS retourner toutes les clés du schéma, même si tout est null.\n"
         "Format à respecter:\n"
         "{"
         "\"meta\": {\"source_file\": string, \"approach\": \"B_rag\", \"provider\": string, \"model\": string},"

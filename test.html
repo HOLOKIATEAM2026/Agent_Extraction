@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent RAG — Holokia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --void:#0A0A0F;--deep:#111118;--surface:#1A1A24;--border:#252535;--border-h:#3A3A55;
+    --gold:#D4AF37;--gold-bright:#F5CC50;--gold-pale:#E8D5A0;
+    --gold-ghost:rgba(212,175,55,0.07);--gold-glow:rgba(212,175,55,0.22);
+    --text:#F8F6F0;--text-body:#E8D5A0;--text-muted:#888899;
+    --success:#2ECC71;--warning:#E67E22;--danger:#E74C3C;--info:#5B9BD5;
+  }
+  body{background:var(--void);color:var(--text-body);font-family:'Crimson Pro',Georgia,serif;font-size:17px;line-height:1.75;min-height:100vh}
+  body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:9999}
+  header{text-align:center;padding:56px 32px 40px;position:relative}
+  header::after{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-top:40px;opacity:.5}
+  .logo-symbol{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.3em;color:var(--gold);opacity:.7;margin-bottom:18px}
+  h1{font-family:'Cinzel',serif;font-size:clamp(26px,4vw,46px);font-weight:400;letter-spacing:.08em;color:var(--text);line-height:1.2;margin-bottom:10px}
+  h1 span{color:var(--gold)}
+  .subtitle{font-size:15px;color:var(--text-muted);font-style:italic}
+  main{max-width:840px;margin:0 auto;padding:44px 28px 88px}
+  .server-note{background:rgba(91,155,213,.07);border:1px solid rgba(91,155,213,.2);border-radius:8px;padding:13px 16px;font-size:13px;color:var(--text-muted);margin-bottom:30px;display:flex;gap:10px;align-items:flex-start;line-height:1.6}
+  .section-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.15em;color:var(--gold);opacity:.8;margin-bottom:9px;text-transform:uppercase}
+  .upload-zone{border:1.5px dashed var(--border-h);border-radius:12px;padding:48px 28px;text-align:center;cursor:pointer;transition:all .35s cubic-bezier(.16,1,.3,1);position:relative;background:var(--gold-ghost);margin-bottom:28px}
+  .upload-zone:hover,.upload-zone.drag-over{border-color:var(--gold);background:rgba(212,175,55,.1);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.3),0 0 30px var(--gold-glow)}
+  .upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .upload-icon{font-size:38px;color:var(--gold);opacity:.7;margin-bottom:14px;display:block;transition:transform .3s ease}
+  .upload-zone:hover .upload-icon{transform:translateY(-4px)}
+  .upload-title{font-family:'Cinzel',serif;font-size:15px;letter-spacing:.06em;color:var(--text);margin-bottom:5px}
+  .upload-hint{font-size:13px;color:var(--text-muted)}
+  .file-info{display:none;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:8px;padding:12px 16px;margin-bottom:22px;animation:slideIn .4s cubic-bezier(.16,1,.3,1)}
+  .file-info.visible{display:flex}
+  .file-icon{font-size:24px;color:var(--gold);flex-shrink:0}
+  .file-name{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file-size{font-size:11px;color:var(--text-muted);flex-shrink:0}
+  .model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:7px;margin-bottom:26px}
+  .model-btn{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:all .2s ease;text-align:center}
+  .model-btn:hover{border-color:var(--border-h);color:var(--text-body)}
+  .model-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gold-ghost);box-shadow:0 0 12px var(--gold-glow)}
+  .btn-extract{width:100%;padding:15px 28px;background:transparent;border:1.5px solid var(--gold);border-radius:8px;color:var(--gold);font-family:'Cinzel',serif;font-size:13px;letter-spacing:.12em;cursor:pointer;transition:all .3s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden;margin-bottom:36px;text-transform:uppercase}
+  .btn-extract::before{content:'';position:absolute;inset:0;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.16,1,.3,1);z-index:0}
+  .btn-extract:hover::before{transform:scaleX(1)}
+  .btn-extract:hover{color:var(--void)}
+  .btn-extract span{position:relative;z-index:1}
+  .btn-extract:disabled{opacity:.35;cursor:not-allowed}
+  .btn-extract:disabled::before{display:none}
+  .progress-wrap{display:none;margin-bottom:30px;animation:slideIn .4s ease}
+  .progress-wrap.visible{display:block}
+  .progress-steps{display:flex;align-items:center;margin-bottom:16px}
+  .step{display:flex;align-items:center;gap:7px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);flex:1}
+  .step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);border:1.5px solid var(--border-h);flex-shrink:0;transition:all .4s ease}
+  .step.done .step-dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px var(--gold-glow)}
+  .step.active .step-dot{background:transparent;border-color:var(--gold);animation:pulseDot 1.5s ease infinite}
+  .step.done,.step.active{color:var(--gold-pale)}
+  .step-line{flex:1;height:1px;background:var(--border);margin:0 3px}
+  .step-line.done{background:var(--gold);opacity:.5}
+  .progress-bar-wrap{height:2px;background:var(--border);border-radius:2px;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));border-radius:2px;width:0%;transition:width .6s cubic-bezier(.16,1,.3,1)}
+  .results-wrap{display:none;animation:revealUp .6s cubic-bezier(.16,1,.3,1)}
+  .results-wrap.visible{display:block}
+  .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+  .results-title{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.08em;color:var(--text)}
+  .btn-copy{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:5px 13px;color:var(--text-muted);font-size:13px;cursor:pointer;transition:all .2s ease;font-family:'Crimson Pro',serif}
+  .btn-copy:hover{border-color:var(--gold);color:var(--gold)}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:26px}
+  .card{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--gold);border-radius:8px;padding:14px 16px;animation:revealUp .5s cubic-bezier(.16,1,.3,1) both}
+  .card:nth-child(2){animation-delay:.08s}
+  .card:nth-child(3){animation-delay:.16s}
+  .card:nth-child(4){animation-delay:.24s}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .card-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+  .card-badge{font-size:10px;padding:2px 7px;border-radius:99px;font-family:'JetBrains Mono',monospace}
+  .badge-ok{background:rgba(46,204,113,.1);color:var(--success);border:1px solid rgba(46,204,113,.2)}
+  .badge-mid{background:rgba(230,126,34,.1);color:var(--warning);border:1px solid rgba(230,126,34,.2)}
+  .badge-low{background:rgba(231,76,60,.1);color:var(--danger);border:1px solid rgba(231,76,60,.2)}
+  .field-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-top:1px solid rgba(37,37,53,.8);gap:8px}
+  .field-label{font-size:12px;color:var(--text-muted);flex-shrink:0}
+  .field-value{font-size:12px;color:var(--text);text-align:right;font-family:'JetBrains Mono',monospace}
+  .field-null{font-size:12px;color:#444455;font-style:italic}
+  .source-box{background:rgba(212,175,55,.04);border-left:2px solid var(--gold);padding:8px 12px;margin-top:7px;font-size:11px;color:var(--text-muted);font-style:italic;border-radius:0 5px 5px 0}
+  .source-ref{color:var(--gold);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:10px}
+  .json-block{background:var(--deep);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .json-toolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--surface);border-bottom:1px solid var(--border)}
+  .json-label{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:.06em}
+  .json-content{padding:18px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:var(--gold-pale);overflow-x:auto;white-space:pre;max-height:380px;overflow-y:auto}
+  .json-content::-webkit-scrollbar{width:3px}
+  .json-content::-webkit-scrollbar-thumb{background:var(--border-h);border-radius:2px}
+  .json-key{color:var(--gold)}
+  .json-str{color:#9ECF8A}
+  .json-num{color:var(--info)}
+  .json-null{color:#444455}
+  .json-bool{color:var(--warning)}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:28px 0}
+  @keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 var(--gold-glow)}50%{box-shadow:0 0 0 5px transparent}}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes revealUp{from{opacity:0;transform:translateY(16px);filter:blur(2px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-symbol">✦ HOLOKIA · COPILOT STRATEGY IA ✦</div>
+  <h1>AGENT <span>RAG</span></h1>
+  <p class="subtitle">Extraction intelligente de rapports d'activité</p>
+</header>
+
+<main>
+
+  <div class="server-note">
+    <span style="color:var(--info);font-size:16px;flex-shrink:0">ℹ</span>
+    <span>
+      Lance d'abord ton serveur Python : <code style="font-family:monospace;color:var(--gold);font-size:12px">python server.py</code> dans le terminal.
+      L'interface enverra le PDF à <code style="font-family:monospace;color:var(--info);font-size:12px">http://localhost:8000/extract</code>.
+      Pour l'instant elle tourne en mode démo sans serveur.
+    </span>
+  </div>
+
+  <p class="section-label">① Document à analyser</p>
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept=".pdf,.docx,.txt" />
+    <span class="upload-icon">⬆</span>
+    <p class="upload-title">Déposer le rapport ici</p>
+    <p class="upload-hint">PDF · Word · TXT — Rapports annuels · Audits data · Frameworks NIST</p>
+  </div>
+
+  <div class="file-info" id="fileInfo">
+    <span class="file-icon">📄</span>
+    <span class="file-name" id="fileName">—</span>
+    <span class="file-size" id="fileSize">—</span>
+  </div>
+
+  <p class="section-label">② Modèle LLM</p>
+  <div class="model-grid" id="modelGrid">
+    <button class="model-btn active" data-model="mistral">mistral</button>
+    <button class="model-btn" data-model="qwen2.5">qwen2.5</button>
+    <button class="model-btn" data-model="deepseek">deepseek</button>
+    <button class="model-btn" data-model="groq">groq</button>
+    <button class="model-btn" data-model="gemini">gemini</button>
+    <button class="model-btn" data-model="gpt-4o">gpt-4o</button>
+  </div>
+
+  <button class="btn-extract" id="btnExtract" disabled>
+    <span id="btnText">⬡ &nbsp; LANCER L'EXTRACTION</span>
+  </button>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-steps">
+      <div class="step" id="s1"><div class="step-dot"></div>Parsing</div>
+      <div class="step-line" id="l1"></div>
+      <div class="step" id="s2"><div class="step-dot"></div>Chunking</div>
+      <div class="step-line" id="l2"></div>
+      <div class="step" id="s3"><div class="step-dot"></div>Vecto.</div>
+      <div class="step-line" id="l3"></div>
+      <div class="step" id="s4"><div class="step-dot"></div>Extraction</div>
+      <div class="step-line" id="l4"></div>
+      <div class="step" id="s5"><div class="step-dot"></div>JSON</div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div class="results-wrap" id="resultsWrap">
+    <div class="results-header">
+      <span class="results-title">RÉSULTATS D'EXTRACTION</span>
+      <button class="btn-copy" id="btnCopy">Copier JSON</button>
+    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
+    <div class="divider"></div>
+    <p class="section-label">JSON complet</p>
+    <div class="json-block">
+      <div class="json-toolbar">
+        <span class="json-label">OUTPUT · JSON · v1</span>
+        <span class="json-label" id="jsonMeta">—</span>
+      </div>
+      <div class="json-content" id="jsonOutput"></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const fileInput=document.getElementById('fileInput'),uploadZone=document.getElementById('uploadZone'),fileInfo=document.getElementById('fileInfo'),fileName=document.getElementById('fileName'),fileSize=document.getElementById('fileSize'),btnExtract=document.getElementById('btnExtract'),btnText=document.getElementById('btnText'),progressWrap=document.getElementById('progressWrap'),progressBar=document.getElementById('progressBar'),resultsWrap=document.getElementById('resultsWrap'),cardsGrid=document.getElementById('cardsGrid'),jsonOutput=document.getElementById('jsonOutput'),jsonMeta=document.getElementById('jsonMeta'),btnCopy=document.getElementById('btnCopy');
+let selectedModel='mistral',selectedFile=null;
+
+document.getElementById('modelGrid').addEventListener('click',e=>{
+  const btn=e.target.closest('.model-btn');
+  if(!btn)return;
+  document.querySelectorAll('.model-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedModel=btn.dataset.model;
+});
+
+uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('drag-over')});
+uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop',e=>{e.preventDefault();uploadZone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)setFile(f)});
+fileInput.addEventListener('change',e=>{if(e.target.files[0])setFile(e.target.files[0])});
+
+function setFile(f){
+  selectedFile=f;
+  fileName.textContent=f.name;
+  fileSize.textContent=(f.size/1024/1024).toFixed(2)+' Mo';
+  fileInfo.classList.add('visible');
+  btnExtract.disabled=false;
+}
+
+function setStep(n){
+  for(let i=1;i<=5;i++){
+    const s=document.getElementById('s'+i);
+    s.classList.remove('done','active');
+    if(i<n)s.classList.add('done');
+    else if(i===n)s.classList.add('active');
+    if(i<5)document.getElementById('l'+i).classList.toggle('done',i<n);
+  }
+  progressBar.style.width=((n-1)/4*100)+'%';
+}
+
+function highlight(json){
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,m=>{
+    if(/^"/.test(m)){if(/:$/.test(m))return'<span class="json-key">'+m+'</span>';return'<span class="json-str">'+m+'</span>';}
+    if(/true|false/.test(m))return'<span class="json-bool">'+m+'</span>';
+    if(/null/.test(m))return'<span class="json-null">'+m+'</span>';
+    return'<span class="json-num">'+m+'</span>';
+  });
+}
+
+function buildCards(data){
+  cardsGrid.innerHTML='';
+  const secs=[
+    {key:'diagnostic_strategique',title:'Stratégique',fields:['taille_marche','taux_croissance','intensite_concurrentielle','concurrents','tendances_marche']},
+    {key:'diagnostic_financier',title:'Financier',fields:['chiffre_affaires','resultat_net','ebitda']},
+    {key:'diagnostic_rh',title:'RH',fields:['effectif_total','masse_salariale']},
+    {key:'diagnostic_data',title:'Maturité Data',fields:['qualite','accessibilite','conformite','historisation']},
+  ];
+  secs.forEach((sec,i)=>{
+    const sd=data[sec.key]||{};
+    const found = f => {
+      const fd = sd[f];
+      if(!fd) return false;
+      if(Array.isArray(fd.valeur)) return fd.valeur.length>0;
+      return fd.valeur!==null && fd.valeur!==undefined && String(fd.valeur).trim()!=='';
+    };
+    const filledCount=sec.fields.reduce((a,f)=>a+(found(f)?1:0),0);
+    const fillRatio=filledCount/sec.fields.length;
+    const badge=fillRatio>=0.7?'ok':fillRatio>=0.4?'mid':'low';
+    let rows='';
+    sec.fields.forEach(f=>{
+      const fd=sd[f];const label=f.replace(/_/g,' ');
+      if(fd && found(f)){
+        const val=Array.isArray(fd.valeur)?fd.valeur.join(', '):fd.valeur;
+        rows+=`<div class="field-row"><span class="field-label">${label}</span><span class="field-value">${val}</span></div>`;
+      }else{
+        rows+=`<div class="field-row"><span class="field-label">${label}</span><span class="field-null">non trouvé</span></div>`;
+      }
+    });
+    const ff=sec.fields.find(f=>sd[f]?.source?.extrait);
+    const srcHtml=ff?`<div class="source-box"><span class="source-ref">p.${sd[ff].source.page}</span> — "${sd[ff].source.extrait}"</div>`:'';
+    cardsGrid.innerHTML+=`<div class="card" style="animation-delay:${i*.08}s"><div class="card-header"><span class="card-title">${sec.title}</span><span class="card-badge badge-${badge}">● ${Math.round(fillRatio*100)}%</span></div>${rows}${srcHtml}</div>`;
+  });
+}
+
+btnExtract.addEventListener('click',async()=>{
+  if(!selectedFile)return;
+  btnExtract.disabled=true;
+  btnText.textContent='⟳  EXTRACTION EN COURS…';
+  progressWrap.classList.add('visible');
+  resultsWrap.classList.remove('visible');
+
+  setStep(1);
+  const t1=setTimeout(()=>setStep(2),450);
+  const t2=setTimeout(()=>setStep(3),1000);
+  const t3=setTimeout(()=>setStep(4),1600);
+
+  const fd=new FormData();
+  fd.append('file',selectedFile);
+
+  let provider=null,model=null;
+  if(['groq','gemini','gpt-4o'].includes(selectedModel)){
+    provider=selectedModel==='gpt-4o'?'openai':selectedModel;
+  }else{
+    provider='ollama';
+    model=selectedModel;
+  }
+  fd.append('provider',provider);
+  if(model)fd.append('model',model);
+  fd.append('approach','d');
+
+  try{
+    const r=await fetch('http://localhost:8000/extract',{method:'POST',body:fd});
+    const data=await r.json();
+    clearTimeout(t1);clearTimeout(t2);clearTimeout(t3);
+    setStep(5);
+    showResults(data);
+  }catch(e){
+    clearTimeout(t1);clearTimeout(t2);clearTimeout(t3);
+    alert('Serveur non accessible. Lance: python server.py');
+    btnText.textContent='⬡  LANCER L\'EXTRACTION';
+    btnExtract.disabled=false;
+  }
+});
+
+function showResults(data){
+  buildCards(data);
+  jsonOutput.innerHTML=highlight(JSON.stringify(data,null,2));
+  jsonMeta.textContent=(data.meta?.modele_utilise||'—')+' · '+new Date().toLocaleTimeString('fr-FR');
+  resultsWrap.classList.add('visible');
+  btnText.textContent='⬡  LANCER L\'EXTRACTION';
+  btnExtract.disabled=false;
+  resultsWrap.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+btnCopy.addEventListener('click',()=>{
+  navigator.clipboard.writeText(document.getElementById('jsonOutput').textContent).then(()=>{
+    btnCopy.textContent='✓ Copié !';
+    setTimeout(()=>{btnCopy.textContent='Copier JSON'},2000);
+  });
+});
+</script>
+</body>
+</html>

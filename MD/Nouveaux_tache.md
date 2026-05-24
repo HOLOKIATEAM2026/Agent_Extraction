@@ -106,14 +106,19 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   | Docs longs | Faible | Bonne | Bonne | Bonne |
   | Complexité | Faible | Moyenne | Élevée | Élevée |
 
-- [ ] **T3.6** — ⚠️ Finaliser `benchmark/rapport_comparatif.md` et sélectionner l'approche finale
-  - Approche B (RAG) semble favorite — à confirmer avec Samad lundi
-  - Documenter le choix avec justification claire
+- [x] **T3.6** — ⚠️ Finaliser `benchmark/rapport_comparatif.md` et sélectionner l'approche finale
+  - Choix proposé : Approche D (RAG + validation/correction)
+  - Choix documenté avec justification claire
 
 > 🆕 **À ajouter (réunion 18/05)** : tester sur les nouveaux types de documents
-- [ ] **T3.7** — Relancer le benchmark sur un **audit data** (T0.6) et mesurer les scores
-- [ ] **T3.8** — Relancer sur un **document cybersécurité / NIST** (T0.7) et mesurer les scores
-- [ ] **T3.9** — Mettre à jour `benchmark/comparison.md` avec ces résultats
+- [x] **T3.7** — Relancer le benchmark sur un **audit data** (T0.6) et mesurer les scores
+- [x] **T3.8** — Relancer sur un **document cybersécurité / NIST** (T0.7) et mesurer les scores
+- [x] **T3.9** — Mettre à jour `benchmark/comparison.md` avec ces résultats
+
+**Démo (hors benchmark) :** `test.html` + `server.py`
+- Objectif : interface simple pour tester l’extraction sans passer par le terminal
+- Fonctionnement : upload PDF/Word/TXT → appel `POST http://localhost:8000/extract` → affichage des champs + sources + JSON complet
+- Usage : démo réunion + validation rapide des résultats sur différents documents
 
 ---
 

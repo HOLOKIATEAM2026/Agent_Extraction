@@ -42,6 +42,25 @@ Lecture :
 - Champs remplis = nombre de champs `valeur` non-nuls (ou listes non vides) / total des champs.
 - Issues validation (Approche D) = nombre d’extraits cités absents du contexte.
 
+## Tests sur nouveaux types de documents (réunion 18/05)
+
+Deux nouveaux types de documents ont été ajoutés au corpus :
+- **Audit data** (TXT) : `data/raw/Audits_Data/...`
+- **Cybersécurité / NIST** (PDF) : `data/raw/Cybersecurity/...`
+
+Relance effectuée sur :
+- `audit_qualite_data_exemple_1.txt`
+- `NIST_SP_1308_CSF2.0_QSG.pdf`
+
+Constat :
+- Les champs “stratégique/financier/RH” du schéma actuel sont **normalement absents** de ces documents → les approches retournent majoritairement `null`/listes vides (0/12).
+- L’important ici est la **robustesse du format** (JSON complet) et la **qualité des citations** :
+  - Approche B : JSON complet, champs à `null` si non présents.
+  - Approche C : JSON complet (fallback si l’agent ne converge pas).
+  - Approche D : JSON complet + validation citations (`issues_count=0` sur ces tests).
+
+Note : pour benchmarker “maturité data” et “cyber & gouvernance”, il faudra étendre le schéma et les prompts (Phase 4/5).
+
 ## Décision recommandée (à présenter à Samad)
 
 ### Choix final proposé : **Approche D** (RAG + validation/correction)
@@ -74,4 +93,3 @@ L’approche D répond mieux à l’exigence “citer obligatoirement + ne jamai
 - Exécutions : `benchmark/out/*.json`
 - Tableau auto : [comparison.md](file:///c:/Users/boubk/Downloads/S8/Stage/RAG/benchmark/comparison.md)
 - Rapport (ce document) : `benchmark/rapport_comparatif.md`
-

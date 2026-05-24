@@ -20,7 +20,7 @@ def get_embeddings(config: Dict[str, Any]):
 
         model = emb_cfg.get("model", "nomic-embed-text")
         base_url = emb_cfg.get("base_url", "http://localhost:11434")
-        sync_client_kwargs = emb_cfg.get("sync_client_kwargs") or {"timeout": 60.0}
+        sync_client_kwargs = emb_cfg.get("sync_client_kwargs") or {"timeout": 300.0}
         return OllamaEmbeddings(
             model=model,
             base_url=base_url,

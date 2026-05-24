@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import shutil
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -25,6 +26,17 @@ def _stable_id(parts: List[str]) -> str:
     return h.hexdigest()
 
 
+def _meta_primitive(v: Any) -> Any:
+    if v is None:
+        return None
+    if isinstance(v, (str, int, float, bool)):
+        return v
+    try:
+        return json.dumps(v, ensure_ascii=False, sort_keys=True)
+    except Exception:
+        return str(v)
+
+
 def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Document], List[str]]:
     docs: List[Document] = []
     ids: List[str] = []
@@ -38,7 +50,7 @@ def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Documen
         }
 
         if c.get("type") == "pdf":
-            meta["pages"] = c.get("pages")
+            meta["pages"] = _meta_primitive(c.get("pages"))
             meta["title"] = c.get("title")
             id_parts = [
                 "pdf",
@@ -47,7 +59,7 @@ def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Documen
                 str(meta.get("section") or ""),
             ]
         elif c.get("type") == "docx":
-            meta["block_indexes"] = c.get("block_indexes")
+            meta["block_indexes"] = _meta_primitive(c.get("block_indexes"))
             id_parts = [
                 "docx",
                 str(meta.get("file_path") or ""),

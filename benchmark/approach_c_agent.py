@@ -45,6 +45,15 @@ def _truncate(text: str, limit: int) -> str:
     return text[:limit] + "\n...(truncated)"
 
 
+def _norm_path(p: Optional[str]) -> Optional[str]:
+    if not p:
+        return p
+    try:
+        return os.path.normpath(p).replace("\\", "/")
+    except Exception:
+        return str(p).replace("\\", "/")
+
+
 def tool_search_document(
     *,
     config_path: str,
@@ -55,18 +64,46 @@ def tool_search_document(
 ) -> Dict[str, Any]:
     cfg = load_config(config_path)
     vs = get_chroma_vectorstore(cfg)
-    if file_path:
-        try:
-            docs = vs.similarity_search(query, k=k, filter={"file_path": file_path})
-        except TypeError:
-            docs = vs.similarity_search(query, k=k)
-    else:
+
+    docs: List[Any]
+    if not file_path:
         docs = vs.similarity_search(query, k=k)
+    else:
+        candidates = []
+        raw = str(file_path)
+        candidates.append(raw)
+        candidates.append(raw.replace("/", "\\"))
+        candidates.append(raw.replace("\\", "/"))
+        try:
+            candidates.append(os.path.normpath(raw))
+        except Exception:
+            pass
+
+        got: List[Any] = []
+        for fp in candidates:
+            try:
+                got = vs.similarity_search(query, k=k, filter={"file_path": fp})
+                if got:
+                    break
+            except TypeError:
+                got = []
+                break
+            except Exception:
+                continue
+
+        if got:
+            docs = got
+        else:
+            docs = vs.similarity_search(query, k=max(k * 5, k))
+            want = _norm_path(file_path)
+            if want:
+                docs = [d for d in docs if _norm_path((d.metadata or {}).get("file_path")) == want]
+            docs = docs[:k]
 
     out_docs: List[Dict[str, Any]] = []
     for d in docs:
         meta = d.metadata or {}
-        if file_path and meta.get("file_path") != file_path:
+        if file_path and _norm_path(meta.get("file_path")) != _norm_path(file_path):
             continue
         out_docs.append(
             {
@@ -225,6 +262,43 @@ def _goal_prompt(file_path: str) -> str:
     )
 
 
+def _empty_field() -> Dict[str, Any]:
+    return {"valeur": None, "source": {"page": None, "extrait": None}, "confiance": 0.0}
+
+
+def _empty_list_field() -> Dict[str, Any]:
+    return {"valeur": [], "source": {"page": None, "extrait": None}, "confiance": 0.0}
+
+
+def _empty_schema(*, file_path: str, provider: str, model: str) -> Dict[str, Any]:
+    return {
+        "meta": {
+            "source_file": file_path,
+            "approach": "C_agent",
+            "provider": provider,
+            "model": model,
+        },
+        "diagnostic_strategique": {
+            "taille_marche": _empty_field(),
+            "taux_croissance": _empty_field(),
+            "intensite_concurrentielle": _empty_field(),
+            "concurrents": _empty_list_field(),
+            "tendances_marche": _empty_list_field(),
+        },
+        "diagnostic_financier": {
+            "chiffre_affaires": _empty_field(),
+            "resultat_net": _empty_field(),
+            "ebitda": _empty_field(),
+            "evolution_n_vs_n1": _empty_field(),
+        },
+        "diagnostic_rh_ops": {
+            "effectif_total": _empty_field(),
+            "masse_salariale": _empty_field(),
+            "kpis": _empty_list_field(),
+        },
+    }
+
+
 def run_approach_c(
     file_path: str,
     *,
@@ -366,6 +440,10 @@ def run_approach_c(
             )
         )
 
+    if extracted_candidate is None:
+        extracted_candidate = _empty_schema(
+            file_path=file_path, provider=llm.provider, model=llm.model_name
+        )
     return ApproachCResult(final_json=extracted_candidate, raw_final="", trace=trace)
 
 
