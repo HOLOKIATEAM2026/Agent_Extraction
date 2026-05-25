@@ -147,6 +147,10 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 
 > Démarre après validation de l'approche en T3.6
 
+- [ ] **T4.0** — 🆕 Analyse préliminaire du document avant extraction
+  - Détecter les catégories présentes (Stratégique, Finance, RH, Data, Cyber)
+  - Générer uniquement les questions pertinentes
+  - Éviter les prompts hors contexte (anti-hallucination / économie de tokens)
 - [ ] **T4.1** — Développer le module de retrieval contextuel (approche sélectionnée)
 - [ ] **T4.2** — Créer les prompts d'extraction par catégorie :
   - Prompt stratégique (marché, concurrents, tendances)
@@ -177,7 +181,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 
 **Livrable :** `schema/` — schéma JSON versionné + modèles Pydantic
 
-- [ ] **T5.1** — Schéma JSON cible complet (mis à jour réunion 18/05) :
+- [x] **T5.1** — Schéma JSON cible complet (mis à jour réunion 18/05) :
   ```json
   {
     "meta": {
@@ -219,10 +223,10 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
     }
   }
   ```
-- [ ] **T5.2** — Validation du schéma avec Pydantic
-- [ ] **T5.3** — Versionner le schéma (`schema/v1/data_schema.json`)
+- [x] **T5.2** — Validation du schéma avec Pydantic
+- [x] **T5.3** — Versionner le schéma (`schema/v1/data_schema.json`)
 - [ ] **T5.4** — Valider le schéma avec Samad (alignement diagnostics Copilot)
-- [ ] **T5.5** — 🆕 Configurer le stockage des JSONs dans **Supabase**
+- [x] **T5.5** — 🆕 Configurer le stockage des JSONs dans **Supabase**
 
 ---
 

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Copilot Holokia - Extraction Schema v1",
+  "description": "Schéma cible pour l'extraction de données depuis les rapports d'activité (incluant Data et Cybersécurité).",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "entreprise": { "type": ["string", "null"] },
+        "annee_rapport": { "type": ["integer", "null"] },
+        "date_extraction": { "type": ["string", "null"], "format": "date-time" },
+        "modele_utilise": { "type": ["string", "null"] },
+        "approche": { "type": ["string", "null"] }
+      },
+      "required": ["entreprise", "annee_rapport", "date_extraction", "modele_utilise", "approche"]
+    },
+    "diagnostic_strategique": {
+      "type": "object",
+      "properties": {
+        "taille_marche": { "$ref": "#/definitions/Field" },
+        "taux_croissance": { "$ref": "#/definitions/Field" },
+        "intensite_concurrentielle": { "$ref": "#/definitions/Field" },
+        "concurrents": { "$ref": "#/definitions/ListField" },
+        "tendances_marche": { "$ref": "#/definitions/ListField" }
+      }
+    },
+    "diagnostic_financier": {
+      "type": "object",
+      "properties": {
+        "chiffre_affaires": { "$ref": "#/definitions/Field" },
+        "resultat_net": { "$ref": "#/definitions/Field" },
+        "ebitda": { "$ref": "#/definitions/Field" }
+      }
+    },
+    "diagnostic_rh": {
+      "type": "object",
+      "properties": {
+        "effectif_total": { "$ref": "#/definitions/Field" },
+        "masse_salariale": { "$ref": "#/definitions/Field" }
+      }
+    },
+    "diagnostic_data": {
+      "type": "object",
+      "properties": {
+        "existence_donnees": { "$ref": "#/definitions/Field" },
+        "qualite": { "$ref": "#/definitions/Field" },
+        "accessibilite": { "$ref": "#/definitions/Field" },
+        "volumetrie": { "$ref": "#/definitions/Field" },
+        "historisation": { "$ref": "#/definitions/Field" },
+        "conformite": { "$ref": "#/definitions/Field" },
+        "documentation": { "$ref": "#/definitions/Field" }
+      }
+    },
+    "diagnostic_cyber_gouvernance": {
+      "type": "object",
+      "properties": {
+        "risques_identifies": { "$ref": "#/definitions/ListField" },
+        "conformite_nist": { "$ref": "#/definitions/Field" },
+        "gouvernance_data": { "$ref": "#/definitions/Field" }
+      }
+    }
+  },
+  "required": [
+    "meta",
+    "diagnostic_strategique",
+    "diagnostic_financier",
+    "diagnostic_rh",
+    "diagnostic_data",
+    "diagnostic_cyber_gouvernance"
+  ],
+  "definitions": {
+    "Source": {
+      "type": "object",
+      "properties": {
+        "page": { "type": ["integer", "null"] },
+        "section": { "type": ["string", "null"] },
+        "extrait": { "type": ["string", "null"] }
+      },
+      "required": ["page", "extrait"]
+    },
+    "Field": {
+      "type": "object",
+      "properties": {
+        "valeur": { "type": ["string", "number", "boolean", "null"] },
+        "source": { 
+          "anyOf": [
+            { "$ref": "#/definitions/Source" },
+            { "type": "null" }
+          ]
+        },
+        "confiance": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["valeur", "source", "confiance"]
+    },
+    "ListField": {
+      "type": "object",
+      "properties": {
+        "valeur": {
+          "type": ["array", "null"],
+          "items": { "type": "string" }
+        },
+        "source": { 
+          "anyOf": [
+            { "$ref": "#/definitions/Source" },
+            { "type": "null" }
+          ]
+        },
+        "confiance": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "required": ["valeur", "source", "confiance"]
+    }
+  }
+}
