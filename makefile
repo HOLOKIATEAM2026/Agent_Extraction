@@ -46,3 +46,6 @@ ollama pull nomic-embed-text
 
 #T3.5
 .\venv\Scripts\python.exe benchmark\compare.py --glob "benchmark/out/*.json" --out benchmark\comparison.md
+
+# Phase 7 - Lancer l'API FastAPI (Copilot Holokia)
+.\venv\Scripts\python.exe -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload

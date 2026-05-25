@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from typing import Any, Dict, Optional, Tuple
 
 import requests
@@ -82,6 +85,25 @@ class SupabaseStore:
             headers["Prefer"] = prefer
         url = self.rest_url.rstrip("/") + "/" + path.lstrip("/")
         r = requests.post(url, headers=headers, params=params, json=json, timeout=self.timeout_s)
+        
+        # Afficher l'erreur si Supabase rejette la requête
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f"[Supabase Error] POST {path} failed: {r.status_code}")
+            print(f"[Supabase Error Response] {r.text}")
+            raise e
+            
+        if not r.text:
+            return None
+        try:
+            return r.json()
+        except Exception:
+            return None
+
+    def _get(self, path: str, *, params: Optional[Dict[str, str]] = None):
+        url = self.rest_url.rstrip("/") + "/" + path.lstrip("/")
+        r = requests.get(url, headers=self.base_headers, params=params, timeout=self.timeout_s)
         r.raise_for_status()
         if not r.text:
             return None
@@ -89,6 +111,39 @@ class SupabaseStore:
             return r.json()
         except Exception:
             return None
+
+    def get_extractions_by_company(self, company: str) -> list:
+        # On va chercher les documents de cette entreprise
+        docs = self._get("documents", params={"company": f"eq.{company}", "select": "id,file_name,year"})
+        if not docs:
+            return []
+            
+        doc_ids = [str(d["id"]) for d in docs]
+        if not doc_ids:
+            return []
+            
+        # On va chercher les extractions liées à ces documents
+        # On utilise l'opérateur 'in' de PostgREST
+        doc_ids_str = ",".join(doc_ids)
+        extractions = self._get("extractions", params={
+            "document_id": f"in.({doc_ids_str})",
+            "select": "id,document_id,approach,provider,model,created_at,result"
+        })
+        
+        if not extractions:
+            return []
+            
+        # On merge les infos du document dans chaque extraction pour que ce soit plus clair
+        doc_map = {str(d["id"]): d for d in docs}
+        
+        results = []
+        for ext in extractions:
+            doc_info = doc_map.get(str(ext["document_id"]), {})
+            ext["document_file"] = doc_info.get("file_name")
+            ext["document_year"] = doc_info.get("year")
+            results.append(ext)
+            
+        return results
 
     def upsert_document(self, file_path: str) -> Optional[str]:
         if not file_path:
