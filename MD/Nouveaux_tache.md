@@ -147,7 +147,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 
 > Démarre après validation de l'approche en T3.6
 
-- [ ] **T4.0** — 🆕 Analyse préliminaire du document avant extraction
+- [x] **T4.0** — 🆕 Analyse préliminaire du document avant extraction
   - Détecter les catégories présentes (Stratégique, Finance, RH, Data, Cyber)
   - Générer uniquement les questions pertinentes
   - Éviter les prompts hors contexte (anti-hallucination / économie de tokens)
