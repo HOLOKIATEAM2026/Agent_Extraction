@@ -18,10 +18,10 @@
 | Phase 1 | Analyse du Besoin | ✅ Terminée |
 | Phase 2 | Architecture Multi-Modèles & Pipeline RAG | ✅ Terminée |
 | Phase 3 | Benchmark des Approches | ✅ Terminée |
-| Phase 4 | Développement de l'Agent Final | ⏳ À venir |
-| Phase 5 | Structuration des Données | ⏳ À venir |
-| Phase 6 | Validation & Évaluation | ⏳ À venir |
-| Phase 7 | Intégration dans le Copilot Holokia | 🔴 Obligatoire |
+| Phase 4 | Développement de l'Agent Final | ✅ Terminée |
+| Phase 5 | Structuration des Données | ✅ Terminée |
+| Phase 6 | Validation & Évaluation | ✅ Terminée |
+| Phase 7 | Intégration dans le Copilot Holokia | ✅ Terminée |
 | Phase 8 | Interface Avancée : Multi-Documents & Historique | ⏳ À venir |
 
 ---
@@ -141,7 +141,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 
 ---
 
-## Phase 4 — Développement de l'Agent Final ⏳ À VENIR
+## Phase 4 — Développement de l'Agent Final ✅ TERMINÉE
 
 **Livrable :** `agent/` — code source de l'agent final
 
@@ -151,14 +151,14 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   - Détecter les catégories présentes (Stratégique, Finance, RH, Data, Cyber)
   - Générer uniquement les questions pertinentes
   - Éviter les prompts hors contexte (anti-hallucination / économie de tokens)
-- [ ] **T4.1** — Développer le module de retrieval contextuel (approche sélectionnée)
-- [ ] **T4.2** — Créer les prompts d'extraction par catégorie :
+- [x] **T4.1** — Développer le module de retrieval contextuel (approche sélectionnée)
+- [x] **T4.2** — Créer les prompts d'extraction par catégorie :
   - Prompt stratégique (marché, concurrents, tendances)
   - Prompt financier (CA, RN, EBITDA)
   - Prompt RH (effectifs, masse salariale)
   - 🆕 Prompt maturité data (qualité, accessibilité, conformité)
   - 🆕 Prompt cybersécurité / gouvernance (risques, conformité NIST)
-- [ ] **T4.3** — Références sources obligatoires sur chaque champ :
+- [x] **T4.3** — Références sources obligatoires sur chaque champ :
   ```json
   {
     "champ": "taille_marche",
@@ -171,13 +171,13 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
     "confiance": 0.92
   }
   ```
-- [ ] **T4.4** — Indicateur de confiance sur chaque extraction (0.0 → 1.0)
-- [ ] **T4.5** — Gestion des champs non trouvés (`null` + message explicatif)
-- [ ] **T4.6** — Anti-hallucination : contraindre le LLM au contexte fourni uniquement
+- [x] **T4.4** — Indicateur de confiance sur chaque extraction (0.0 → 1.0)
+- [x] **T4.5** — Gestion des champs non trouvés (`null` + message explicatif)
+- [x] **T4.6** — Anti-hallucination : contraindre le LLM au contexte fourni uniquement
 
 ---
 
-## Phase 5 — Structuration des Données ⏳ À VENIR
+## Phase 5 — Structuration des Données ✅ TERMINÉE
 
 **Livrable :** `schema/` — schéma JSON versionné + modèles Pydantic
 
@@ -225,28 +225,28 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   ```
 - [x] **T5.2** — Validation du schéma avec Pydantic
 - [x] **T5.3** — Versionner le schéma (`schema/v1/data_schema.json`)
-- [ ] **T5.4** — Valider le schéma avec Samad (alignement diagnostics Copilot)
+- [x] **T5.4** — Valider le schéma avec Samad (alignement diagnostics Copilot)
 - [x] **T5.5** — 🆕 Configurer le stockage des JSONs dans **Supabase**
 
 ---
 
-## Phase 6 — Validation & Évaluation ⏳ À VENIR
+## Phase 6 — Validation & Évaluation ✅ TERMINÉE
 
 **Livrable :** `eval/` + `rapport_performance.md`
 
-- [ ] **T6.1** — Utiliser les rapports annotés (Phase 0) comme ground truth
-- [ ] **T6.2** — Définir les métriques d'évaluation :
+- [x] **T6.1** — Utiliser les rapports annotés (Phase 0) comme ground truth
+- [x] **T6.2** — Définir les métriques d'évaluation :
   - Taux d'extraction correcte par champ (objectif : > 85%)
   - Cohérence des références sources citées
   - Taux de hallucinations détectées
   - Taux de champs `null` non justifiés
-- [ ] **T6.3** — Comparer les métriques entre Groq et Ollama
-- [ ] **T6.4** — Itérer sur les prompts selon les résultats
-- [ ] **T6.5** — Rédiger le rapport de performance final (avant / après optimisation)
+- [x] **T6.3** — Comparer les métriques entre Groq et Ollama
+- [x] **T6.4** — Itérer sur les prompts selon les résultats
+- [x] **T6.5** — Rédiger le rapport de performance final (avant / après optimisation)
 
 ---
 
-## Phase 7 — Intégration dans le Copilot Holokia 🔴 OBLIGATOIRE
+## Phase 7 — Intégration dans le Copilot Holokia ✅ TERMINÉE
 
 > **Changement de statut réunion 18/05** : cette phase n'est **plus optionnelle**.  
 > L'agent doit exposer une API pour s'intégrer dans le Copilot Holokia comme brique agentique autonome.
@@ -263,7 +263,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   - Upload fichier → affichage résultats + JSON + citations
 - [x] **T7.5** — 🆕 Déploiement backend sur **Render**
 - [x] **T7.6** — Documentation API (Swagger / OpenAPI auto-générée par FastAPI)
-- [ ] **T7.7** — (Optionnel) Connecteur direct vers le Copilot Holokia
+- [x] **T7.7** — (Optionnel) Connecteur direct vers le Copilot Holokia
 
 ---
 
@@ -327,10 +327,10 @@ Phase 8  → Interface avancée            ← en dernier
 | L1 | Spécifications fonctionnelles étendues | Markdown | Phase 1 | ✅ |
 | L2 | Architecture multi-modèles + Supabase | Markdown + Diagramme | Phase 2 | ✅ |
 | L3 | Benchmark 4 approches × 3 types de docs | Code + Rapport | Phase 3 | ✅ |
-| L4 | Code source de l'agent final | Python (GitHub) | Phase 4 | ⏳ |
-| L5 | Schéma JSON étendu (data + cyber) | JSON Schema + Pydantic | Phase 5 | ⏳ |
-| L6 | Rapport de performance | Markdown / PDF | Phase 6 | ⏳ |
-| L7 | API déployée sur Render + démo | URL + Vidéo | Phase 7 | ⏳ |
+| L4 | Code source de l'agent final | Python (GitHub) | Phase 4 | ✅ |
+| L5 | Schéma JSON étendu (data + cyber) | JSON Schema + Pydantic | Phase 5 | ✅ |
+| L6 | Rapport de performance | Markdown / PDF | Phase 6 | ✅ |
+| L7 | API déployée sur Render + démo | URL + Vidéo | Phase 7 | ✅ |
 | L8 | Interface 3 onglets déployée | Web app | Phase 8 | ⏳ |
 
 ---
@@ -343,10 +343,10 @@ Phase 8  → Interface avancée            ← en dernier
 | Phase 1 — Analyse du besoin | ✅ Terminée | |
 | Phase 2 — Architecture multi-modèles | ✅ Terminée | |
 | Phase 3 | Benchmark approches | ✅ Terminée | ⚠️ Présenter choix approche D |
-| Phase 4 — Développement agent | ⏳ À venir | |
-| Phase 5 — Structuration données | ⏳ À venir | |
-| Phase 6 — Validation | ⏳ À venir | |
-| Phase 7 — Intégration API | 🔴 Obligatoire | |
+| Phase 4 — Développement agent | ✅ Terminée | |
+| Phase 5 — Structuration données | ✅ Terminée | |
+| Phase 6 — Validation | ✅ Terminée | |
+| Phase 7 — Intégration API | ✅ Terminée | |
 | Phase 8 — Interface avancée | ⏳ À venir | |
 
 ---

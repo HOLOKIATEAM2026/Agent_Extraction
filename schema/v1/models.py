@@ -26,7 +26,9 @@ class MetaInfo(BaseModel):
     annee_rapport: Optional[int] = None
     date_extraction: Optional[datetime] = None
     modele_utilise: Optional[str] = None
+    provider: Optional[str] = None
     approche: Optional[str] = None
+    source_file: Optional[str] = None
 
 
 class DiagnosticStrategique(BaseModel):

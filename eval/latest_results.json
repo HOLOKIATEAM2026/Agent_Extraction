@@ -1,0 +1,13 @@
+{
+  "model": "llama-3.3-70b-versatile",
+  "provider": "groq",
+  "accuracy": 0.0,
+  "hallucination_rate": 0.0,
+  "raw_metrics": {
+    "total": 6,
+    "correct": 0,
+    "hallucinations": 0,
+    "missing": 6,
+    "source_issues": 0
+  }
+}

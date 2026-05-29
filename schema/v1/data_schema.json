@@ -11,9 +11,11 @@
         "annee_rapport": { "type": ["integer", "null"] },
         "date_extraction": { "type": ["string", "null"], "format": "date-time" },
         "modele_utilise": { "type": ["string", "null"] },
-        "approche": { "type": ["string", "null"] }
+        "provider": { "type": ["string", "null"] },
+        "approche": { "type": ["string", "null"] },
+        "source_file": { "type": ["string", "null"] }
       },
-      "required": ["entreprise", "annee_rapport", "date_extraction", "modele_utilise", "approche"]
+      "required": ["entreprise", "annee_rapport", "date_extraction", "modele_utilise", "provider", "approche"]
     },
     "diagnostic_strategique": {
       "type": "object",
