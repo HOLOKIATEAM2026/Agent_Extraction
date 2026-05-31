@@ -3,7 +3,13 @@ from typing import Dict, List, Any, Optional
 from pydantic import BaseModel, Field
 
 from langchain_core.prompts import PromptTemplate
-from agent.llm_manager import get_llm
+from agent.llm_provider import LLMProvider
+
+def get_llm(provider: Optional[str] = None, model: Optional[str] = None, config_path: str = "config.yaml", temperature: float = 0.0):
+    llm_manager = LLMProvider(provider=provider, model=model, config_path=config_path)
+    if temperature != 0.0:
+        llm_manager.llm.temperature = temperature
+    return llm_manager.llm
 
 class DocumentCategories(BaseModel):
     """Modèle Pydantic pour forcer le LLM à répondre avec un format précis lors du routing"""

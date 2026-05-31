@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 from agent.chunking import chunk_document
 from agent.indexing import chunks_to_langchain_docs
 from agent.vectorstore import get_chroma_vectorstore, load_config
+from agent.extractor import run_agent_extraction
 from benchmark.approach_a import run_approach_a
 from benchmark.approach_b import run_approach_b
 from benchmark.approach_c_agent import run_approach_c
@@ -130,8 +131,8 @@ def _to_ui_schema(payload: Dict[str, Any]) -> Dict[str, Any]:
     ui["meta"] = _derive_ui_meta(
         file_path=str(meta.get("source_file") or ""),
         provider=str(meta.get("provider") or ""),
-        model=str(meta.get("model") or ""),
-        approach=str(meta.get("approach") or ""),
+        model=str(meta.get("modele_utilise") or ""),
+        approach=str(meta.get("approche") or ""),
     )
 
     ui["diagnostic_strategique"] = _normalize_group(
@@ -164,10 +165,22 @@ def _to_ui_schema(payload: Dict[str, Any]) -> Dict[str, Any]:
     ui["diagnostic_data"] = _normalize_group(
         result_obj.get("diagnostic_data"),
         field_kinds={
+            "existence_donnees": False,
             "qualite": False,
             "accessibilite": False,
-            "conformite": False,
+            "volumetrie": False,
             "historisation": False,
+            "conformite": False,
+            "documentation": False,
+        },
+    )
+    
+    ui["diagnostic_cyber_gouvernance"] = _normalize_group(
+        result_obj.get("diagnostic_cyber_gouvernance"),
+        field_kinds={
+            "risques_identifies": True,
+            "conformite_nist": False,
+            "gouvernance_data": False,
         },
     )
 
@@ -214,7 +227,19 @@ def _run_approach(
     model: Optional[str],
     config_path: str,
 ) -> Dict[str, Any]:
-    a = (approach or "d").strip().lower()
+    a = (approach or "agent").strip().lower()
+    
+    # 🆕 NOUVELLE APPROCHE PAR DÉFAUT : L'AGENT FINAL (T4.1)
+    if a in {"agent", "final", "t4"}:
+        result_dict = run_agent_extraction(
+            file_path=file_path, 
+            provider=provider, 
+            model=model, 
+            config_path=config_path
+        )
+        return {"meta": result_dict.get("meta", {}), "result": result_dict}
+
+    # Anciennes approches du benchmark conservées pour rétrocompatibilité
     if a in {"a", "approach_a"}:
         r = run_approach_a(file_path, provider=provider, model=model, config_path=config_path)
         return {"meta": r.meta, "result": r.parsed_json, "raw_response": r.raw_response}
@@ -224,6 +249,8 @@ def _run_approach(
     if a in {"c", "approach_c"}:
         r = run_approach_c(file_path, provider=provider, model=model, config_path=config_path, max_steps=6)
         return {"final": r.final_json, "trace": r.trace}
+    
+    # Fallback sur l'approche D
     r = run_approach_d(file_path, provider=provider, model=model, config_path=config_path, top_k_per_query=2, max_chunks_total=10, max_fix_passes=1)
     return {
         "meta": r.meta,
@@ -301,7 +328,7 @@ async def extract_document(
     file: UploadFile = File(...),
     provider: Optional[str] = Form(None),
     model: Optional[str] = Form(None),
-    approach: str = Form("d"),
+    approach: str = Form("agent"),
     config: str = Form("config.yaml"),
     async_mode: bool = Form(False),
 ):
