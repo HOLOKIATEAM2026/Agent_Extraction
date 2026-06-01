@@ -530,7 +530,15 @@ async def extract_multi(
         from agent.vectorstore import get_embeddings
         embeddings = get_embeddings({})
         
-        vectorstore = FAISS.from_documents(lc_docs, embeddings)
+        # Initialisation avec le premier document pour éviter les timeouts
+        vectorstore = FAISS.from_documents([lc_docs[0]], embeddings)
+        
+        # Ajout du reste par batchs
+        batch_size = 10
+        for start in range(1, len(lc_docs), batch_size):
+            end = start + batch_size
+            print(f"[INFO] Multi-Docs (FAISS) : upsert batch {start}:{min(end, len(lc_docs))}/{len(lc_docs)}")
+            vectorstore.add_documents(lc_docs[start:end])
         
         # 3. Extraction
         result = run_multi_extraction(

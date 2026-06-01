@@ -95,9 +95,19 @@ def get_or_create_faiss_vectorstore(
         print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
         return FAISS.load_local(cache_path, embeddings, allow_dangerous_deserialization=True)
     
-    # Sinon -> créer et sauvegarder en un seul batch
-    print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (batch embedding)...")
-    vectorstore = FAISS.from_documents(chunks, embeddings)
+    # Sinon -> créer et sauvegarder en batchs pour éviter le timeout Ollama
+    print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
+    
+    # On initialise le vectorstore avec le premier batch
+    batch_size = 10
+    vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
+    
+    # On ajoute le reste par batchs
+    for start in range(batch_size, len(chunks), batch_size):
+        end = start + batch_size
+        print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
+        vectorstore.add_documents(chunks[start:end])
+        
     vectorstore.save_local(cache_path)
     print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
     
