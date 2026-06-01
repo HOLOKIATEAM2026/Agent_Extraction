@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Agent RAG</title>
+<link rel="icon" href="../logo/cropped-logo_holokia_noir.jpg" type="image/avif">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --ink:#0a0a0a;
+  --paper:#f5f2eb;
+  --blue:#0047ff;
+  --teal:#00c896;
+  --red:#e8002a;
+  --muted:#9a9585;
+  --line:rgba(10,10,10,0.15);
+  --mono:'DM Mono',monospace;
+  --display:'Bebas Neue',sans-serif;
+  --body:'DM Sans',sans-serif;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+
+/* GRID OVERLAY */
+.grid-bg{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:60px 60px;
+  opacity:0.4;
+}
+
+/* ─── NAV ─── */
+nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 40px;
+  height:56px;
+  border-bottom:1px solid var(--ink);
+  background:var(--paper);
+  mix-blend-mode:normal;
+}
+.nav-logo{
+  font-family:var(--display);
+  font-size:24px;
+  letter-spacing:0.05em;
+  color:var(--ink);
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.nav-logo-dot{
+  width:10px;height:10px;
+  border-radius:50%;
+  background:var(--blue);
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.nav-links{
+  display:flex;
+  gap:40px;
+  list-style:none;
+}
+.nav-links a{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-decoration:none;
+  transition:color 0.2s;
+}
+.nav-links a:hover{color:var(--blue)}
+.nav-status{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--teal);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.nav-status::before{
+  content:'';
+  width:6px;height:6px;
+  border-radius:50%;
+  background:var(--teal);
+  animation:blink 1.5s ease-in-out infinite;
+}
+
+/* ─── HERO ─── */
+.hero{
+  position:relative;
+  z-index:1;
+  min-height:100vh;
+  padding:100px 40px 0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:auto 1fr;
+  border-bottom:1px solid var(--ink);
+}
+.hero-tag{
+  grid-column:1/-1;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding-bottom:24px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:40px;
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+.hero-tag span{color:var(--blue)}
+.hero-left{
+  padding-right:60px;
+  border-right:1px solid var(--line);
+  padding-bottom:80px;
+}
+.hero-title{
+  font-family:var(--display);
+  font-size:clamp(80px,12vw,180px);
+  line-height:0.88;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+  margin-bottom:40px;
+}
+.hero-title em{
+  font-style:normal;
+  color:var(--blue);
+  display:block;
+}
+.hero-desc{
+  font-size:17px;
+  color:var(--muted);
+  line-height:1.7;
+  max-width:440px;
+  margin-bottom:48px;
+}
+.hero-desc strong{color:var(--ink);font-weight:500}
+.hero-ctas{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+.btn-primary{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 28px;
+  background:var(--blue);
+  color:#fff;
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid var(--blue);
+  transition:all 0.2s;
+}
+.btn-primary:hover{background:var(--ink);border-color:var(--ink)}
+.btn-outline{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:14px 28px;
+  background:transparent;
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  text-decoration:none;
+  border:1px solid var(--ink);
+  transition:all 0.2s;
+}
+.btn-outline:hover{background:var(--ink);color:var(--paper)}
+
+.hero-right{
+  padding-left:60px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding-bottom:80px;
+}
+.hero-metrics{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  margin-bottom:40px;
+}
+.metric{
+  background:var(--paper);
+  padding:28px 24px;
+}
+.metric-val{
+  font-family:var(--display);
+  font-size:56px;
+  line-height:1;
+  color:var(--ink);
+}
+.metric-val.blue{color:var(--blue)}
+.metric-val.teal{color:var(--teal)}
+.metric-label{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-top:8px;
+}
+
+/* EKG line */
+.ekg-container{
+  width:100%;
+  overflow:hidden;
+}
+.ekg-label{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  color:var(--muted);
+  margin-bottom:8px;
+}
+.ekg-svg{width:100%;height:60px}
+.ekg-path{
+  fill:none;
+  stroke:var(--blue);
+  stroke-width:1.5;
+  stroke-dasharray:800;
+  stroke-dashoffset:800;
+  animation:ekg 3s ease-in-out infinite;
+}
+.ekg-path2{
+  fill:none;
+  stroke:var(--teal);
+  stroke-width:1;
+  opacity:0.4;
+  stroke-dasharray:800;
+  stroke-dashoffset:800;
+  animation:ekg 3s ease-in-out 0.5s infinite;
+}
+@keyframes ekg{
+  0%{stroke-dashoffset:800}
+  60%{stroke-dashoffset:0}
+  100%{stroke-dashoffset:-800}
+}
+
+/* hero bottom annotation */
+.hero-footnote{
+  grid-column:1/-1;
+  padding:20px 0;
+  border-top:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.hero-footnote-text{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+}
+.hero-team-tags{
+  display:flex;
+  gap:8px;
+}
+.team-pill{
+  font-family:var(--mono);
+  font-size:10px;
+  padding:4px 10px;
+  border:1px solid var(--line);
+  color:var(--muted);
+}
+
+/* ─── HOME CARDS ─── */
+.home-container {
+  min-height: 100vh;
+  padding: 120px 40px 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+.home-title {
+  font-family: var(--display);
+  font-size: clamp(40px, 6vw, 80px);
+  color: var(--ink);
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 1;
+}
+.home-desc {
+  font-family: var(--body);
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 60px;
+  text-align: center;
+  max-width: 600px;
+}
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+}
+.mode-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 50px 40px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.mode-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.mode-card:hover {
+  border-color: var(--blue);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+}
+.mode-card:hover::before {
+  transform: scaleX(1);
+}
+.mode-card-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+.mode-card-title {
+  font-family: var(--display);
+  font-size: 32px;
+  color: var(--ink);
+  transition: color 0.3s ease;
+}
+.mode-card:hover .mode-card-title {
+  color: var(--blue);
+}
+.mode-card-desc {
+  font-family: var(--body);
+  font-size: 16px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ─── ROUTING VIEWS ─── */
+.view-section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.view-section.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ─── SECTION BASE ─── */
+section{
+  position:relative;
+  z-index:1;
+}
+.section-header{
+  display:grid;
+  grid-template-columns:40px 1fr;
+  align-items:start;
+  gap:0;
+  padding:60px 40px 48px;
+  border-bottom:1px solid var(--line);
+}
+.section-num{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  padding-top:4px;
+}
+.section-title{
+  font-family:var(--display);
+  font-size:clamp(40px,6vw,88px);
+  line-height:0.9;
+  letter-spacing:-0.01em;
+}
+.section-title em{font-style:normal;color:var(--blue)}
+
+/* ─── FEATURES / SOLUTIONS ─── */
+.features{border-bottom:1px solid var(--ink)}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+}
+.feature-card{
+  padding:48px 40px;
+  border-right:1px solid var(--line);
+}
+.feature-card:last-child{border-right:none}
+.feature-num{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--blue);
+  letter-spacing:0.1em;
+  margin-bottom:32px;
+  display:block;
+}
+.feature-icon{
+  width:48px;height:48px;
+  margin-bottom:24px;
+}
+.feature-icon path,.feature-icon circle,.feature-icon rect,.feature-icon line,.feature-icon polyline{
+  stroke:var(--ink);
+  fill:none;
+  stroke-width:1.5;
+  stroke-linecap:square;
+}
+.feature-title{
+  font-family:var(--display);
+  font-size:32px;
+  letter-spacing:0.02em;
+  margin-bottom:16px;
+  line-height:1;
+}
+.feature-desc{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.7;
+}
+.feature-tag{
+  display:inline-block;
+  margin-top:24px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:4px 10px;
+  border:1px solid var(--blue);
+  color:var(--blue);
+}
+
+/* ─── INTERFACE SHOWCASE ─── */
+.showcase{border-bottom:1px solid var(--ink)}
+.showcase-item{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--line);
+}
+.showcase-item:last-child{border-bottom:none}
+.showcase-item.reverse{direction:rtl}
+.showcase-item.reverse>*{direction:ltr}
+.showcase-info{
+  padding:60px 60px 60px 40px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border-right:1px solid var(--line);
+}
+.showcase-item.reverse .showcase-info{
+  border-right:none;
+  border-left:1px solid var(--line);
+  padding:60px 40px 60px 60px;
+}
+.showcase-label{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.showcase-label::before{content:'//'}
+.showcase-heading{
+  font-family:var(--display);
+  font-size:clamp(36px,4vw,60px);
+  letter-spacing:0.01em;
+  line-height:0.95;
+  margin-bottom:24px;
+}
+.showcase-text{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.8;
+  margin-bottom:32px;
+}
+.spec-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.spec-list li{
+  font-family:var(--mono);
+  font-size:12px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.spec-list li::before{
+  content:'→';
+  color:var(--blue);
+  font-size:14px;
+}
+.showcase-visual{
+  overflow:hidden;
+  background:#e8e4db;
+  position:relative;
+  padding:30px; /* Ajout de padding pour éviter que l'image touche les bords */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.showcase-visual img{
+  width:100%;
+  height:100%;
+  object-fit:contain; /* Changé de cover à contain pour voir toute la photo */
+  display:block;
+  filter:grayscale(10%) contrast(1.02);
+  transition:all 0.4s ease;
+}
+.showcase-visual:hover img{
+    filter:grayscale(0%) contrast(1.1);
+    transform:scale(1.01); /* Zoom très léger pour garder l'aspect naturel */
+  }
+  .showcase-item.triple {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .showcase-visual-label{
+  position:absolute;
+  bottom:20px;right:20px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(10,10,10,0.5);
+  background:rgba(245,242,235,0.85);
+  padding:6px 12px;
+  border:1px solid var(--line);
+}
+
+/* ─── BENCHMARK / TECH ─── */
+.tech{border-bottom:1px solid var(--ink)}
+.tech-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.tech-panel{
+  padding:60px 40px;
+  border-right:1px solid var(--line);
+}
+.tech-panel:last-child{border-right:none}
+.tech-panel-title{
+  font-family:var(--display);
+  font-size:40px;
+  margin-bottom:40px;
+  line-height:1;
+}
+.bench-row{
+  display:grid;
+  grid-template-columns:120px 1fr 60px;
+  align-items:center;
+  gap:16px;
+  padding:16px 0;
+  border-bottom:1px solid var(--line);
+}
+.bench-row:last-child{border-bottom:none}
+.bench-label{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+}
+.bench-bar-wrap{height:4px;background:rgba(10,10,10,0.08);position:relative}
+.bench-bar{
+  position:absolute;
+  top:0;left:0;
+  height:100%;
+  transition:width 1.5s cubic-bezier(0.16,1,0.3,1);
+}
+.bench-bar.blue{background:var(--blue)}
+.bench-bar.teal{background:var(--teal)}
+.bench-bar.red{background:var(--red)}
+.bench-val{
+  font-family:var(--mono);
+  font-size:11px;
+  text-align:right;
+  color:var(--ink);
+  font-weight:500;
+}
+
+/* comparison table */
+.compare-table{width:100%;border-collapse:collapse}
+.compare-table th{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-align:left;
+  padding:12px 0;
+  border-bottom:1px solid var(--ink);
+}
+.compare-table td{
+  font-family:var(--mono);
+  font-size:12px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  vertical-align:middle;
+}
+.compare-table tr:last-child td{border-bottom:none}
+.badge{
+  display:inline-block;
+  padding:3px 8px;
+  font-size:10px;
+  font-family:var(--mono);
+}
+.badge.good{background:#d4f4e8;color:#005c35}
+.badge.bad{background:#fce8eb;color:#8a001a}
+.badge.edge{background:#e0ecff;color:#0033b3;font-weight:500}
+
+/* ─── TIMELINE / PLANNING ─── */
+.timeline{border-bottom:1px solid var(--ink)}
+.timeline-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+}
+.tl-phase{
+  padding:48px 32px 48px 40px;
+  border-right:1px solid var(--line);
+  position:relative;
+}
+.tl-phase:last-child{border-right:none}
+.tl-num{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.15em;
+  color:var(--muted);
+  margin-bottom:20px;
+  display:block;
+}
+.tl-title{
+  font-family:var(--display);
+  font-size:28px;
+  letter-spacing:0.02em;
+  margin-bottom:16px;
+  line-height:1;
+}
+.tl-items{list-style:none;display:flex;flex-direction:column;gap:8px}
+.tl-items li{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.5;
+  padding-left:14px;
+  position:relative;
+}
+.tl-items li::before{
+  content:'—';
+  position:absolute;
+  left:0;
+  color:var(--blue);
+}
+.tl-phase::after{
+  content:attr(data-phase);
+  position:absolute;
+  bottom:20px;right:20px;
+  font-family:var(--display);
+  font-size:80px;
+  color:rgba(10,10,10,0.04);
+  line-height:1;
+  pointer-events:none;
+}
+
+/* ─── DOCUMENTS ─── */
+.docs{
+  background:var(--ink);
+  border-bottom:1px solid #333;
+}
+.docs .section-header{
+  border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.docs .section-num{color:rgba(255,255,255,0.3)}
+.docs .section-title{color:#fff}
+.docs .section-title em{color:var(--teal)}
+.docs-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+.doc-card{
+  padding:60px 40px;
+  border-right:1px solid rgba(255,255,255,0.08);
+  text-decoration:none;
+  display:block;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.3s;
+}
+.doc-card:last-child{border-right:none}
+.doc-card:hover{background:rgba(255,255,255,0.03)}
+.doc-card-type{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+  margin-bottom:40px;
+}
+.doc-card-num{
+  font-family:var(--display);
+  font-size:120px;
+  line-height:1;
+  color:rgba(255,255,255,0.06);
+  position:absolute;
+  top:20px;right:20px;
+}
+.doc-card-title{
+  font-family:var(--display);
+  font-size:44px;
+  color:#fff;
+  line-height:0.95;
+  letter-spacing:0.01em;
+  margin-bottom:16px;
+}
+.doc-card-desc{
+  font-size:14px;
+  color:rgba(255,255,255,0.4);
+  line-height:1.6;
+  margin-bottom:48px;
+}
+.doc-card-action{
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+}
+.doc-card:first-child .doc-card-action{color:var(--blue)}
+.doc-card:last-child .doc-card-action{color:var(--teal)}
+.doc-card-action svg{
+  width:14px;height:14px;
+  transition:transform 0.2s;
+}
+.doc-card:hover .doc-card-action svg{transform:translateX(4px)}
+
+/* ─── TEAM ─── */
+.team{border-bottom:1px solid var(--ink)}
+.team-inner{
+  padding:60px 40px;
+  display:grid;
+  grid-template-columns:320px 1fr;
+  gap:80px;
+  align-items:start;
+}
+.team-copy{}
+.team-copy p{
+  font-size:14px;
+  color:var(--muted);
+  line-height:1.8;
+  margin-top:16px;
+}
+.team-members{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  align-self:start;
+}
+.team-member{
+  background:var(--paper);
+  padding:24px 20px;
+}
+.member-init{
+  font-family:var(--display);
+  font-size:32px;
+  color:var(--blue);
+  line-height:1;
+  margin-bottom:10px;
+}
+.member-name{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--ink);
+  font-weight:500;
+}
+.member-role{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+/* ─── FOOTER ─── */
+footer{
+  position:relative;
+  z-index:1;
+  background:var(--ink);
+  padding:32px 40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.footer-logo{
+  font-family:var(--display);
+  font-size:20px;
+  letter-spacing:0.05em;
+  color:#fff;
+}
+.footer-copy{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  color:rgba(255,255,255,0.3);
+  text-transform:uppercase;
+}
+.footer-links{
+  display:flex;
+  gap:24px;
+  list-style:none;
+}
+.footer-links a{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.3);
+  text-decoration:none;
+}
+.footer-links a:hover{color:#fff}
+
+/* reveal animation */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+}
+.reveal.visible{opacity:1;transform:none}
+
+@media(max-width:900px){
+  nav {
+    padding: 0 15px;
+    height: auto;
+    min-height: 60px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 15px;
+    position: relative; /* On change en relative pour éviter de chevaucher le hero */
+  }
+  .nav-logo { font-size: 20px; }
+  .nav-links {
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-status { display: none; }
+
+  .hero{
+    grid-template-columns:1fr;
+    grid-template-rows: auto;
+    padding: 40px 15px; /* Réduction du padding car le nav n'est plus fixe */
+    min-height: auto;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-tag {
+    font-size: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-left{
+    border-right:none;
+    padding-right:0;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-title {
+    font-size: clamp(40px, 12vw, 60px);
+    margin-bottom: 20px;
+  }
+  .hero-desc {
+    font-size: 14px;
+    margin-bottom: 24px;
+    max-width: 100%;
+  }
+  .hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .btn-primary, .btn-outline {
+    justify-content: center;
+    width: 100%;
+    padding: 12px 20px;
+  }
+  .hero-right{
+    padding-left:0;
+    padding-top: 30px;
+  }
+  .hero-metrics {
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 30px;
+  }
+  .metric {
+    padding: 20px 15px;
+  }
+  .metric-val {
+    font-size: 32px;
+  }
+  .hero-footnote {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+    padding: 20px 0;
+  }
+  .hero-team-tags {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .section-header {
+    padding: 40px 15px 24px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .section-title {
+    font-size: 36px;
+  }
+
+  .features-grid{grid-template-columns:1fr}
+  .feature-card{
+    padding: 30px 15px;
+    border-right:none;
+    border-bottom:1px solid var(--line);
+  }
+  .feature-card:last-child { border-bottom: none; }
+
+  .showcase-item{
+    grid-template-columns:1fr;
+  }
+  .showcase-item.triple {
+    grid-template-columns: 1fr;
+  }
+  .showcase-info {
+    padding: 30px 15px;
+    border-right: none !important;
+    border-left: none !important;
+  }
+  .showcase-heading {
+    font-size: 28px;
+  }
+  .showcase-item.reverse {
+    direction: ltr;
+  }
+  .showcase-visual {
+      aspect-ratio: 16/9;
+      border-left: none !important;
+      border-right: none !important;
+      padding: 15px; /* Padding réduit sur mobile */
+    }
+
+  .tech-grid{grid-template-columns:1fr}
+  .tech-panel{
+    padding: 30px 15px;
+    border-right:none;
+    border-bottom:1px solid var(--line);
+  }
+  .tech-panel-title { font-size: 32px; }
+  .bench-row {
+    grid-template-columns: 80px 1fr 45px;
+    gap: 10px;
+    font-size: 10px;
+  }
+  .compare-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .timeline-grid{grid-template-columns:1fr}
+  .tl-phase {
+    padding: 30px 15px;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .tl-phase::after { font-size: 60px; }
+
+  .docs-grid{grid-template-columns:1fr}
+  .doc-card{
+    padding: 40px 15px;
+    border-right:none;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .doc-card-title { font-size: 28px; }
+
+  .team-inner{
+    grid-template-columns:1fr;
+    padding: 40px 15px;
+    gap: 30px;
+  }
+  .team-members{
+    grid-template-columns: 1fr;
+  }
+  
+  footer {
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 15px;
+    text-align: center;
+  }
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#home" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <ul class="nav-links">
+    <li><a href="#home">Accueil</a></li>
+    <li><a href="#diagnostic">Mode Diagnostic</a></li>
+    <li><a href="#multi">Mode Multi-Docs</a></li>
+    <li><a href="#chat">Mode Chat</a></li>
+    <li><a href="#historique">Historique</a></li>
+  </ul>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<div id="view-home" class="view-section active">
+  <div class="home-container">
+    <h1 class="home-title">Sélectionnez votre mode d'analyse</h1>
+    <p class="home-desc">Choisissez l'outil le plus adapté à votre besoin. Notre Agent IA RAG multi-modèles vous assistera dans l'exploitation de vos documents.</p>
+    
+    <div class="cards-grid">
+      <a href="#chat" class="mode-card">
+        <div class="mode-card-icon">💬</div>
+        <h2 class="mode-card-title">Mode Chat</h2>
+        <p class="mode-card-desc"><strong>Posez vos propres questions sur vos documents.</strong><br>Téléchargez vos rapports et discutez librement avec l'IA. Elle sourcera toutes ses réponses directement depuis le contenu fourni.</p>
+      </a>
+      
+      <a href="#diagnostic" class="mode-card">
+        <div class="mode-card-icon">📊</div>
+        <h2 class="mode-card-title">Mode Diagnostic</h2>
+        <p class="mode-card-desc"><strong>Analyse structurée automatique.</strong><br>Le pipeline RAG extrait intelligemment les indicateurs clés (CA, RH, Data, Cyber) et génère un JSON pré-formaté pour le Copilot.</p>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="view-diagnostic" class="view-section">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">
+    <span>AGENT RAG</span>
+    <span>/ Extraction / Rapports d'Activité / IA /</span>
+    <span style="margin-left:auto">Pipeline Multi-LLM</span>
+  </div>
+
+  <div class="hero-left reveal">
+    <h1 class="hero-title">
+      Extraction<br>
+      <em>Intelligente</em>
+    </h1>
+    <p class="hero-desc">
+      Analyse automatique de rapports d'activité d'entreprises (PDF, Word, TXT). Extraction structurée avec citations sourcées pour préremplir le diagnostic stratégique.
+    </p>
+    <!--
+    <div class="hero-ctas">
+      <a href="#demo" class="btn-primary">
+        Tester l'Agent
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  -->
+  </div>
+
+  <div class="hero-right reveal" id="demo">
+    <div class="hero-metrics" style="display:flex; flex-direction:column; padding:20px; background:var(--paper); border:1px solid var(--line);">
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">1. UPLOAD DOCUMENT</div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="margin-top:10px; font-family:var(--mono); font-size:12px;" />
+      </div>
+      
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">2. CHOIX DU MODÈLE</div>
+        <select id="modelSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
+          <option value="groq">Groq (Rapide)</option>
+          <option value="mistral">Mistral (Local Ollama)</option>
+          <option value="qwen2.5">Qwen2.5 (Local Ollama)</option>
+          <option value="gpt-4o">GPT-4o (OpenAI)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">3. APPROCHE</div>
+        <select id="approachSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
+          <option value="agent" selected>L'Agent Final (Analyse Préliminaire + RAG Ciblé)</option>
+          <option value="d">Approche D (RAG + Validation)</option>
+          <option value="a">Approche A (Lecture directe complète)</option>
+          <option value="b">Approche B (RAG classique)</option>
+          <option value="c">Approche C (Agent multi-tours lent)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">4. MODE D'EXTRACTION</div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false" checked> Rapide (synchrone)</label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true"> Robuste (asynchrone • gros PDF)</label>
+        </div>
+      </div>
+
+      <button id="btnExtract" class="btn-primary" style="width:100%; justify-content:center; margin-top:10px;">LANCER L'EXTRACTION</button>
+      
+      <div id="statusText" style="margin-top:15px; font-family:var(--mono); font-size:10px; color:var(--blue); display:none;">Statut: En cours...</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="features" style="display:none; padding-bottom:0;">
+  <div class="section-header reveal">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Diagnostic<br><em>Stratégique</em></h2>
+  </div>
+  
+  <!-- Conteneur pour les cartes visuelles -->
+  <div style="padding: 40px; background:var(--paper);">
+    <div id="cardsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+      <!-- Les cartes seront générées ici par JS -->
+    </div>
+  </div>
+
+  <!-- Le JSON reste accessible mais dans une section séparée style "débug/technique" -->
+  <div style="padding: 40px; background:var(--ink); color:#fff; overflow-x:auto;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+      <div>
+        <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
+        <span style="font-family:var(--mono); font-size:10px; color:rgba(255,255,255,0.4); margin-left:15px;">(Vue développeur)</span>
+      </div>
+      <button id="btnCopy" class="btn-outline" style="color:#fff; border-color:#fff; padding:6px 12px;">COPIER</button>
+    </div>
+    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(255,255,255,0.8); max-height:400px; overflow-y:auto;"></pre>
+  </div>
+</section>
+</div> <!-- /view-diagnostic -->
+
+<div id="view-multi" class="view-section">
+  <section class="hero" style="min-height: 100vh; padding-top:120px; display: block;">
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+      <h1 class="hero-title" style="font-size: 60px; margin-bottom: 20px;">
+        Analyse<br>
+        <em>Multi-Documents</em>
+      </h1>
+      <p class="hero-desc" style="max-width: 600px; margin-bottom: 40px;">
+        Uploadez plusieurs rapports en même temps et posez des questions ciblées. Le système comparera les informations trouvées dans chaque document.
+      </p>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <!-- Left Column: Upload & Questions -->
+        <div style="background: var(--paper); border: 1px solid var(--line); padding: 40px;">
+          
+          <!-- Upload -->
+          <div style="margin-bottom: 30px;">
+            <label style="font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; display: block;">1. Documents (PDF, DOCX, TXT)</label>
+            <input type="file" id="multiFileInput" multiple accept=".pdf,.docx,.txt" style="display: none;">
+            <div id="multiDropZone" style="border: 2px dashed var(--line); padding: 40px 20px; text-align: center; cursor: pointer; transition: 0.3s;">
+              <span style="font-family: var(--display); font-size: 20px;">Glissez vos fichiers ici</span><br>
+              <span style="font-family: var(--mono); font-size: 12px; color: var(--muted);">ou cliquez pour parcourir</span>
+            </div>
+            <ul id="multiFileList" style="margin-top: 15px; font-family: var(--mono); font-size: 12px; color: var(--blue); list-style-type: none; padding: 0;"></ul>
+          </div>
+
+          <!-- Questions -->
+          <div style="margin-bottom: 30px;">
+            <label style="font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; display: block;">2. Questions Ciblées</label>
+            
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+              <select id="multiPredefSelect" style="flex: 1; padding: 10px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink);">
+                <option value="">-- Ajouter une question prédéfinie --</option>
+                <option value="Quel est le chiffre d'affaires total ?">Chiffre d'affaires</option>
+                <option value="Quel est le taux de croissance ?">Taux de croissance</option>
+                <option value="Quels sont les principaux concurrents cités ?">Concurrents</option>
+                <option value="Quel est l'effectif total de l'entreprise ?">Effectif</option>
+                <option value="Quelles sont les mesures prises concernant la conformité des données (RGPD, NIST, etc.) ?">Conformité Cyber / Data</option>
+              </select>
+              <button id="btnAddPredef" class="btn-outline" style="padding: 10px 15px;">Ajouter</button>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="multiCustomQuestion" placeholder="Ou tapez votre propre question..." style="flex: 1; padding: 10px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink);">
+              <button id="btnAddCustom" class="btn-outline" style="padding: 10px 15px;">Ajouter</button>
+            </div>
+            
+            <ul id="multiQuestionList" style="margin-top: 20px; padding: 0; list-style-type: none; display: flex; flex-direction: column; gap: 10px;">
+              <!-- Questions will be added here -->
+            </ul>
+          </div>
+          
+          <button id="btnMultiExtract" class="btn-solid" style="width: 100%; padding: 20px; font-size: 16px; margin-top: 20px;">LANCER L'ANALYSE MULTI-DOCS</button>
+          <div id="multiStatus" style="margin-top: 15px; font-family: var(--mono); font-size: 12px; color: var(--blue); text-align: center; display: none;">Traitement en cours...</div>
+        </div>
+
+        <!-- Right Column: Results -->
+        <div style="background: var(--paper); border: 1px solid var(--line); padding: 40px; overflow-y: auto; max-height: 800px;" id="multiResultsContainer">
+          <div style="font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; margin-top: 100px;">
+            Les résultats de la comparaison s'afficheront ici.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="view-chat" class="view-section">
+  <section class="hero" style="min-height: 100vh; padding-top:120px;">
+    <div class="hero-left">
+      <h1 class="hero-title">
+        Mode<br>
+        <em>Chat</em>
+      </h1>
+      <p class="hero-desc">
+        Interrogez librement vos documents en langage naturel.
+      </p>
+      <div style="padding: 20px; background:var(--line); border:1px solid var(--line); margin-top:20px;">
+        <p style="font-family:var(--mono); font-size:12px; color:var(--ink);">L'interface complète du Mode Chat (T8.17) sera intégrée ici.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div id="view-historique" class="view-section">
+  <section class="hero" style="min-height: 100vh; padding-top:120px; display: block;">
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+      <h1 class="hero-title" style="font-size: 60px; margin-bottom: 20px;">
+        Historique des<br>
+        <em>Extractions</em>
+      </h1>
+      
+      <div style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+        <input type="text" id="filterEntreprise" placeholder="Filtrer par entreprise..." style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 200px; background: transparent; color: var(--ink);">
+        <input type="date" id="filterDate" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
+        <select id="filterModel" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
+          <option value="">Tous les modèles</option>
+          <option value="groq">Groq</option>
+          <option value="mistral">Mistral</option>
+          <option value="qwen2.5">Qwen2.5</option>
+          <option value="openai">OpenAI (GPT-4o)</option>
+        </select>
+        <button id="btnExportCSV" class="btn-outline" style="margin-left: auto; padding: 10px 20px;">Exporter CSV</button>
+      </div>
+
+      <div style="background: var(--paper); border: 1px solid var(--line); overflow-x: auto; margin-bottom: 80px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--line); background: rgba(10,10,10,0.02);">
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Date</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Entreprise</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Fichier</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Modèle</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Confiance moy.</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historiqueTableBody">
+            <tr><td colspan="6" style="padding: 20px; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--muted);">Chargement de l'historique...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Modal for JSON/Details -->
+  <div id="historiqueModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; padding: 40px; overflow-y: auto;">
+    <div style="background: var(--paper); max-width: 1000px; margin: 0 auto; border: 1px solid var(--line); position: relative;">
+      <button id="btnCloseModal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink);">&times;</button>
+      
+      <div style="padding: 40px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="modalTitle" style="font-family: var(--display); font-size: 40px;">Détails de l'extraction</h2>
+        <button id="btnCompare" class="btn-outline">Comparer</button>
+      </div>
+      
+      <!-- Container for single JSON view -->
+      <div id="modalJsonContainer" style="padding: 40px; background: var(--ink); color: #fff;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+          <span style="font-family: var(--mono); font-size: 12px; color: var(--teal);">RÉSULTAT JSON</span>
+          <button id="btnCopyModal" class="btn-outline" style="color: #fff; border-color: #fff; padding: 6px 12px;">COPIER</button>
+        </div>
+        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.8); max-height: 600px; overflow-y: auto;"></pre>
+      </div>
+      
+      <!-- Container for Compare view -->
+      <div id="modalCompareContainer" style="display: none; padding: 40px; background: var(--paper);">
+        <div style="margin-bottom: 20px;">
+          <label style="font-family: var(--mono); font-size: 12px;">Sélectionnez une autre extraction pour comparer :</label>
+          <select id="compareSelect" style="margin-left: 10px; padding: 8px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line);">
+            <option value="">-- Choisir --</option>
+          </select>
+        </div>
+        
+        <div id="compareDiffGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+            <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle1">Extraction A</h4>
+            <div id="compareContent1" style="font-size: 14px;"></div>
+          </div>
+          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+            <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle2">Extraction B</h4>
+            <div id="compareContent2" style="font-size: 14px;"></div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const modelSelect = document.getElementById('modelSelect');
+const approachSelect = document.getElementById('approachSelect');
+const btnExtract = document.getElementById('btnExtract');
+const statusText = document.getElementById('statusText');
+const resultsSection = document.getElementById('results');
+const cardsGrid = document.getElementById('cardsGrid');
+const jsonOutput = document.getElementById('jsonOutput');
+const btnCopy = document.getElementById('btnCopy');
+
+function buildCards(data) {
+  cardsGrid.innerHTML = '';
+  
+  const sections = [
+    { key: 'diagnostic_strategique', title: 'Stratégique', fields: ['taille_marche', 'taux_croissance', 'intensite_concurrentielle', 'concurrents', 'tendances_marche'] },
+    { key: 'diagnostic_financier', title: 'Financier', fields: ['chiffre_affaires', 'resultat_net', 'ebitda'] },
+    { key: 'diagnostic_rh', title: 'RH', fields: ['effectif_total', 'masse_salariale'] },
+    { key: 'diagnostic_data', title: 'Maturité Data', fields: ['existence_donnees', 'qualite', 'accessibilite', 'volumetrie', 'historisation', 'conformite', 'documentation'] },
+    { key: 'diagnostic_cyber_gouvernance', title: 'Cyber & Gouvernance', fields: ['risques_identifies', 'conformite_nist', 'gouvernance_data'] }
+  ];
+
+  sections.forEach((sec) => {
+    const sectionData = data[sec.key] || {};
+    
+    // Check if at least one field has a value
+    const hasData = sec.fields.some(f => {
+      const fieldData = sectionData[f];
+      if(!fieldData) return false;
+      if(Array.isArray(fieldData.valeur)) return fieldData.valeur.length > 0;
+      return fieldData.valeur !== null && fieldData.valeur !== undefined && String(fieldData.valeur).trim() !== '';
+    });
+
+    let html = `
+      <div style="background:#fff; border:1px solid var(--line); padding:24px;">
+        <h3 style="font-family:var(--display); font-size:24px; margin-bottom:16px; display:flex; justify-content:space-between;">
+          ${sec.title}
+          <span style="font-family:var(--mono); font-size:12px; color:${hasData ? 'var(--teal)' : 'var(--red)'};">
+            ${hasData ? 'DONNÉES TROUVÉES' : 'NON TROUVÉ'}
+          </span>
+        </h3>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+    `;
+
+    sec.fields.forEach(f => {
+      const fieldData = sectionData[f];
+      const label = f.replace(/_/g, ' ').toUpperCase();
+      let value = '<span style="color:var(--muted); font-style:italic;">Non spécifié</span>';
+      let sourceHtml = '';
+
+      if (fieldData) {
+        const isFound = Array.isArray(fieldData.valeur) 
+          ? fieldData.valeur.length > 0 
+          : (fieldData.valeur !== null && fieldData.valeur !== undefined && String(fieldData.valeur).trim() !== '');
+
+        if (isFound) {
+          value = Array.isArray(fieldData.valeur) ? fieldData.valeur.join(', ') : fieldData.valeur;
+          value = `<strong style="color:var(--ink);">${value}</strong>`;
+        }
+
+        if (fieldData.source && fieldData.source.extrait) {
+          sourceHtml = `
+            <div style="margin-top:4px; padding:8px 12px; background:rgba(0,71,255,0.05); border-left:2px solid var(--blue); font-size:11px; color:var(--muted);">
+              <span style="font-family:var(--mono); color:var(--blue);">PAGE ${fieldData.source.page} :</span> "${fieldData.source.extrait}"
+            </div>
+          `;
+        }
+      }
+
+      html += `
+        <div style="border-bottom:1px solid rgba(10,10,10,0.05); padding-bottom:8px;">
+          <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom:4px;">${label}</div>
+          <div style="font-size:14px; line-height:1.4;">${value}</div>
+          ${sourceHtml}
+        </div>
+      `;
+    });
+
+    html += `</div></div>`;
+    cardsGrid.innerHTML += html;
+  });
+}
+
+let pollInterval;
+
+function setFormLocked(isLocked) {
+  if (modelSelect) modelSelect.disabled = isLocked;
+  if (approachSelect) approachSelect.disabled = isLocked;
+}
+
+function setStored(key, value) {
+  try {
+    if (value === undefined || value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, String(value));
+    }
+  } catch (_) {}
+}
+
+function getStored(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (_) {
+    return null;
+  }
+}
+
+function setStoredJson(key, obj) {
+  try {
+    if (obj === undefined || obj === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(obj));
+    }
+  } catch (_) {}
+}
+
+function getStoredJson(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (_) {
+    return null;
+  }
+}
+
+btnExtract.addEventListener('click', async () => {
+  if(!fileInput.files[0]) {
+    alert("Veuillez sélectionner un fichier.");
+    return;
+  }
+
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = undefined;
+  }
+
+  btnExtract.disabled = true;
+  setFormLocked(true);
+  btnExtract.textContent = "TRAITEMENT...";
+  statusText.style.display = "block";
+  statusText.textContent = "Statut: Envoi au serveur (FastAPI)...";
+  setStored("holokia_processing", "1");
+  setStored("holokia_status", statusText.textContent);
+  setStored("holokia_hash", "#demo");
+  resultsSection.style.display = "none";
+
+  const fd = new FormData();
+  fd.append('file', fileInput.files[0]);
+  
+  const selectedModel = modelSelect.value;
+  let provider = 'ollama';
+  let model = selectedModel;
+  
+  if(['groq','gpt-4o'].includes(selectedModel)){
+    provider = selectedModel === 'gpt-4o' ? 'openai' : selectedModel;
+    model = ''; // Le serveur utilise le modèle par défaut du provider
+  }
+  
+  fd.append('provider', provider);
+  if(model) fd.append('model', model);
+  fd.append('approach', approachSelect ? approachSelect.value : 'agent');
+  
+  const isAsync = document.querySelector('input[name="asyncMode"]:checked').value === "true";
+  fd.append('async_mode', isAsync);
+  setStored("holokia_async", isAsync ? "1" : "0");
+
+  try {
+    const response = await fetch('http://localhost:8000/extract', {
+      method: 'POST',
+      body: fd
+    });
+    
+    const data = await response.json();
+    
+    if (isAsync && data.job_id) {
+      statusText.textContent = `Statut: Job créé (ID: ${data.job_id}). Traitement en arrière-plan...`;
+      setStored("holokia_job_id", data.job_id);
+      setStored("holokia_status", statusText.textContent);
+      pollJobStatus(data.job_id);
+    } else {
+      showResults(data);
+    }
+  } catch(e) {
+    statusText.textContent = "Erreur: Serveur FastAPI injoignable (port 8000).";
+    btnExtract.disabled = false;
+    setFormLocked(false);
+    btnExtract.textContent = "LANCER L'EXTRACTION";
+    setStored("holokia_processing", "0");
+    setStored("holokia_job_id", null);
+    setStored("holokia_status", statusText.textContent);
+  }
+});
+
+async function pollJobStatus(jobId) {
+  pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch(`http://localhost:8000/status/${jobId}`);
+      const data = await res.json();
+      
+      if (data.status === "completed") {
+        clearInterval(pollInterval);
+        pollInterval = undefined;
+        showResults(data.result);
+      } else if (data.status === "failed") {
+        clearInterval(pollInterval);
+        pollInterval = undefined;
+        statusText.textContent = `Erreur: ${data.error}`;
+        btnExtract.disabled = false;
+        setFormLocked(false);
+        btnExtract.textContent = "LANCER L'EXTRACTION";
+        setStored("holokia_processing", "0");
+        setStored("holokia_job_id", null);
+        setStored("holokia_status", statusText.textContent);
+      } else {
+        statusText.textContent = `Statut: ${data.status.toUpperCase()}...`;
+        setStored("holokia_status", statusText.textContent);
+      }
+    } catch(e) {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = undefined;
+      }
+      statusText.textContent = "Erreur: Impossible de récupérer le statut du job.";
+      btnExtract.disabled = false;
+      setFormLocked(false);
+      btnExtract.textContent = "LANCER L'EXTRACTION";
+      setStored("holokia_processing", "0");
+      setStored("holokia_job_id", null);
+      setStored("holokia_status", statusText.textContent);
+    }
+  }, 2000);
+}
+
+function showResults(data, options) {
+  const scroll = !(options && options.scroll === false);
+  statusText.textContent = "Statut: Terminé !";
+  setStored("holokia_status", statusText.textContent);
+  setStored("holokia_processing", "0");
+  setStored("holokia_job_id", null);
+  setStored("holokia_hash", "#results");
+  if (location.hash !== "#results") {
+    location.hash = "#results";
+  }
+  
+  // Appel de la nouvelle fonction pour générer les cartes visuelles
+  buildCards(data);
+
+  // Garder le JSON brut mais formatté pour la section développeur
+  jsonOutput.textContent = JSON.stringify(data, null, 2);
+  setStoredJson("holokia_last_result", data);
+  
+  resultsSection.style.display = "block";
+  if (scroll) {
+    resultsSection.scrollIntoView({behavior: 'smooth'});
+  }
+  btnExtract.disabled = false;
+  setFormLocked(false);
+  btnExtract.textContent = "LANCER L'EXTRACTION";
+}
+
+btnCopy.addEventListener('click', () => {
+  navigator.clipboard.writeText(jsonOutput.textContent).then(() => {
+    const oldText = btnCopy.textContent;
+    btnCopy.textContent = "COPIÉ !";
+    setTimeout(() => btnCopy.textContent = oldText, 2000);
+  });
+});
+
+// MULTI-DOCS LOGIC
+const multiFileInput = document.getElementById('multiFileInput');
+const multiDropZone = document.getElementById('multiDropZone');
+const multiFileList = document.getElementById('multiFileList');
+let multiFiles = [];
+
+multiDropZone.addEventListener('click', () => multiFileInput.click());
+multiDropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  multiDropZone.style.background = 'rgba(0,71,255,0.05)';
+});
+multiDropZone.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  multiDropZone.style.background = 'transparent';
+});
+multiDropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  multiDropZone.style.background = 'transparent';
+  handleMultiFiles(e.dataTransfer.files);
+});
+multiFileInput.addEventListener('change', (e) => {
+  handleMultiFiles(e.target.files);
+});
+
+function handleMultiFiles(files) {
+  for (let i = 0; i < files.length; i++) {
+    multiFiles.push(files[i]);
+    const li = document.createElement('li');
+    li.textContent = `📄 ${files[i].name}`;
+    li.style.marginBottom = '5px';
+    multiFileList.appendChild(li);
+  }
+}
+
+const multiQuestionList = document.getElementById('multiQuestionList');
+let multiQuestions = [];
+
+function addMultiQuestion(q) {
+  if (!q || multiQuestions.includes(q)) return;
+  multiQuestions.push(q);
+  
+  const li = document.createElement('li');
+  li.style.background = '#fff';
+  li.style.border = '1px solid var(--line)';
+  li.style.padding = '10px 15px';
+  li.style.display = 'flex';
+  li.style.justifyContent = 'space-between';
+  li.style.alignItems = 'center';
+  
+  const text = document.createElement('span');
+  text.textContent = q;
+  text.style.fontFamily = 'var(--body)';
+  text.style.fontSize = '14px';
+  
+  const btnRemove = document.createElement('button');
+  btnRemove.textContent = '×';
+  btnRemove.style.background = 'none';
+  btnRemove.style.border = 'none';
+  btnRemove.style.color = 'var(--red)';
+  btnRemove.style.cursor = 'pointer';
+  btnRemove.style.fontSize = '16px';
+  btnRemove.onclick = () => {
+    multiQuestions = multiQuestions.filter(x => x !== q);
+    li.remove();
+  };
+  
+  li.appendChild(text);
+  li.appendChild(btnRemove);
+  multiQuestionList.appendChild(li);
+}
+
+document.getElementById('btnAddPredef').addEventListener('click', () => {
+  const sel = document.getElementById('multiPredefSelect');
+  addMultiQuestion(sel.value);
+  sel.value = '';
+});
+
+document.getElementById('btnAddCustom').addEventListener('click', () => {
+  const inp = document.getElementById('multiCustomQuestion');
+  addMultiQuestion(inp.value.trim());
+  inp.value = '';
+});
+
+document.getElementById('btnMultiExtract').addEventListener('click', async () => {
+  if (multiFiles.length === 0) {
+    alert("Veuillez ajouter au moins un document.");
+    return;
+  }
+  if (multiQuestions.length === 0) {
+    alert("Veuillez ajouter au moins une question.");
+    return;
+  }
+  
+  const status = document.getElementById('multiStatus');
+  const btn = document.getElementById('btnMultiExtract');
+  const resContainer = document.getElementById('multiResultsContainer');
+  
+  status.style.display = 'block';
+  btn.disabled = true;
+  btn.style.opacity = '0.5';
+  resContainer.innerHTML = '<div style="text-align:center; margin-top:50px;"><div class="spinner" style="margin:0 auto 20px;"></div><p style="font-family:var(--mono); font-size:12px; color:var(--blue);">Analyse en cours... Cela peut prendre plusieurs minutes.</p></div>';
+  
+  const formData = new FormData();
+  multiFiles.forEach(f => formData.append('files', f));
+  formData.append('questions', JSON.stringify(multiQuestions));
+  formData.append('provider', 'groq');
+  formData.append('model', 'llama-3.3-70b-versatile');
+  
+  try {
+    const response = await fetch('http://localhost:8000/extract-multi', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    if (data.ok) {
+      renderMultiResults(data.results);
+    } else {
+      resContainer.innerHTML = `<div style="color:var(--red); padding:20px;">Erreur: ${data.error}</div>`;
+    }
+  } catch (err) {
+    resContainer.innerHTML = `<div style="color:var(--red); padding:20px;">Erreur de connexion au serveur.</div>`;
+  } finally {
+    status.style.display = 'none';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
+});
+
+function renderMultiResults(results) {
+  const container = document.getElementById('multiResultsContainer');
+  container.innerHTML = '';
+  
+  // 1. Synthèse
+  if (results.synthese_comparative) {
+    const synthDiv = document.createElement('div');
+    synthDiv.style.background = 'rgba(0,71,255,0.05)';
+    synthDiv.style.border = '1px solid var(--blue)';
+    synthDiv.style.padding = '20px';
+    synthDiv.style.marginBottom = '30px';
+    
+    synthDiv.innerHTML = `
+      <h3 style="font-family: var(--display); font-size: 24px; margin-bottom: 15px; color: var(--blue);">Synthèse Comparative</h3>
+      <div style="font-family: var(--body); font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${results.synthese_comparative}</div>
+    `;
+    container.appendChild(synthDiv);
+  }
+  
+  // 2. Par document
+  const docs = results.results_by_document || {};
+  for (const [fname, qRes] of Object.entries(docs)) {
+    const docDiv = document.createElement('div');
+    docDiv.style.background = '#fff';
+    docDiv.style.border = '1px solid var(--line)';
+    docDiv.style.padding = '20px';
+    docDiv.style.marginBottom = '20px';
+    
+    let html = `<h4 style="font-family: var(--mono); font-size: 14px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--line);">📄 ${fname}</h4>`;
+    
+    for (const [q, ans] of Object.entries(qRes)) {
+      const val = ans.valeur || '<span style="color:var(--muted)">Non trouvé</span>';
+      let sourceHtml = '';
+      if (ans.source && ans.source.page !== null) {
+        sourceHtml = `<span style="font-family:var(--mono); font-size:10px; color:var(--teal); margin-left:10px; background:rgba(0,255,170,0.1); padding:2px 6px; border-radius:4px;">Page ${ans.source.page}</span>`;
+      }
+      
+      html += `
+        <div style="margin-bottom: 15px;">
+          <div style="font-family: var(--body); font-weight: 500; font-size: 14px; margin-bottom: 5px;">${q}</div>
+          <div style="font-family: var(--body); font-size: 14px; color: var(--ink); display:flex; align-items:center;">
+            ${val} ${sourceHtml}
+          </div>
+        </div>
+      `;
+    }
+    
+    docDiv.innerHTML = html;
+    container.appendChild(docDiv);
+  }
+}
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting){
+      e.target.style.transitionDelay = (i * 0.08) + 's';
+      e.target.classList.add('visible');
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// animate bench bars on scroll
+const benchObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.bench-bar').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { bar.style.width = w; });
+        });
+      });
+      benchObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('.tech-panel').forEach(p => benchObs.observe(p));
+
+window.addEventListener('hashchange', () => {
+  setStored("holokia_hash", location.hash || "#home");
+  handleRouting();
+});
+
+function handleRouting() {
+  const hash = location.hash || '#home';
+  
+  // Masquer toutes les sections
+  document.querySelectorAll('.view-section').forEach(sec => {
+    sec.classList.remove('active');
+  });
+  
+  // Déterminer la vue cible
+  let targetId = 'view-home';
+  if (hash === '#diagnostic' || hash === '#results' || hash === '#demo') {
+    targetId = 'view-diagnostic';
+  } else if (hash === '#multi') {
+    targetId = 'view-multi';
+  } else if (hash === '#chat') {
+    targetId = 'view-chat';
+  } else if (hash === '#historique') {
+    targetId = 'view-historique';
+    loadHistorique();
+  }
+  
+  const targetSec = document.getElementById(targetId);
+  if (targetSec) {
+    targetSec.classList.add('active');
+  }
+
+  // Mettre à jour les liens de navigation
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    const href = a.getAttribute('href');
+    if (href === hash || (targetId === 'view-diagnostic' && href === '#diagnostic') || (targetId === 'view-home' && href === '#home') || (targetId === 'view-historique' && href === '#historique')) {
+      a.style.color = 'var(--blue)';
+      a.style.fontWeight = '500';
+    } else {
+      a.style.color = 'var(--muted)';
+      a.style.fontWeight = 'normal';
+    }
+  });
+}
+
+let allExtractions = [];
+let currentExtractionId = null;
+
+async function loadHistorique() {
+  const tbody = document.getElementById('historiqueTableBody');
+  try {
+    const res = await fetch('http://localhost:8000/extractions');
+    const data = await res.json();
+    if (data.ok) {
+      allExtractions = data.data || [];
+      renderHistorique(allExtractions);
+      populateCompareSelect(allExtractions);
+    } else {
+      tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; color: var(--red);">${data.error || 'Erreur de chargement'}</td></tr>`;
+    }
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; color: var(--red);">Erreur réseau</td></tr>`;
+  }
+}
+
+function calculateAverageConfidence(result) {
+  if (!result) return 0;
+  let total = 0;
+  let count = 0;
+  const sections = ['diagnostic_strategique', 'diagnostic_financier', 'diagnostic_rh', 'diagnostic_data', 'diagnostic_cyber_gouvernance'];
+  
+  sections.forEach(sec => {
+    if (result[sec]) {
+      Object.values(result[sec]).forEach(field => {
+        if (field && typeof field.confiance === 'number') {
+          total += field.confiance;
+          count++;
+        }
+      });
+    }
+  });
+  
+  return count > 0 ? (total / count) : 0;
+}
+
+function renderHistorique(extractions) {
+  const tbody = document.getElementById('historiqueTableBody');
+  tbody.innerHTML = '';
+  
+  if (extractions.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--muted);">Aucune extraction trouvée.</td></tr>`;
+    return;
+  }
+  
+  extractions.forEach(ext => {
+    const date = new Date(ext.created_at).toLocaleString('fr-FR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    
+    const conf = calculateAverageConfidence(ext.result);
+    const confColor = conf > 0.8 ? 'var(--teal)' : (conf > 0.5 ? '#f39c12' : 'var(--red)');
+    
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid var(--line)';
+    tr.innerHTML = `
+      <td style="padding: 15px; font-family: var(--mono); font-size: 12px;">${date}</td>
+      <td style="padding: 15px; font-family: var(--body); font-weight: 500;">${ext.company || '-'}</td>
+      <td style="padding: 15px; font-family: var(--mono); font-size: 11px; color: var(--muted);">${ext.document_file || '-'}</td>
+      <td style="padding: 15px; font-family: var(--mono); font-size: 12px;">
+        <span style="background: rgba(0,71,255,0.1); color: var(--blue); padding: 4px 8px; border-radius: 4px;">
+          ${ext.model || ext.provider || '-'}
+        </span>
+      </td>
+      <td style="padding: 15px; font-family: var(--mono); font-size: 12px; color: ${confColor}; font-weight: 500;">
+        ${(conf * 100).toFixed(1)}%
+      </td>
+      <td style="padding: 15px;">
+        <button class="btn-view" data-id="${ext.id}" style="background: var(--ink); color: #fff; border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer;">VOIR JSON</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  
+  document.querySelectorAll('.btn-view').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id');
+      openModal(id);
+    });
+  });
+}
+
+function filterHistorique() {
+  const entrepriseStr = document.getElementById('filterEntreprise').value.toLowerCase();
+  const dateStr = document.getElementById('filterDate').value;
+  const modelStr = document.getElementById('filterModel').value.toLowerCase();
+  
+  const filtered = allExtractions.filter(ext => {
+    const matchEnt = !entrepriseStr || (ext.company && ext.company.toLowerCase().includes(entrepriseStr));
+    const extDate = ext.created_at ? ext.created_at.split('T')[0] : '';
+    const matchDate = !dateStr || extDate === dateStr;
+    const matchModel = !modelStr || (
+      (ext.model && ext.model.toLowerCase().includes(modelStr)) || 
+      (ext.provider && ext.provider.toLowerCase().includes(modelStr))
+    );
+    
+    return matchEnt && matchDate && matchModel;
+  });
+  
+  renderHistorique(filtered);
+}
+
+document.getElementById('filterEntreprise').addEventListener('input', filterHistorique);
+document.getElementById('filterDate').addEventListener('change', filterHistorique);
+document.getElementById('filterModel').addEventListener('change', filterHistorique);
+
+// Modal logic
+const modal = document.getElementById('historiqueModal');
+const modalJsonContainer = document.getElementById('modalJsonContainer');
+const modalCompareContainer = document.getElementById('modalCompareContainer');
+
+async function openModal(id) {
+  currentExtractionId = id;
+  const ext = allExtractions.find(e => e.id == id);
+  if (!ext) return;
+  
+  document.getElementById('modalTitle').textContent = `Détails : ${ext.company || 'Inconnu'}`;
+  document.getElementById('modalJson').textContent = JSON.stringify(ext.result, null, 2);
+  
+  modalJsonContainer.style.display = 'block';
+  modalCompareContainer.style.display = 'none';
+  document.getElementById('btnCompare').style.display = 'block';
+  document.getElementById('btnCompare').textContent = 'Comparer';
+  
+  // Set current selected in compare select
+  const compareSelect = document.getElementById('compareSelect');
+  compareSelect.value = '';
+  
+  modal.style.display = 'block';
+}
+
+document.getElementById('btnCloseModal').addEventListener('click', () => {
+  modal.style.display = 'none';
+});
+
+document.getElementById('btnCopyModal').addEventListener('click', () => {
+  const text = document.getElementById('modalJson').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopyModal');
+    const oldText = btn.textContent;
+    btn.textContent = "COPIÉ !";
+    setTimeout(() => btn.textContent = oldText, 2000);
+  });
+});
+
+// Compare logic
+function populateCompareSelect(extractions) {
+  const select = document.getElementById('compareSelect');
+  select.innerHTML = '<option value="">-- Choisir une extraction --</option>';
+  extractions.forEach(ext => {
+    const date = new Date(ext.created_at).toLocaleDateString('fr-FR');
+    const model = ext.model || ext.provider || '?';
+    const opt = document.createElement('option');
+    opt.value = ext.id;
+    opt.textContent = `${ext.company || 'Inconnu'} - ${date} (${model})`;
+    select.appendChild(opt);
+  });
+}
+
+document.getElementById('btnCompare').addEventListener('click', () => {
+  if (modalJsonContainer.style.display === 'none') {
+    // Switch to JSON view
+    modalJsonContainer.style.display = 'block';
+    modalCompareContainer.style.display = 'none';
+    document.getElementById('btnCompare').textContent = 'Comparer';
+  } else {
+    // Switch to Compare view
+    modalJsonContainer.style.display = 'none';
+    modalCompareContainer.style.display = 'block';
+    document.getElementById('btnCompare').textContent = 'Voir JSON';
+    renderComparison(currentExtractionId, document.getElementById('compareSelect').value);
+  }
+});
+
+document.getElementById('compareSelect').addEventListener('change', (e) => {
+  renderComparison(currentExtractionId, e.target.value);
+});
+
+function renderComparison(id1, id2) {
+  const ext1 = allExtractions.find(e => e.id == id1);
+  const ext2 = allExtractions.find(e => e.id == id2);
+  
+  const c1 = document.getElementById('compareContent1');
+  const c2 = document.getElementById('compareContent2');
+  
+  if (!ext1) {
+    c1.innerHTML = 'Sélectionnez une extraction de base';
+    return;
+  }
+  
+  document.getElementById('compareTitle1').textContent = `${ext1.company || 'A'} (${ext1.model || ext1.provider})`;
+  c1.innerHTML = formatExtractionForCompare(ext1.result);
+  
+  if (!ext2) {
+    document.getElementById('compareTitle2').textContent = `Extraction B`;
+    c2.innerHTML = '<div style="padding: 20px; color: var(--muted); text-align: center;">Sélectionnez une extraction dans la liste ci-dessus</div>';
+    return;
+  }
+  
+  document.getElementById('compareTitle2').textContent = `${ext2.company || 'B'} (${ext2.model || ext2.provider})`;
+  c2.innerHTML = formatExtractionForCompare(ext2.result);
+}
+
+function formatExtractionForCompare(result) {
+  if (!result) return 'Pas de données';
+  
+  let html = '';
+  const sections = [
+    { key: 'diagnostic_strategique', title: 'Stratégique' },
+    { key: 'diagnostic_financier', title: 'Financier' },
+    { key: 'diagnostic_rh', title: 'RH' },
+    { key: 'diagnostic_data', title: 'Data' },
+    { key: 'diagnostic_cyber_gouvernance', title: 'Cyber & Gouv.' }
+  ];
+  
+  sections.forEach(sec => {
+    if (!result[sec.key]) return;
+    
+    html += `<div style="margin-bottom: 15px;">
+      <h5 style="font-family: var(--mono); font-size: 11px; color: var(--blue); border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-bottom: 8px; text-transform: uppercase;">${sec.title}</h5>`;
+      
+    Object.entries(result[sec.key]).forEach(([key, field]) => {
+      const label = key.replace(/_/g, ' ');
+      let val = '<span style="color:var(--muted)">-</span>';
+      
+      if (field && field.valeur !== null && field.valeur !== undefined && field.valeur !== '') {
+        val = Array.isArray(field.valeur) && field.valeur.length === 0 ? '<span style="color:var(--muted)">-</span>' : 
+              (Array.isArray(field.valeur) ? field.valeur.join(', ') : field.valeur);
+      }
+      
+      html += `
+        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed rgba(0,0,0,0.05);">
+          <div style="font-family: var(--mono); font-size: 10px; color: var(--muted);">${label}</div>
+          <div style="font-size: 12px; font-weight: 500;">${val}</div>
+        </div>
+      `;
+    });
+    
+    html += `</div>`;
+  });
+  
+  return html;
+}
+
+// Export CSV
+document.getElementById('btnExportCSV').addEventListener('click', () => {
+  if (allExtractions.length === 0) return;
+  
+  // Headers
+  let csv = 'ID,Date,Entreprise,Fichier,Modele,Confiance Moyenne\n';
+  
+  allExtractions.forEach(ext => {
+    const conf = calculateAverageConfidence(ext.result);
+    const date = ext.created_at ? ext.created_at.split('T')[0] : '';
+    const comp = (ext.company || '').replace(/"/g, '""');
+    const file = (ext.document_file || '').replace(/"/g, '""');
+    const model = (ext.model || ext.provider || '').replace(/"/g, '""');
+    
+    csv += `${ext.id},${date},"${comp}","${file}","${model}",${conf.toFixed(3)}\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", "historique_extractions.csv");
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+});
+
+(() => {
+  const storedHash = getStored("holokia_hash");
+  if (storedHash && storedHash !== location.hash) {
+    location.hash = storedHash;
+  } else {
+    handleRouting();
+  }
+
+  const storedStatus = getStored("holokia_status");
+  if (storedStatus) {
+    statusText.style.display = "block";
+    statusText.textContent = storedStatus;
+  }
+
+  const isProcessing = getStored("holokia_processing") === "1";
+  const jobId = getStored("holokia_job_id");
+  const lastResult = getStoredJson("holokia_last_result");
+
+  if (isProcessing && jobId) {
+    btnExtract.disabled = true;
+    setFormLocked(true);
+    btnExtract.textContent = "TRAITEMENT...";
+    resultsSection.style.display = "none";
+    pollJobStatus(jobId);
+    return;
+  }
+
+  if (lastResult && (storedHash === "#results" || location.hash === "#results")) {
+    showResults(lastResult, { scroll: false });
+  }
+})();
+</script>
+</body>
+</html>

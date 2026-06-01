@@ -151,6 +151,11 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   - Détecter les catégories présentes (Stratégique, Finance, RH, Data, Cyber)
   - Générer uniquement les questions pertinentes
   - Éviter les prompts hors contexte (anti-hallucination / économie de tokens)
+- [x] **T4.0bis** — 🆕 Sous-système de conversion PDF → Markdown
+  - Détecter titres/sections via taille de police
+  - Convertir tableaux en Markdown structuré
+  - Sauvegarder dans `data/processed/`
+  - Charger depuis le cache si déjà converti
 - [x] **T4.1** — Développer le module de retrieval contextuel (approche sélectionnée)
 - [x] **T4.2** — Créer les prompts d'extraction par catégorie :
   - Prompt stratégique (marché, concurrents, tendances)
@@ -275,46 +280,127 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 
 ### 8A — Mode Multi-Documents + Questions ciblées
 
-- [ ] **T8.1** — Modifier l'interface pour accepter plusieurs fichiers simultanément (drag & drop multiple)
-- [ ] **T8.2** — Ajouter une zone de question libre
+- [x] **T8.1** — Modifier l'interface pour accepter plusieurs fichiers simultanément (drag & drop multiple)
+- [x] **T8.2** — Ajouter une zone de question libre
   - Exemple : *"Quel est le taux de croissance de chaque entreprise ?"*
-- [ ] **T8.3** — Ajouter des questions prédéfinies (liste déroulante basée sur le diagnostic Copilot)
+- [x] **T8.3** — Ajouter des questions prédéfinies (liste déroulante basée sur le diagnostic Copilot)
   - Taille du marché, concurrents, CA, effectifs, conformité NIST…
-- [ ] **T8.4** — Modifier `server.py` pour accepter un tableau de fichiers + une question
-- [ ] **T8.5** — Modifier le pipeline RAG : indexer N documents avec métadonnée `source_fichier` par chunk
-- [ ] **T8.6** — Afficher les résultats par document avec synthèse comparative finale
-- [ ] **T8.7** — Chaque réponse conserve sa citation source (page + extrait + nom du fichier)
+- [x] **T8.4** — Modifier `server.py` pour accepter un tableau de fichiers + une question
+- [x] **T8.5** — Modifier le pipeline RAG : indexer N documents avec métadonnée `source_fichier` par chunk
+- [x] **T8.6** — Afficher les résultats par document avec synthèse comparative finale
+- [x] **T8.7** — Chaque réponse conserve sa citation source (page + extrait + nom du fichier)
 
 **Livrable partiel :** Onglet "Analyse multi-docs" + endpoint `POST /extract-multi`
 
 ### 8B — Historique des Extractions
 
-- [ ] **T8.8** — Créer l'endpoint `GET /extractions` dans FastAPI (lecture depuis Supabase)
-- [ ] **T8.9** — Créer l'endpoint `GET /extractions/{id}` pour récupérer un résultat complet
-- [ ] **T8.10** — Ajouter un onglet **Historique** dans l'interface :
+- [x] **T8.8** — Créer l'endpoint `GET /extractions` dans FastAPI (lecture depuis Supabase)
+- [x] **T8.9** — Créer l'endpoint `GET /extractions/{id}` pour récupérer un résultat complet
+- [x] **T8.10** — Ajouter un onglet **Historique** dans l'interface :
   - Liste des rapports analysés (entreprise, date, modèle, score confiance moyen)
   - Cliquer sur une ligne → afficher le JSON complet
-- [ ] **T8.11** — Filtres : par date, par entreprise, par modèle LLM utilisé
-- [ ] **T8.12** — Comparaison côte à côte de deux extractions (champ par champ)
-- [ ] **T8.13** — Export JSON ou CSV depuis l'historique
+- [x] **T8.11** — Filtres : par date, par entreprise, par modèle LLM utilisé
+- [x] **T8.12** — Comparaison côte à côte de deux extractions (champ par champ)
+- [x] **T8.13** — Export JSON ou CSV depuis l'historique
 
 **Livrable partiel :** Onglet "Historique" + endpoints GET Supabase
 
-### Dépendances Phase 8
+---
+
+### 8C — Page d'accueil : Sélection du Mode d'Analyse
+
+> **Objectif :** Ajouter une page d'entrée avec deux modes distincts,
+> orientant l'utilisateur vers le bon outil selon son besoin.
+
+- [x] **T8.14** — Créer une page d'accueil (`index.html`) avec deux cartes cliquables :
+  - **Mode Chat** → *"Posez vos propres questions sur vos documents"*
+  - **Mode Diagnostic** → *"Analyse structurée automatique"*
+- [x] **T8.15** — Appliquer un design cohérent avec l'interface existante
+  (couleurs, typographie, logo Holokia)
+- [x] **T8.16** — Gérer la navigation entre les deux modes sans rechargement
+  complet de page (routing côté client)
+
+**Livrable partiel :** Page d'accueil deployée + navigation fonctionnelle
+
+---
+
+### 8D — Mode Chat Libre sur Documents (Option 1)
+
+> **Objectif :** Permettre à un utilisateur d'uploader ses fichiers et
+> de poser librement n'importe quelle question en langage naturel.
+> Le LLM répond uniquement depuis le contenu des fichiers chargés.
+
+- [ ] **T8.17** — Créer l'interface du Mode Chat :
+  - Zone d'upload (drag & drop, multi-fichiers PDF/Word/TXT)
+  - Zone de conversation (bulles messages user / assistant)
+  - Indicateur de chargement pendant l'indexation
+- [ ] **T8.18** — Modifier `server.py` : ajouter l'endpoint `POST /chat`
+  - Accepte : fichiers + historique de conversation + question courante
+  - Retourne : réponse texte + liste des citations (page + extrait + nom fichier)
+- [ ] **T8.19** — Implémenter le pipeline RAG conversationnel multi-tours :
+  - Indexer les documents uploadés dans une session isolée (FAISS temporaire)
+  - Injecter l'historique des échanges dans le contexte du prompt
+  - Contraindre le LLM au contexte fourni (anti-hallucination)
+- [ ] **T8.20** — Afficher chaque réponse avec ses citations sources :
+  - Numéro de page, extrait textuel, nom du fichier source
+  - Indicateur de confiance global de la réponse
+- [ ] **T8.21** — Gérer la session de chat :
+  - Bouton *"Nouvelle conversation"* (reset index + historique)
+  - Export de la conversation (JSON ou TXT)
+
+**Livrable partiel :** Onglet "Chat libre" fonctionnel + endpoint `POST /chat`
+
+---
+
+### 8E — Mode Diagnostic Éditable (Option 2 améliorée)
+
+> **Objectif :** Conserver le pipeline de diagnostic structuré existant
+> et y ajouter un éditeur de questions permettant à l'utilisateur
+> d'adapter les questions selon son secteur ou son client,
+> sans modifier le code.
+
+- [ ] **T8.22** — Ajouter un panneau latéral "Mes questions" dans
+  l'interface du Mode Diagnostic :
+  - Liste des questions actives (modifiables inline)
+  - Bouton *"Ajouter une question"*
+  - Bouton *"Supprimer"* par question
+  - Bouton *"Réinitialiser aux questions par défaut"*
+- [ ] **T8.23** — Créer la table `custom_questions` dans **Supabase** :
+  - Champs : `id`, `categorie`, `question_text`, `is_default`,
+    `created_at`
+  - Pré-remplir avec les questions actuelles du code comme valeurs
+    par défaut
+- [ ] **T8.24** — Ajouter les endpoints dans FastAPI :
+  - `GET /questions` → retourner la liste des questions actives
+  - `POST /questions` → sauvegarder une nouvelle question
+  - `DELETE /questions/{id}` → supprimer une question
+  - `POST /questions/reset` → restaurer les questions par défaut
+- [ ] **T8.25** — Modifier le pipeline d'extraction : charger les
+  questions depuis Supabase au lieu du code statique
+- [ ] **T8.26** — Afficher dans les résultats la liste des questions
+  utilisées pour cette extraction (traçabilité)
+
+**Livrable partiel :** Éditeur de questions fonctionnel +
+endpoints CRUD Supabase + diagnostic piloté par les questions de la base
+
+---
+
+### Dépendances Phase 8 (mise à jour)
 
 ```
-T8.1 → T8.7   nécessite Phase 4 terminée (agent final)
-T8.8 → T8.13  nécessite T2.9 (Supabase) ✅ déjà fait
-               nécessite T7.1 (FastAPI)  ← Phase 7 d'abord
+T8.14 → T8.16   aucune dépendance (page d'accueil autonome)
+T8.17 → T8.21   nécessite Phase 4 terminée (agent final) ✅
+T8.22 → T8.26   nécessite T2.9 (Supabase) ✅
+                nécessite T7.1 (FastAPI)  ✅
 ```
 
-### Ordre recommandé
+### Ordre recommandé (mise à jour)
 
 ```
-Phase 5  → Schéma JSON finalisé
-Phase 7  → FastAPI + Render déployé     ← débloque 8B
-Phase 4  → Agent final opérationnel     ← débloque 8A
-Phase 8  → Interface avancée            ← en dernier
+T8.14 → Page d'accueil (2 modes)         ← en premier, bloque tout
+T8.22 → Éditeur questions Supabase       ← Option 2, dépendances ✅
+T8.17 → Chat libre RAG                   ← Option 1, plus complexe
+T8.8  → Historique                       ← en dernier
 ```
 
 ---
@@ -331,7 +417,7 @@ Phase 8  → Interface avancée            ← en dernier
 | L5 | Schéma JSON étendu (data + cyber) | JSON Schema + Pydantic | Phase 5 | ✅ |
 | L6 | Rapport de performance | Markdown / PDF | Phase 6 | ✅ |
 | L7 | API déployée sur Render + démo | URL + Vidéo | Phase 7 | ✅ |
-| L8 | Interface 3 onglets déployée | Web app | Phase 8 | ⏳ |
+| L8 | Page 2 modes : Chat libre + Diagnostic éditable | Web app | Phase 8 | ⏳ |
 
 ---
 
@@ -347,7 +433,11 @@ Phase 8  → Interface avancée            ← en dernier
 | Phase 5 — Structuration données | ✅ Terminée | |
 | Phase 6 — Validation | ✅ Terminée | |
 | Phase 7 — Intégration API | ✅ Terminée | |
-| Phase 8 — Interface avancée | ⏳ À venir | |
+| Phase 8A — Multi-Documents         | ✅ Terminée | |
+| Phase 8B — Historique            | ✅ Terminée | |
+| Phase 8C — Page sélection mode   | ✅ Terminée | | 
+| Phase 8D — Mode Chat libre       | ⏳ À venir | | 
+| Phase 8E — Mode Diagnostic édit. | ⏳ À venir | | 
 
 ---
 

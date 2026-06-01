@@ -20,21 +20,27 @@ def get_embeddings(config: Dict[str, Any]):
 
         model = emb_cfg.get("model", "nomic-embed-text")
         base_url = emb_cfg.get("base_url", "http://localhost:11434")
-        sync_client_kwargs = emb_cfg.get("sync_client_kwargs") or {"timeout": 300.0}
+        # On augmente drastiquement le timeout pour éviter les httpx.ReadTimeout
+        sync_client_kwargs = emb_cfg.get("sync_client_kwargs") or {"timeout": 900.0}
         return OllamaEmbeddings(
             model=model,
             base_url=base_url,
-            sync_client_kwargs=sync_client_kwargs,
+            client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
 
 def get_chroma_vectorstore(
-    config: Dict[str, Any],
+    config: Optional[Dict[str, Any]] = None,
     *,
     embedding_function=None,
+    persist_dir: Optional[str] = None,
+    clear: bool = False
 ):
+    if config is None:
+        config = load_config()
+
     try:
         from langchain_chroma import Chroma
     except ImportError:
@@ -44,8 +50,13 @@ def get_chroma_vectorstore(
     if vs_cfg.get("type", "chroma") != "chroma":
         raise ValueError("vectorstore.type doit être 'chroma'")
 
-    persist_dir = vs_cfg.get("persist_dir", "vectorstore/chroma")
+    if persist_dir is None:
+        persist_dir = vs_cfg.get("persist_dir", "vectorstore/chroma")
     collection_name = vs_cfg.get("collection_name", "reports")
+
+    if clear and os.path.exists(persist_dir):
+        import shutil
+        shutil.rmtree(persist_dir, ignore_errors=True)
 
     if embedding_function is None:
         embedding_function = get_embeddings(config)
@@ -56,3 +67,38 @@ def get_chroma_vectorstore(
         persist_directory=persist_dir,
         embedding_function=embedding_function,
     )
+
+def get_or_create_faiss_vectorstore(
+    chunks: list, 
+    doc_name: str, 
+    embeddings=None, 
+    config: Optional[Dict[str, Any]] = None
+):
+    """
+    Crée un vectorstore FAISS ou le charge depuis le cache s'il existe déjà.
+    """
+    from langchain_community.vectorstores import FAISS
+    import os
+    
+    if config is None:
+        config = load_config()
+        
+    if embeddings is None:
+        embeddings = get_embeddings(config)
+        
+    cache_dir = os.path.join("data", "vectors")
+    os.makedirs(cache_dir, exist_ok=True)
+    cache_path = os.path.join(cache_dir, f"{doc_name}.faiss")
+    
+    # Si déjà indexé -> charger depuis le disque (instantané)
+    if os.path.exists(cache_path):
+        print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
+        return FAISS.load_local(cache_path, embeddings, allow_dangerous_deserialization=True)
+    
+    # Sinon -> créer et sauvegarder en un seul batch
+    print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (batch embedding)...")
+    vectorstore = FAISS.from_documents(chunks, embeddings)
+    vectorstore.save_local(cache_path)
+    print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
+    
+    return vectorstore

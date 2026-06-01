@@ -265,9 +265,9 @@ def chunk_document(
         return chunk_pdf(file_path, max_chars=max_chars, overlap_chars=overlap_chars)
     if lower.endswith(".docx"):
         return chunk_docx(file_path, max_chars=max_chars, overlap_chars=overlap_chars)
-    if lower.endswith(".txt"):
+    if lower.endswith(".txt") or lower.endswith(".md"):
         return chunk_txt(file_path, max_chars=max_chars, overlap_chars=overlap_chars)
-    raise ValueError("Unsupported document type (expected .pdf or .docx)")
+    raise ValueError("Unsupported document type (expected .pdf, .docx, .txt or .md)")
 
 
 def chunk_txt(

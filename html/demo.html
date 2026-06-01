@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Holokia — Agent RAG</title>
+<link rel="icon" href="../logo/cropped-logo_holokia_noir.jpg" type="image/avif">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -966,7 +967,7 @@ footer{
     <li><a href="#demo">Démo Agent</a></li>
     <li><a href="#results">Résultats</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA — 2026</div>
+  <div class="nav-status">Copilot Strategy IA</div>
 </nav>
 
 <!-- HERO -->
@@ -1026,8 +1027,8 @@ footer{
       <div style="margin-bottom:20px;">
         <div class="ekg-label">4. MODE D'EXTRACTION</div>
         <div style="display:flex; gap:10px; margin-top:10px;">
-          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false" checked> Synchrone (bloquant)</label>
-          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true"> Asynchrone (pour gros PDF)</label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false" checked> Rapide (synchrone)</label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true"> Robuste (asynchrone • gros PDF)</label>
         </div>
       </div>
 
@@ -1150,16 +1151,68 @@ function buildCards(data) {
 
 let pollInterval;
 
+function setFormLocked(isLocked) {
+  if (modelSelect) modelSelect.disabled = isLocked;
+  if (approachSelect) approachSelect.disabled = isLocked;
+}
+
+function setStored(key, value) {
+  try {
+    if (value === undefined || value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, String(value));
+    }
+  } catch (_) {}
+}
+
+function getStored(key) {
+  try {
+    return localStorage.getItem(key);
+  } catch (_) {
+    return null;
+  }
+}
+
+function setStoredJson(key, obj) {
+  try {
+    if (obj === undefined || obj === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, JSON.stringify(obj));
+    }
+  } catch (_) {}
+}
+
+function getStoredJson(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (_) {
+    return null;
+  }
+}
+
 btnExtract.addEventListener('click', async () => {
   if(!fileInput.files[0]) {
     alert("Veuillez sélectionner un fichier.");
     return;
   }
 
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = undefined;
+  }
+
   btnExtract.disabled = true;
+  setFormLocked(true);
   btnExtract.textContent = "TRAITEMENT...";
   statusText.style.display = "block";
   statusText.textContent = "Statut: Envoi au serveur (FastAPI)...";
+  setStored("holokia_processing", "1");
+  setStored("holokia_status", statusText.textContent);
+  setStored("holokia_hash", "#demo");
   resultsSection.style.display = "none";
 
   const fd = new FormData();
@@ -1180,6 +1233,7 @@ btnExtract.addEventListener('click', async () => {
   
   const isAsync = document.querySelector('input[name="asyncMode"]:checked').value === "true";
   fd.append('async_mode', isAsync);
+  setStored("holokia_async", isAsync ? "1" : "0");
 
   try {
     const response = await fetch('http://localhost:8000/extract', {
@@ -1191,6 +1245,8 @@ btnExtract.addEventListener('click', async () => {
     
     if (isAsync && data.job_id) {
       statusText.textContent = `Statut: Job créé (ID: ${data.job_id}). Traitement en arrière-plan...`;
+      setStored("holokia_job_id", data.job_id);
+      setStored("holokia_status", statusText.textContent);
       pollJobStatus(data.job_id);
     } else {
       showResults(data);
@@ -1198,7 +1254,11 @@ btnExtract.addEventListener('click', async () => {
   } catch(e) {
     statusText.textContent = "Erreur: Serveur FastAPI injoignable (port 8000).";
     btnExtract.disabled = false;
+    setFormLocked(false);
     btnExtract.textContent = "LANCER L'EXTRACTION";
+    setStored("holokia_processing", "0");
+    setStored("holokia_job_id", null);
+    setStored("holokia_status", statusText.textContent);
   }
 });
 
@@ -1210,33 +1270,62 @@ async function pollJobStatus(jobId) {
       
       if (data.status === "completed") {
         clearInterval(pollInterval);
+        pollInterval = undefined;
         showResults(data.result);
       } else if (data.status === "failed") {
         clearInterval(pollInterval);
+        pollInterval = undefined;
         statusText.textContent = `Erreur: ${data.error}`;
         btnExtract.disabled = false;
+        setFormLocked(false);
         btnExtract.textContent = "LANCER L'EXTRACTION";
+        setStored("holokia_processing", "0");
+        setStored("holokia_job_id", null);
+        setStored("holokia_status", statusText.textContent);
       } else {
         statusText.textContent = `Statut: ${data.status.toUpperCase()}...`;
+        setStored("holokia_status", statusText.textContent);
       }
     } catch(e) {
-      console.error(e);
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = undefined;
+      }
+      statusText.textContent = "Erreur: Impossible de récupérer le statut du job.";
+      btnExtract.disabled = false;
+      setFormLocked(false);
+      btnExtract.textContent = "LANCER L'EXTRACTION";
+      setStored("holokia_processing", "0");
+      setStored("holokia_job_id", null);
+      setStored("holokia_status", statusText.textContent);
     }
   }, 2000);
 }
 
-function showResults(data) {
+function showResults(data, options) {
+  const scroll = !(options && options.scroll === false);
   statusText.textContent = "Statut: Terminé !";
+  setStored("holokia_status", statusText.textContent);
+  setStored("holokia_processing", "0");
+  setStored("holokia_job_id", null);
+  setStored("holokia_hash", "#results");
+  if (location.hash !== "#results") {
+    location.hash = "#results";
+  }
   
   // Appel de la nouvelle fonction pour générer les cartes visuelles
   buildCards(data);
 
   // Garder le JSON brut mais formatté pour la section développeur
   jsonOutput.textContent = JSON.stringify(data, null, 2);
+  setStoredJson("holokia_last_result", data);
   
   resultsSection.style.display = "block";
-  resultsSection.scrollIntoView({behavior: 'smooth'});
+  if (scroll) {
+    resultsSection.scrollIntoView({behavior: 'smooth'});
+  }
   btnExtract.disabled = false;
+  setFormLocked(false);
   btnExtract.textContent = "LANCER L'EXTRACTION";
 }
 
@@ -1274,6 +1363,40 @@ const benchObs = new IntersectionObserver(entries => {
   });
 },{threshold:0.3});
 document.querySelectorAll('.tech-panel').forEach(p => benchObs.observe(p));
+
+window.addEventListener('hashchange', () => {
+  setStored("holokia_hash", location.hash || "#demo");
+});
+
+(() => {
+  const storedHash = getStored("holokia_hash");
+  if (storedHash && storedHash !== location.hash) {
+    location.hash = storedHash;
+  }
+
+  const storedStatus = getStored("holokia_status");
+  if (storedStatus) {
+    statusText.style.display = "block";
+    statusText.textContent = storedStatus;
+  }
+
+  const isProcessing = getStored("holokia_processing") === "1";
+  const jobId = getStored("holokia_job_id");
+  const lastResult = getStoredJson("holokia_last_result");
+
+  if (isProcessing && jobId) {
+    btnExtract.disabled = true;
+    setFormLocked(true);
+    btnExtract.textContent = "TRAITEMENT...";
+    resultsSection.style.display = "none";
+    pollJobStatus(jobId);
+    return;
+  }
+
+  if (lastResult && (storedHash === "#results" || location.hash === "#results")) {
+    showResults(lastResult, { scroll: false });
+  }
+})();
 </script>
 </body>
 </html>

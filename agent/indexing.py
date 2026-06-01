@@ -14,7 +14,7 @@ def iter_document_paths(data_dir: str) -> Iterable[str]:
     for root, _, files in os.walk(data_dir):
         for name in files:
             lower = name.lower()
-            if lower.endswith((".pdf", ".docx", ".txt")):
+            if lower.endswith((".pdf", ".docx", ".txt", ".md")):
                 yield os.path.join(root, name)
 
 
