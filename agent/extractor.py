@@ -140,6 +140,11 @@ def run_agent_extraction(
     base_name = os.path.basename(file_path)
     entreprise_name = os.path.splitext(base_name)[0]
     
+    # Construire la liste des questions utilisées
+    questions_list = []
+    for cat_q in dynamic_queries.values():
+        questions_list.extend(cat_q)
+    
     raw_results["meta"] = {
         "entreprise": entreprise_name,
         "annee_rapport": None,
@@ -147,7 +152,8 @@ def run_agent_extraction(
         "modele_utilise": model or "default",
         "provider": provider or "default",
         "approche": "Agent_Final_T4",
-        "source_file": file_path
+        "source_file": file_path,
+        "questions_utilisees": questions_list
     }
     
     # Mapping entre nos catégories internes et les noms du schéma JSON

@@ -126,32 +126,61 @@ QUESTIONS_PAR_CATEGORIE = {
 }
 
 
+def get_all_questions() -> Dict[str, List[Dict[str, str]]]:
+    """
+    Récupère les questions depuis Supabase si disponible, sinon utilise le dictionnaire par défaut.
+    """
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if supabase_enabled():
+            store = SupabaseStore()
+            db_questions = store.get_custom_questions()
+            if db_questions:
+                q_dict = {}
+                for row in db_questions:
+                    cat = row.get("categorie")
+                    if not cat:
+                        continue
+                    if cat not in q_dict:
+                        q_dict[cat] = []
+                    q_dict[cat].append({
+                        "id": row.get("id"),
+                        "champ": row.get("champ"),
+                        "question": row.get("question_text"),
+                        "type": row.get("type", "field")
+                    })
+                return q_dict
+    except Exception:
+        pass
+    
+    return QUESTIONS_PAR_CATEGORIE
+
 def build_dynamic_queries(categories: DocumentCategories) -> Dict[str, List[Dict[str, str]]]:
     """
     Construit le dictionnaire final des requêtes RAG à exécuter,
     uniquement pour les catégories qui ont été détectées comme 'True' par l'Analyzer.
     """
     active_cats = categories.get_active_categories()
+    all_questions = get_all_questions()
     
     queries_to_run = {}
-    
     for cat in active_cats:
-        if cat in QUESTIONS_PAR_CATEGORIE:
-            queries_to_run[cat] = QUESTIONS_PAR_CATEGORIE[cat]
+        if cat in all_questions:
+            queries_to_run[cat] = all_questions[cat]
             
     return queries_to_run
-
 
 def get_empty_category_result(category_name: str) -> Dict[str, Any]:
     """
     Si une catégorie est ignorée par l'analyzer, on renvoie ce dictionnaire 
     rempli de 'null' pour respecter le schéma JSON global sans faire d'appels LLM.
     """
-    if category_name not in QUESTIONS_PAR_CATEGORIE:
+    all_questions = get_all_questions()
+    if category_name not in all_questions:
         return {}
         
     result = {}
-    for q in QUESTIONS_PAR_CATEGORIE[category_name]:
+    for q in all_questions[category_name]:
         champ = q["champ"]
         if q["type"] == "list":
             result[champ] = {"valeur": [], "source": None, "confiance": 0.0}

@@ -31,6 +31,14 @@ chroma/
 *.sqlite3
 uploads/
 
+# Data & Cache RAG (Ignorer les fichiers lourds, garder la structure)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/vectors/*
+!data/vectors/.gitkeep
+
 # Node / Frontend
 node_modules/
 dist/

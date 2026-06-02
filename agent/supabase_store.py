@@ -112,6 +112,17 @@ class SupabaseStore:
         except Exception:
             return None
 
+    def _delete(self, path: str, *, params: Optional[Dict[str, str]] = None):
+        url = self.rest_url.rstrip("/") + "/" + path.lstrip("/")
+        r = requests.delete(url, headers=self.base_headers, params=params, timeout=self.timeout_s)
+        r.raise_for_status()
+        if not r.text:
+            return None
+        try:
+            return r.json()
+        except Exception:
+            return None
+
     def get_extractions_by_company(self, company: str) -> list:
         # On va chercher les documents de cette entreprise
         docs = self._get("documents", params={"company": f"eq.{company}", "select": "id,file_name,year"})
@@ -225,6 +236,39 @@ class SupabaseStore:
         if isinstance(data, dict):
             return str(data.get("id") or "")
         return None
+
+    def get_custom_questions(self) -> list:
+        data = self._get("custom_questions", params={"order": "created_at.asc"})
+        return data if isinstance(data, list) else []
+
+    def add_custom_question(self, categorie: str, champ: str, question_text: str, q_type: str = "field") -> Optional[str]:
+        row = {
+            "categorie": categorie,
+            "champ": champ,
+            "question_text": question_text,
+            "type": q_type,
+            "is_default": False
+        }
+        data = self._post("custom_questions", json=row, prefer="return=representation")
+        if isinstance(data, list) and data:
+            return str(data[0].get("id") or "")
+        if isinstance(data, dict):
+            return str(data.get("id") or "")
+        return None
+
+    def delete_custom_question(self, q_id: str) -> bool:
+        try:
+            self._delete("custom_questions", params={"id": f"eq.{q_id}"})
+            return True
+        except Exception:
+            return False
+
+    def reset_custom_questions(self) -> bool:
+        try:
+            self._delete("custom_questions", params={"is_default": "eq.false"})
+            return True
+        except Exception:
+            return False
 
 
 def _extract_meta(payload: Dict[str, Any]) -> Dict[str, Any]:
