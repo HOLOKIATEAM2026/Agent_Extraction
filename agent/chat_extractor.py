@@ -3,7 +3,13 @@ import re
 from typing import List, Dict, Any, Tuple
 from langchain_core.vectorstores import VectorStore
 from langchain_core.prompts import PromptTemplate
-from agent.llm_config import get_llm
+from agent.llm_provider import LLMProvider
+
+def get_llm(provider: str = None, model: str = None, config_path: str = "config.yaml", temperature: float = 0.0):
+    llm_manager = LLMProvider(provider=provider, model=model, config_path=config_path)
+    if temperature != 0.0:
+        llm_manager.llm.temperature = temperature
+    return llm_manager.llm
 
 def run_chat_rag(
     vectorstore: VectorStore,
@@ -26,19 +32,36 @@ def run_chat_rag(
     citations = []
     context_parts = []
     
+    # Map to track actual document index provided to the LLM
+    doc_index_map = {}
+    
     for i, doc in enumerate(docs, 1):
         page = doc.metadata.get("page", "Inconnue")
         file_name = doc.metadata.get("file_name", "Inconnu")
         text = doc.page_content.strip()
         
-        citations.append({
-            "id": i,
-            "page": page,
-            "file_name": file_name,
-            "extrait": text[:200] + "..." if len(text) > 200 else text
-        })
+        # Determine the visual document ID for the LLM
+        doc_key = f"{file_name}_p{page}"
+        if doc_key not in doc_index_map:
+            doc_index_map[doc_key] = len(doc_index_map) + 1
+            
+        doc_id = doc_index_map[doc_key]
         
-        context_parts.append(f"--- Document {i} (Fichier: {file_name}, Page: {page}) ---\n{text}")
+        # Deduplicate citations that point to the exact same file and page
+        citation_exists = False
+        for c in citations:
+            if c["file_name"] == file_name and c["page"] == page:
+                citation_exists = True
+                break
+                
+        if not citation_exists:
+            citations.append({
+                "page": page,
+                "file_name": file_name,
+                "extrait": text[:200] + "..." if len(text) > 200 else text
+            })
+        
+        context_parts.append(f"--- Extrait de {file_name}, Page {page} ---\n{text}")
         
     context_str = "\n\n".join(context_parts)
     
@@ -56,7 +79,7 @@ Ton but est de répondre à la question de l'utilisateur de manière précise, c
 
 RÈGLES IMPORTANTES :
 1. Si la réponse ne se trouve PAS dans le contexte, dis simplement "Je ne trouve pas cette information dans les documents fournis." N'invente jamais d'informations.
-2. Cite toujours tes sources en te référant aux numéros de documents (ex: "D'après le Document 1...").
+2. Cite toujours tes sources en te référant au nom du fichier et au numéro de page (ex: "D'après test.txt, page 4...").
 3. Prends en compte l'historique de la conversation si nécessaire pour comprendre le contexte de la question.
 
 {history}
@@ -74,7 +97,7 @@ RÉPONSE :"""
         input_variables=["history", "context", "question"]
     )
     
-    llm = get_llm(provider=provider, model_name=model, temperature=0.0)
+    llm = get_llm(provider=provider, model=model, temperature=0.0)
     chain = prompt | llm
     
     response_text = chain.invoke({

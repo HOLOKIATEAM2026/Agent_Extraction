@@ -150,7 +150,8 @@ def get_all_questions() -> Dict[str, List[Dict[str, str]]]:
                         "type": row.get("type", "field")
                     })
                 return q_dict
-    except Exception:
+    except Exception as e:
+        print(f"[Supabase] Erreur lors de la récupération des questions: {e}")
         pass
     
     return QUESTIONS_PAR_CATEGORIE

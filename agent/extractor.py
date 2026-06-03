@@ -36,8 +36,21 @@ def _extract_category_data(
         
         # 1. Retrieval (Recherche vectorielle)
         retrieved_docs = vectorstore.similarity_search(question, k=top_k)
+        
+        # Helper to safely extract page numbers from document metadata
+        def get_page(doc):
+            p = doc.metadata.get('page')
+            if p is not None:
+                return str(p)
+            pages = doc.metadata.get('pages')
+            if pages and len(pages) > 0:
+                if isinstance(pages, list):
+                    return str(pages[0])
+                return str(pages)
+            return 'Inconnue'
+            
         context_text = "\n\n".join(
-            [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
+            [f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc.page_content}" 
              for i, doc in enumerate(retrieved_docs)]
         )
         
@@ -68,12 +81,19 @@ Règles de formatage de ta réponse :
                     category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
                 continue
                 
-            # Extraction basique de la page (très simplifiée pour l'instant)
+            # Extraction basique de la page
             page_num = None
             if "[Page " in response:
                 try:
                     page_str = response.split("[Page ")[1].split("]")[0]
-                    page_num = int(page_str)
+                    if page_str.isdigit():
+                        page_num = int(page_str)
+                    elif page_str.lower() != "inconnue":
+                        # Essayer d'extraire juste les chiffres si possible (ex: "1, 2" -> 1)
+                        import re
+                        m = re.search(r'\d+', page_str)
+                        if m:
+                            page_num = int(m.group())
                     response = response.split("[Page ")[0].strip()
                 except:
                     pass
@@ -83,12 +103,28 @@ Règles de formatage de ta réponse :
             else:
                 valeur = response
                 
+            # Trouver l'extrait le plus pertinent pour la justification (celui de la bonne page si possible)
+            best_extrait = context_text[:200] + "..."
+            if page_num is not None:
+                for doc in retrieved_docs:
+                    doc_page = get_page(doc)
+                    if str(page_num) == doc_page:
+                        best_extrait = doc.page_content[:200] + "..."
+                        break
+            else:
+                if retrieved_docs:
+                    best_extrait = retrieved_docs[0].page_content[:200] + "..."
+                    # Essayer de récupérer la page du premier document si on n'en a pas
+                    doc_page = get_page(retrieved_docs[0])
+                    if doc_page and doc_page.isdigit():
+                        page_num = int(doc_page)
+                
             category_results[champ] = {
                 "valeur": valeur,
                 "source": {
                     "page": page_num,
                     "section": None,
-                    "extrait": context_text[:200] + "..." # On prend le début du contexte comme justification
+                    "extrait": best_extrait
                 },
                 "confiance": 0.85 # Confiance arbitraire pour l'instant
             }

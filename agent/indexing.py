@@ -52,6 +52,16 @@ def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Documen
         if c.get("type") == "pdf":
             meta["pages"] = _meta_primitive(c.get("pages"))
             meta["title"] = c.get("title")
+            
+            page_str = "Inconnue"
+            if c.get("pages"):
+                pages_list = c.get("pages")
+                if isinstance(pages_list, list):
+                    page_str = ", ".join(str(p) for p in pages_list)
+                else:
+                    page_str = str(pages_list)
+            meta["page"] = page_str
+            
             id_parts = [
                 "pdf",
                 str(meta.get("file_path") or ""),
@@ -60,6 +70,16 @@ def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Documen
             ]
         elif c.get("type") == "docx":
             meta["block_indexes"] = _meta_primitive(c.get("block_indexes"))
+            
+            page_str = "Inconnue"
+            if c.get("block_indexes"):
+                idx_list = c.get("block_indexes")
+                if isinstance(idx_list, list):
+                    page_str = "bloc " + ", ".join(str(p) for p in idx_list)
+                else:
+                    page_str = "bloc " + str(idx_list)
+            meta["page"] = page_str
+            
             id_parts = [
                 "docx",
                 str(meta.get("file_path") or ""),
@@ -67,9 +87,28 @@ def chunks_to_langchain_docs(chunks: List[Dict[str, Any]]) -> Tuple[List[Documen
                 str(meta.get("section") or ""),
             ]
         else:
+            meta["parts"] = _meta_primitive(c.get("parts"))
+            
+            page_str = "Inconnue"
+            if c.get("pages"):
+                meta["pages"] = _meta_primitive(c.get("pages"))
+                pages_list = c.get("pages")
+                if isinstance(pages_list, list):
+                    page_str = ", ".join(str(p) for p in pages_list)
+                else:
+                    page_str = str(pages_list)
+            elif c.get("parts"):
+                parts_list = c.get("parts")
+                if isinstance(parts_list, list):
+                    page_str = "partie " + ", ".join(str(p) for p in parts_list)
+                else:
+                    page_str = "partie " + str(parts_list)
+            meta["page"] = page_str
+            
             id_parts = [
                 "chunk",
                 str(meta.get("file_path") or ""),
+                str(meta.get("parts") or ""),
                 str(meta.get("section") or ""),
             ]
 
