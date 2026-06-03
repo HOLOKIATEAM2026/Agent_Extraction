@@ -330,21 +330,21 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 > de poser librement n'importe quelle question en langage naturel.
 > Le LLM répond uniquement depuis le contenu des fichiers chargés.
 
-- [ ] **T8.17** — Créer l'interface du Mode Chat :
+- [x] **T8.17** — Créer l'interface du Mode Chat :
   - Zone d'upload (drag & drop, multi-fichiers PDF/Word/TXT)
   - Zone de conversation (bulles messages user / assistant)
   - Indicateur de chargement pendant l'indexation
-- [ ] **T8.18** — Modifier `server.py` : ajouter l'endpoint `POST /chat`
+- [x] **T8.18** — Modifier `server.py` : ajouter l'endpoint `POST /chat`
   - Accepte : fichiers + historique de conversation + question courante
   - Retourne : réponse texte + liste des citations (page + extrait + nom fichier)
-- [ ] **T8.19** — Implémenter le pipeline RAG conversationnel multi-tours :
+- [x] **T8.19** — Implémenter le pipeline RAG conversationnel multi-tours :
   - Indexer les documents uploadés dans une session isolée (FAISS temporaire)
   - Injecter l'historique des échanges dans le contexte du prompt
   - Contraindre le LLM au contexte fourni (anti-hallucination)
-- [ ] **T8.20** — Afficher chaque réponse avec ses citations sources :
+- [x] **T8.20** — Afficher chaque réponse avec ses citations sources :
   - Numéro de page, extrait textuel, nom du fichier source
   - Indicateur de confiance global de la réponse
-- [ ] **T8.21** — Gérer la session de chat :
+- [x] **T8.21** — Gérer la session de chat :
   - Bouton *"Nouvelle conversation"* (reset index + historique)
   - Export de la conversation (JSON ou TXT)
 
@@ -436,7 +436,7 @@ T8.8  → Historique                       ← en dernier
 | Phase 8A — Multi-Documents         | ✅ Terminée | |
 | Phase 8B — Historique            | ✅ Terminée | |
 | Phase 8C — Page sélection mode   | ✅ Terminée | | 
-| Phase 8D — Mode Chat libre       | ⏳ À venir | | 
+| Phase 8D — Mode Chat libre       | ✅ Terminée | | 
 | Phase 8E — Mode Diagnostic édit. | ⏳ À venir | | 
 
 ---

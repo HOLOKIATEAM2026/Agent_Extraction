@@ -29,9 +29,11 @@ class MetaInfo(BaseModel):
     provider: Optional[str] = None
     approche: Optional[str] = None
     source_file: Optional[str] = None
+    questions_utilisees: Optional[list] = None
 
 
 class DiagnosticStrategique(BaseModel):
+    model_config = {"extra": "allow"}
     taille_marche: ExtractedField = Field(default_factory=ExtractedField)
     taux_croissance: ExtractedField = Field(default_factory=ExtractedField)
     intensite_concurrentielle: ExtractedField = Field(default_factory=ExtractedField)
@@ -40,17 +42,20 @@ class DiagnosticStrategique(BaseModel):
 
 
 class DiagnosticFinancier(BaseModel):
+    model_config = {"extra": "allow"}
     chiffre_affaires: ExtractedField = Field(default_factory=ExtractedField)
     resultat_net: ExtractedField = Field(default_factory=ExtractedField)
     ebitda: ExtractedField = Field(default_factory=ExtractedField)
 
 
 class DiagnosticRH(BaseModel):
+    model_config = {"extra": "allow"}
     effectif_total: ExtractedField = Field(default_factory=ExtractedField)
     masse_salariale: ExtractedField = Field(default_factory=ExtractedField)
 
 
 class DiagnosticData(BaseModel):
+    model_config = {"extra": "allow"}
     existence_donnees: ExtractedField = Field(default_factory=ExtractedField)
     qualite: ExtractedField = Field(default_factory=ExtractedField)
     accessibilite: ExtractedField = Field(default_factory=ExtractedField)
@@ -61,6 +66,7 @@ class DiagnosticData(BaseModel):
 
 
 class DiagnosticCyberGouvernance(BaseModel):
+    model_config = {"extra": "allow"}
     risques_identifies: ExtractedListField = Field(default_factory=ExtractedListField)
     conformite_nist: ExtractedField = Field(default_factory=ExtractedField)
     gouvernance_data: ExtractedField = Field(default_factory=ExtractedField)
