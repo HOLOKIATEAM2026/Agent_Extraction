@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holokia — Comparaison de documents</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    /* ── DESIGN TOKENS (remplace les variables Claude.ai) ── */
+    :root {
+      --blue:    #0047FF;
+      --teal:    #1D9E75;
+      --red:     #E24B4A;
+
+      /* Texte */
+      --color-text-primary:   #0d0d0d;
+      --color-text-secondary: #6b7280;
+
+      /* Bordures */
+      --color-border-tertiary: #e4e4e7;
+
+      /* Fonds */
+      --color-background-primary:   #ffffff;
+      --color-background-tertiary:  #f4f4f5;
+
+      /* Typo */
+      --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+
+      /* Rayons */
+      --border-radius-sm: 4px;
+      --border-radius-md: 6px;
+      --border-radius-lg: 10px;
+
+      /* Aliases internes */
+      --ink:     var(--color-text-primary);
+      --muted:   var(--color-text-secondary);
+      --line:    var(--color-border-tertiary);
+      --surface: var(--color-background-primary);
+      --page:    var(--color-background-tertiary);
+      --mono:    var(--font-mono);
+      --sans:    var(--font-sans);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Visually hidden (accessibilité) */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @keyframes spin   { to { transform: rotate(360deg); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    @keyframes slideIn{ from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: none; } }
+
+    html, body { height: 100%; }
+
+    .page-wrap {
+      font-family: var(--sans);
+      background: var(--page);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--line);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 20px; }
+    .logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+    .topbar-breadcrumb {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-sep { opacity: 0.35; }
+    .breadcrumb-active { color: var(--blue); }
+    .topbar-badges { display: flex; gap: 8px; }
+    .badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: var(--page);
+      border: 0.5px solid var(--line);
+      border-radius: var(--border-radius-md);
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── LAYOUT ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: calc(100vh - 53px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 0.5px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 24px 28px 20px;
+      border-bottom: 0.5px solid var(--line);
+    }
+    .sidebar-eyebrow {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+    .sidebar-title { font-size: 20px; font-weight: 500; color: var(--ink); line-height: 1.2; }
+    .sidebar-title span { color: var(--blue); }
+
+    .sidebar-steps { flex: 1; overflow-y: auto; padding: 0; }
+    .sidebar-steps::-webkit-scrollbar { width: 2px; }
+    .sidebar-steps::-webkit-scrollbar-thumb { background: var(--line); }
+
+    .step-block { padding: 20px 28px; border-bottom: 0.5px solid var(--line); }
+    .step-block:last-of-type { border-bottom: none; }
+    .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .step-num {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--blue);
+      background: rgba(0,71,255,0.07);
+      border: 0.5px solid rgba(0,71,255,0.15);
+      padding: 3px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      flex-shrink: 0;
+    }
+    .step-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Drop zone */
+    .drop-zone {
+      border: 1px dashed var(--line);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--page);
+      border-radius: var(--border-radius-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--blue);
+      border-style: solid;
+      background: rgba(0,71,255,0.02);
+    }
+    .dz-icon { font-size: 22px; color: var(--muted); }
+    .dz-title { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .dz-hint {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    input[type="file"] { display: none; }
+
+    .file-list {
+      list-style: none;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--page);
+      border: 0.5px solid var(--line);
+      border-left: 2px solid var(--teal);
+      border-radius: var(--border-radius-md);
+      animation: slideIn 0.2s ease;
+    }
+    .file-ext {
+      font-family: var(--mono);
+      font-size: 8px;
+      font-weight: 500;
+      color: var(--teal);
+      background: rgba(29,158,117,0.07);
+      padding: 2px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .file-name {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--ink);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .file-rm {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: color 0.1s;
+      flex-shrink: 0;
+    }
+    .file-rm:hover { color: var(--red); }
+
+    /* Questions */
+    .q-inputs { display: flex; flex-direction: column; gap: 6px; }
+    .q-row { display: flex; gap: 6px; }
+    .q-select, .q-input {
+      flex: 1;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 0.5px solid var(--line);
+      background: var(--page);
+      color: var(--ink);
+      outline: none;
+      border-radius: var(--border-radius-md);
+      transition: border-color 0.15s;
+    }
+    .q-select:focus, .q-input:focus { border-color: var(--blue); }
+    .q-input::placeholder { color: var(--muted); }
+    .q-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+    .btn-add {
+      padding: 8px 12px;
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: transparent;
+      border: 0.5px solid var(--line);
+      color: var(--ink);
+      cursor: pointer;
+      border-radius: var(--border-radius-md);
+      transition: background 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-add:hover { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+    .question-list {
+      list-style: none;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .question-list::-webkit-scrollbar { width: 2px; }
+    .question-list::-webkit-scrollbar-thumb { background: var(--line); }
+    .q-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      background: var(--page);
+      border: 0.5px solid var(--line);
+      border-left: 2px solid var(--blue);
+      border-radius: var(--border-radius-md);
+      animation: slideIn 0.2s ease;
+    }
+    .q-num {
+      font-family: var(--mono);
+      font-size: 8px;
+      color: var(--blue);
+      background: rgba(0,71,255,0.07);
+      padding: 2px 6px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .q-text { font-size: 11px; color: var(--ink); flex: 1; line-height: 1.4; }
+    .btn-rm {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: color 0.1s;
+      flex-shrink: 0;
+    }
+    .btn-rm:hover { color: var(--red); }
+
+    /* Model */
+    .model-row { display: flex; align-items: center; gap: 10px; }
+    .model-select {
+      flex: 1;
+      padding: 8px 28px 8px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 0.5px solid var(--line);
+      background: var(--page);
+      color: var(--ink);
+      outline: none;
+      appearance: none;
+      border-radius: var(--border-radius-md);
+      cursor: pointer;
+      transition: border-color 0.15s;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .model-select:focus { border-color: var(--blue); }
+    .model-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+
+    /* Launch */
+    .launch-block {
+      padding: 20px 28px 24px;
+      border-top: 0.5px solid var(--line);
+      background: var(--surface);
+    }
+    .btn-launch {
+      width: 100%;
+      padding: 13px;
+      background: var(--blue);
+      color: white;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: background 0.15s, transform 0.1s;
+      border-radius: var(--border-radius-md);
+    }
+    .btn-launch:hover:not(:disabled) { background: #0039d8; }
+    .btn-launch:active:not(:disabled) { transform: scale(0.99); }
+    .btn-launch:disabled { opacity: 0.4; cursor: not-allowed; }
+    .launch-icon { transition: transform 0.2s; }
+    .btn-launch:hover .launch-icon { transform: translateX(3px); }
+
+    .status-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--blue);
+      justify-content: center;
+    }
+    .status-bar.show { display: flex; }
+    .spinner {
+      width: 10px; height: 10px;
+      border: 1.5px solid rgba(0,71,255,0.15);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* ── RESULTS ── */
+    .results {
+      background: var(--page);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .results::-webkit-scrollbar { width: 2px; }
+    .results::-webkit-scrollbar-thumb { background: var(--line); }
+
+    /* Empty state */
+    .empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+      gap: 0;
+    }
+    .empty-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 32px;
+      opacity: 0.4;
+    }
+    .empty-card {
+      background: var(--surface);
+      border: 0.5px solid var(--line);
+      border-radius: var(--border-radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .empty-card-header { display: flex; align-items: center; gap: 8px; }
+    .empty-card-icon {
+      width: 22px; height: 22px;
+      border-radius: 4px;
+      background: var(--page);
+      border: 0.5px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .empty-card-title { height: 8px; background: var(--line); border-radius: 4px; flex: 1; }
+    .empty-card-line { height: 6px; background: var(--line); border-radius: 3px; }
+    .empty-card-line.short { width: 60%; }
+
+    .empty-text {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .empty-sub {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+      text-align: center;
+      max-width: 280px;
+    }
+
+    /* Results content */
+    .results-content {
+      padding: 28px 32px;
+      animation: fadeUp 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .results-topbar { display: flex; align-items: center; justify-content: space-between; }
+    .results-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .results-count {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--blue);
+      background: rgba(0,71,255,0.06);
+      border: 0.5px solid rgba(0,71,255,0.12);
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    /* Synthèse */
+    .synthese {
+      background: var(--surface);
+      border: 0.5px solid var(--line);
+      border-left: 3px solid var(--blue);
+      border-radius: 0 var(--border-radius-lg) var(--border-radius-lg) 0;
+      padding: 18px 20px;
+    }
+    .synthese-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .synthese-body { font-size: 13px; color: var(--ink); line-height: 1.75; white-space: pre-wrap; }
+
+    /* Doc cards */
+    .doc-card {
+      background: var(--surface);
+      border: 0.5px solid var(--line);
+      border-radius: var(--border-radius-lg);
+      overflow: hidden;
+    }
+    .doc-card-header {
+      padding: 12px 18px;
+      border-bottom: 0.5px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--page);
+    }
+    .doc-icon {
+      width: 28px; height: 28px;
+      background: rgba(29,158,117,0.06);
+      border: 0.5px solid rgba(29,158,117,0.2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+    }
+    .doc-name {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .doc-count {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 0.5px solid var(--line);
+      padding: 2px 8px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .qa-table { width: 100%; }
+    .qa-row {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 16px;
+      padding: 10px 18px;
+      border-bottom: 0.5px solid rgba(0,0,0,0.03);
+      align-items: start;
+      transition: background 0.1s;
+    }
+    .qa-row:last-child { border-bottom: none; }
+    .qa-row:hover { background: rgba(0,0,0,0.012); }
+    .qa-q { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.5; padding-top: 1px; }
+    .qa-a {
+      font-size: 12px;
+      color: var(--ink);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .qa-empty { color: var(--muted); font-size: 12px; font-style: italic; }
+    .page-badge {
+      font-family: var(--mono);
+      font-size: 8px;
+      color: var(--teal);
+      border: 0.5px solid rgba(29,158,117,0.25);
+      padding: 2px 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      background: rgba(29,158,117,0.04);
+      border-radius: 20px;
+    }
+    .conf-badge { font-family: var(--mono); font-size: 8px; padding: 2px 7px; border-radius: 20px; flex-shrink: 0; }
+    .conf-high   { background: rgba(29,158,117,0.06); color: var(--teal); border: 0.5px solid rgba(29,158,117,0.2); }
+    .conf-medium { background: rgba(245,158,11,0.06); color: #B45309; border: 0.5px solid rgba(245,158,11,0.2); }
+    .conf-low    { background: rgba(226,75,74,0.06); color: var(--red); border: 0.5px solid rgba(226,75,74,0.15); }
+
+    /* Error */
+    .error-block {
+      padding: 12px 16px;
+      border: 0.5px solid rgba(226,75,74,0.2);
+      background: rgba(226,75,74,0.03);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--red);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-radius: var(--border-radius-md);
+    }
+
+    /* Loading */
+    .loading-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 80px 0;
+      animation: fadeUp 0.3s ease;
+    }
+    .spinner-lg {
+      width: 24px; height: 24px;
+      border: 2px solid var(--line);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .loading-text { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap" role="main">
+  <h2 class="sr-only">Holokia — Mode comparaison de documents</h2>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="logo">
+        <span class="logo-dot"></span>
+        HOLOKIA
+      </div>
+      <div class="topbar-breadcrumb">
+        <span>Accueil</span>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-active">Comparaison</span>
+      </div>
+    </div>
+    <div class="topbar-badges">
+      <div class="badge"><span class="badge-dot" style="background:var(--blue)"></span> RAG actif</div>
+      <div class="badge" id="hdDocs"><span class="badge-dot" style="background:var(--teal)"></span> 0 doc</div>
+      <div class="badge" id="hdQuestions"><span class="badge-dot" style="background:#F59E0B"></span> 0 question</div>
+    </div>
+  </div>
+
+  <!-- Body layout -->
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-eyebrow">Mode Analyse</div>
+        <div class="sidebar-title">Analyse <span>Comparaison</span></div>
+      </div>
+
+      <div class="sidebar-steps">
+
+        <!-- Step 1 -->
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-num">01</span>
+            <span class="step-label">Documents</span>
+          </div>
+          <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.md">
+          <div id="dropZone" class="drop-zone" tabindex="0">
+            <i class="ti ti-file-upload dz-icon" aria-hidden="true"></i>
+            <div class="dz-title">Glissez vos fichiers ici</div>
+            <div class="dz-hint">PDF · DOCX · TXT · MD</div>
+          </div>
+          <ul id="fileList" class="file-list"></ul>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-num">02</span>
+            <span class="step-label">Questions ciblées</span>
+          </div>
+          <div class="q-inputs">
+            <div class="q-row">
+              <select id="predefSelect" class="q-select">
+                <option value="">Question prédéfinie…</option>
+                <option value="Quel est le chiffre d'affaires total ?">Chiffre d'affaires</option>
+                <option value="Quel est le taux de croissance ?">Taux de croissance</option>
+                <option value="Quels sont les principaux concurrents cités ?">Concurrents</option>
+                <option value="Quel est l'effectif total de l'entreprise ?">Effectif total</option>
+                <option value="Quel est le résultat net ?">Résultat net</option>
+                <option value="Quelles sont les mesures de conformité RGPD / NIST ?">Conformité Cyber</option>
+                <option value="Quels sont les risques identifiés dans le rapport ?">Risques identifiés</option>
+                <option value="Quelle est la stratégie annoncée pour l'année suivante ?">Stratégie</option>
+              </select>
+              <button id="btnPredef" class="btn-add">+ Ajouter</button>
+            </div>
+            <div class="q-row">
+              <input type="text" id="customQ" class="q-input" placeholder="Votre propre question…">
+              <button id="btnCustom" class="btn-add">+ Ajouter</button>
+            </div>
+          </div>
+          <ul id="qList" class="question-list"></ul>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-block">
+          <div class="step-header">
+            <span class="step-num">03</span>
+            <span class="step-label">Modèle LLM</span>
+          </div>
+          <div class="model-row">
+            <select id="modelSelect" class="model-select">
+              <option value="groq">⚡ Groq — LLaMA 3.1 70B</option>
+              <option value="mistral">Mistral 7B (Ollama)</option>
+              <option value="qwen3:8b">Qwen 3 8B (Ollama)</option>
+            </select>
+            <div class="model-status"><span class="status-dot"></span> Actif</div>
+          </div>
+        </div>
+
+      </div><!-- /sidebar-steps -->
+
+      <!-- Launch -->
+      <div class="launch-block">
+        <button id="btnLaunch" class="btn-launch">
+          Lancer la comparaison
+          <i class="ti ti-arrow-right launch-icon" aria-hidden="true" style="font-size:15px"></i>
+        </button>
+        <div id="statusBar" class="status-bar">
+          <div class="spinner"></div>
+          Analyse comparative en cours…
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results" id="resultsPanel">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-grid">
+          <div class="empty-card">
+            <div class="empty-card-header">
+              <div class="empty-card-icon"><i class="ti ti-file-text" aria-hidden="true" style="font-size:13px;color:var(--muted)"></i></div>
+              <div class="empty-card-title"></div>
+            </div>
+            <div class="empty-card-line"></div>
+            <div class="empty-card-line short"></div>
+            <div class="empty-card-line"></div>
+          </div>
+          <div class="empty-card">
+            <div class="empty-card-header">
+              <div class="empty-card-icon"><i class="ti ti-file-text" aria-hidden="true" style="font-size:13px;color:var(--muted)"></i></div>
+              <div class="empty-card-title"></div>
+            </div>
+            <div class="empty-card-line short"></div>
+            <div class="empty-card-line"></div>
+            <div class="empty-card-line short"></div>
+          </div>
+        </div>
+        <div class="empty-text">Résultats comparatifs</div>
+        <div class="empty-sub">Ajoutez vos documents et vos questions, puis lancez l'analyse pour voir les résultats ici.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let files = [];
+let questions = [];
+
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+function getExt(n) { return n.split('.').pop().toUpperCase().slice(0,4); }
+
+function updateBadges() {
+  document.getElementById('hdDocs').innerHTML =
+    `<span class="badge-dot" style="background:var(--teal)"></span> ${files.length} doc${files.length!==1?'s':''}`;
+  document.getElementById('hdQuestions').innerHTML =
+    `<span class="badge-dot" style="background:#F59E0B"></span> ${questions.length} question${questions.length!==1?'s':''}`;
+}
+
+function handleFiles(fList) {
+  Array.from(fList).forEach(f => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    if (!['pdf','docx','txt','md'].includes(ext)) return;
+    if (files.find(x => x.name === f.name)) return;
+    files.push(f);
+    const li = document.createElement('li');
+    li.className = 'file-item';
+    li.innerHTML = `
+      <span class="file-ext">${getExt(f.name)}</span>
+      <span class="file-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <button class="file-rm" data-name="${esc(f.name)}">✕</button>`;
+    li.querySelector('.file-rm').onclick = () => {
+      files = files.filter(x => x.name !== f.name);
+      li.remove();
+      updateBadges();
+    };
+    document.getElementById('fileList').appendChild(li);
+  });
+  updateBadges();
+}
+
+const dz = document.getElementById('dropZone');
+const fi = document.getElementById('fileInput');
+dz.addEventListener('click', () => fi.click());
+dz.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') fi.click(); });
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fi.addEventListener('change', e => { handleFiles(e.target.files); fi.value=''; });
+
+function addQuestion(q) {
+  q = q.trim();
+  if (!q || questions.includes(q)) return;
+  questions.push(q);
+  const li = document.createElement('li');
+  li.className = 'q-item';
+  li.dataset.q = q;
+  li.innerHTML = `
+    <span class="q-num">${String(questions.length).padStart(2,'0')}</span>
+    <span class="q-text">${esc(q)}</span>
+    <button class="btn-rm">×</button>`;
+  li.querySelector('.btn-rm').onclick = () => {
+    questions = questions.filter(x => x !== q);
+    li.remove();
+    document.getElementById('qList').querySelectorAll('.q-item').forEach((item,i) => {
+      item.querySelector('.q-num').textContent = String(i+1).padStart(2,'0');
+    });
+    updateBadges();
+  };
+  document.getElementById('qList').appendChild(li);
+  updateBadges();
+}
+
+document.getElementById('btnPredef').addEventListener('click', () => {
+  const s = document.getElementById('predefSelect');
+  addQuestion(s.value); s.value='';
+});
+document.getElementById('btnCustom').addEventListener('click', () => {
+  const i = document.getElementById('customQ');
+  addQuestion(i.value); i.value='';
+});
+document.getElementById('customQ').addEventListener('keydown', e => {
+  if (e.key==='Enter') { addQuestion(e.target.value); e.target.value=''; }
+});
+
+function getConfBadge(c) {
+  const cls = c>=0.8?'high':c>=0.5?'medium':'low';
+  return `<span class="conf-badge conf-${cls}">${Math.round(c*100)}%</span>`;
+}
+
+function renderResults(data) {
+  const panel = document.getElementById('resultsPanel');
+  panel.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.className = 'results-content';
+
+  if (data.synthese_comparative) {
+    const s = document.createElement('div');
+    s.className = 'synthese';
+    s.innerHTML = `<div class="synthese-label">Synthèse comparative</div><div class="synthese-body">${esc(data.synthese_comparative)}</div>`;
+    wrap.appendChild(s);
+  }
+
+  const docs = data.results_by_document || {};
+  const n = Object.keys(docs).length;
+  const topbar = document.createElement('div');
+  topbar.className = 'results-topbar';
+  topbar.innerHTML = `<div class="results-label">Résultats par document</div><div class="results-count">${n} document${n!==1?'s':''}</div>`;
+  wrap.appendChild(topbar);
+
+  for (const [fname, qRes] of Object.entries(docs)) {
+    const qCount = Object.keys(qRes).length;
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.innerHTML = `<div class="doc-card-header">
+      <div class="doc-icon"><i class="ti ti-file-text" aria-hidden="true" style="font-size:13px;color:var(--teal)"></i></div>
+      <span class="doc-name" title="${esc(fname)}">${esc(fname)}</span>
+      <span class="doc-count">${qCount} réponse${qCount!==1?'s':''}</span>
+    </div>`;
+    const table = document.createElement('div');
+    table.className = 'qa-table';
+    for (const [q, ans] of Object.entries(qRes)) {
+      const val  = ans.valeur || null;
+      const page = ans.source?.page != null ? `<span class="page-badge">p. ${ans.source.page}</span>` : '';
+      const conf = ans.confiance != null ? getConfBadge(ans.confiance) : '';
+      const row  = document.createElement('div');
+      row.className = 'qa-row';
+      row.innerHTML = `<div class="qa-q">${esc(q)}</div>
+        <div class="qa-a">${val ? esc(val)+page+conf : '<span class="qa-empty">Non trouvé</span>'}</div>`;
+      table.appendChild(row);
+    }
+    card.appendChild(table);
+    wrap.appendChild(card);
+  }
+
+  panel.appendChild(wrap);
+}
+
+function renderDemo() {
+  const demo = {
+    synthese_comparative: `Analyse comparative de ${files.length} document(s) sur ${questions.length} question(s).\n\nServeur non disponible — mode démonstration. Lancez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`,
+    results_by_document: {}
+  };
+  files.forEach(f => {
+    demo.results_by_document[f.name] = {};
+    questions.forEach(q => {
+      demo.results_by_document[f.name][q] = {
+        valeur: 'Données non disponibles (mode démo)',
+        source: { page: null },
+        confiance: null
+      };
+    });
+  });
+  renderResults(demo);
+}
+
+document.getElementById('btnLaunch').addEventListener('click', async () => {
+  if (!files.length)     { alert('Veuillez ajouter au moins un document.');  return; }
+  if (!questions.length) { alert('Veuillez ajouter au moins une question.'); return; }
+
+  const btn   = document.getElementById('btnLaunch');
+  const bar   = document.getElementById('statusBar');
+  const panel = document.getElementById('resultsPanel');
+
+  btn.disabled = true;
+  bar.classList.add('show');
+  panel.innerHTML = `<div class="loading-state"><div class="spinner-lg"></div><div class="loading-text">Analyse de ${files.length} document(s)…</div></div>`;
+
+  const fd = new FormData();
+  files.forEach(f => fd.append('files', f));
+  fd.append('questions', JSON.stringify(questions));
+  const model = document.getElementById('modelSelect').value;
+  fd.append('provider', model==='groq'?'groq':'ollama');
+  fd.append('model', model);
+
+  try {
+    const res  = await fetch('http://localhost:8000/extract-multi', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.ok) renderResults(data.results);
+    else panel.innerHTML = `<div class="results-content"><div class="error-block">Erreur serveur : ${esc(data.error||'Inconnue')}</div></div>`;
+  } catch {
+    renderDemo();
+  } finally {
+    btn.disabled = false;
+    bar.classList.remove('show');
+  }
+});
+</script>
+
+</body>
+</html>
