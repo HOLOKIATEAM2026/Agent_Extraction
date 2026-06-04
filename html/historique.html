@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Agent RAG</title>
+<link rel="icon" href="../logo/cropped-logo_holokia_noir.jpg" type="image/avif">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="diagnostic.html">Mode Diagnostic</a></li>
+    <li><a href="multi.html">Mode Comparaison</a></li>
+    <li><a href="chat.html">Mode Chat</a></li>
+  </ul>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<section class="hero" style="min-height: 100vh; padding-top:120px; display: block;">
+    <div style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 40px;">
+      
+      <div class="hero-tag">
+        <span>AGENT RAG</span>
+        <span>/ Historique des Extractions / IA /</span>
+        <!-- Toggle Navigation Diagnostic / Historique -->
+        <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
+          <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;" onmouseover="this.style.color='var(--ink)'; this.style.background='rgba(10,10,10,0.02)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">Diagnostic</a>
+          <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(0,71,255,0.08); color: var(--blue); font-weight: 500; border: 1px solid rgba(0,71,255,0.1);">Historique</a>
+        </div>
+      </div>
+
+      <h1 class="hero-title" style="font-size: 60px; margin-bottom: 20px;">
+        Historique des<br>
+        <em>Extractions</em>
+      </h1>
+      
+      <div style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
+        <input type="text" id="filterEntreprise" placeholder="Filtrer par entreprise..." style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 200px; background: transparent; color: var(--ink);">
+        <input type="date" id="filterDate" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
+        <select id="filterModel" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
+          <option value="">Tous les modèles</option>
+          <option value="groq">Groq</option>
+          <option value="mistral">Mistral</option>
+          <option value="qwen3:8b">Qwen 3 8B</option>
+          <option value="openai">OpenAI (GPT-4o)</option>
+        </select>
+        <button id="btnExportCSV" class="btn-outline" style="margin-left: auto; padding: 10px 20px;">Exporter CSV</button>
+      </div>
+
+      <div style="background: var(--paper); border: 1px solid var(--line); overflow-x: auto; margin-bottom: 80px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--line); background: rgba(10,10,10,0.02);">
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Date</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Entreprise</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Fichier</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Modèle</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Confiance moy.</th>
+              <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="historiqueTableBody">
+            <tr><td colspan="6" style="padding: 20px; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--muted);">Chargement de l'historique...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Modal for JSON/Details -->
+  <div id="historiqueModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; padding: 40px; overflow-y: auto;">
+    <div style="background: var(--paper); max-width: 1000px; margin: 0 auto; border: 1px solid var(--line); position: relative;">
+      <button id="btnCloseModal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink);">&times;</button>
+      
+      
+      <div style="padding: 40px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+        <h2 id="modalTitle" style="font-family: var(--display); font-size: 40px;">Détails de l'extraction</h2>
+        <button id="btnCompare" class="btn-outline">Comparer</button>
+      </div>
+      
+      <!-- Container for single JSON view -->
+      <div id="modalJsonContainer" style="padding: 40px; background: var(--ink); color: #fff;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+          <span style="font-family: var(--mono); font-size: 12px; color: var(--teal);">RÉSULTAT JSON</span>
+          <button id="btnCopyModal" class="btn-outline" style="color: #fff; border-color: #fff; padding: 6px 12px;">COPIER</button>
+        </div>
+        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.8); max-height: 600px; overflow-y: auto;"></pre>
+      </div>
+      
+      <!-- Container for Compare view -->
+      <div id="modalCompareContainer" style="display: none; padding: 40px; background: var(--paper);">
+        <div style="margin-bottom: 20px;">
+          <label style="font-family: var(--mono); font-size: 12px;">Sélectionnez une autre extraction pour comparer :</label>
+          <select id="compareSelect" style="margin-left: 10px; padding: 8px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line);">
+            <option value="">-- Choisir --</option>
+          </select>
+        </div>
+        
+        <div id="compareDiffGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+            <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle1">Extraction A</h4>
+            <div id="compareContent1" style="font-size: 14px;"></div>
+          </div>
+          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+            <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle2">Extraction B</h4>
+            <div id="compareContent2" style="font-size: 14px;"></div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%; background: #fff;">
+  &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/historique.js"></script>
+
+</body>
+</html>

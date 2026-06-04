@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Agent RAG</title>
+<link rel="icon" href="../logo/cropped-logo_holokia_noir.jpg" type="image/avif">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="diagnostic.html" style="color:var(--blue);font-weight:500;">Mode Diagnostic</a></li>
+    <li><a href="multi.html">Mode Comparaison</a></li>
+    <li><a href="chat.html">Mode Chat</a></li>
+  </ul>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">
+    <span>AGENT RAG</span>
+    <span>/ Extraction / Rapports d'Activité / IA /</span>
+    <!-- Toggle Navigation Diagnostic / Historique -->
+    <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
+      <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(0,71,255,0.08); color: var(--blue); font-weight: 500; border: 1px solid rgba(0,71,255,0.1);">Diagnostic</a>
+      <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;" onmouseover="this.style.color='var(--ink)'; this.style.background='rgba(10,10,10,0.02)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">Historique</a>
+    </div>
+  </div>
+
+
+  <div class="hero-left reveal">
+    <h1 class="hero-title">
+      Extraction<br>
+      <em>Intelligente</em>
+    </h1>
+    <p class="hero-desc">
+      Analyse automatique de rapports d'activité d'entreprises (PDF, Word, TXT). Extraction structurée avec citations sourcées pour préremplir le diagnostic stratégique.
+    </p>
+    <!--
+    <div class="hero-ctas">
+      <a href="#demo" class="btn-primary">
+        Tester l'Agent
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  -->
+  </div>
+
+  <div class="hero-right reveal" id="demo">
+    <div class="hero-metrics" style="display:flex; flex-direction:column; padding:20px; background:var(--paper); border:1px solid var(--line);">
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">1. UPLOAD DOCUMENT</div>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="margin-top:10px; font-family:var(--mono); font-size:12px;" />
+      </div>
+      
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">2. CHOIX DU MODÈLE</div>
+        <select id="modelSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
+          <option value="groq">Groq (Rapide)</option>
+          <option value="mistral">Mistral (Local Ollama)</option>
+          <option value="qwen3:8b">Qwen 3 8B (Local Ollama)</option>
+          <option value="gpt-4o">GPT-4o (OpenAI)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">3. APPROCHE</div>
+        <select id="approachSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
+          <option value="agent" selected>L'Agent Final (Analyse Préliminaire + RAG Ciblé)</option>
+          <option value="d">Approche D (RAG + Validation)</option>
+          <option value="a">Approche A (Lecture directe complète)</option>
+          <option value="b">Approche B (RAG classique)</option>
+          <option value="c">Approche C (Agent multi-tours lent)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:20px;">
+        <div class="ekg-label">4. MODE D'EXTRACTION</div>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false" checked> Rapide (synchrone)</label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true"> Robuste (asynchrone • gros PDF)</label>
+        </div>
+      </div>
+
+      <button id="btnExtract" class="btn-primary" style="width:100%; justify-content:center; margin-top:10px;">LANCER L'EXTRACTION</button>
+      
+      <button id="btnOpenQuestions" class="btn-outline" style="width:100%; justify-content:center; margin-top:10px; padding: 12px; font-size: 11px;">ÉDITER LES QUESTIONS</button>
+      
+      <div id="statusText" style="margin-top:15px; font-family:var(--mono); font-size:10px; color:var(--blue); display:none;">Statut: En cours...</div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="features" style="display:none; padding-bottom:0;">
+  <div class="section-header reveal">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Diagnostic<br><em>Stratégique</em></h2>
+  </div>
+  
+  <!-- Conteneur pour les cartes visuelles -->
+  <div style="padding: 40px; background:var(--paper);">
+    <div id="cardsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+      <!-- Les cartes seront générées ici par JS -->
+    </div>
+  </div>
+
+  <!-- Le JSON reste accessible mais dans une section séparée style "débug/technique" -->
+  <div style="padding: 40px; background:var(--ink); color:#fff; overflow-x:auto;">
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
+      <div>
+        <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
+        <span style="font-family:var(--mono); font-size:10px; color:rgba(255,255,255,0.4); margin-left:15px;">(Vue développeur)</span>
+      </div>
+      <button id="btnCopy" class="btn-outline" style="color:#fff; border-color:#fff; padding:6px 12px;">COPIER</button>
+    </div>
+    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(255,255,255,0.8); max-height:400px; overflow-y:auto;"></pre>
+  </div>
+</section>
+
+<!-- Panneau latéral : Mes Questions -->
+<div id="questionsPanel" style="position:fixed; top:0; right:-450px; width:400px; height:100vh; background:#fff; border-left:1px solid var(--line); z-index:9999; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
+  <div style="padding: 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background: var(--paper);">
+    <h3 style="font-family:var(--display); font-size:20px; margin:0;">Mes Questions</h3>
+    <button id="btnCloseQuestions" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted);">&times;</button>
+  </div>
+  
+  <div style="padding: 20px; border-bottom: 1px solid var(--line); background: var(--paper);">
+    <div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px;">AJOUTER UNE QUESTION</div>
+    <form id="addQuestionForm" style="display:flex; flex-direction:column; gap:10px;">
+      <select id="qCategory" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+        <option value="strategique">Stratégique</option>
+        <option value="financier">Financier</option>
+        <option value="rh">RH</option>
+        <option value="data">Maturité Data</option>
+        <option value="cyber">Cyber & Gouvernance</option>
+      </select>
+      <input type="text" id="qChamp" placeholder="Clé (ex: nom_champ)" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+      <input type="text" id="qText" placeholder="La question à poser au LLM..." required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+      <select id="qType" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+        <option value="field">Champ unique (Texte, Nombre)</option>
+        <option value="list">Liste d'éléments</option>
+      </select>
+      <button type="submit" class="btn-primary" style="padding:8px; font-size:11px; justify-content:center;">AJOUTER</button>
+    </form>
+  </div>
+  
+  <div style="flex:1; overflow-y:auto; padding: 20px;" id="questionsList">
+    <!-- Liste des questions injectée ici -->
+    <div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>
+  </div>
+  
+  <div style="padding: 20px; border-top: 1px solid var(--line); background: var(--paper);">
+    <button id="btnResetQuestions" class="btn-outline" style="width:100%; justify-content:center; padding:10px; font-size:11px; border-color:var(--red); color:var(--red);">RÉINITIALISER AUX DÉFAUTS</button>
+  </div>
+</div>
+<!-- Overlay -->
+<div id="questionsOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9998; display:none; opacity:0; transition: opacity 0.3s ease;"></div>
+
+<script src="js/common.js"></script>
+<script src="js/diagnostic.js"></script>
+
+</body>
+</html>
