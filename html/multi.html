@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Mode Comparaison</title>
+<link rel="icon" href="../logo/cropped-logo_holokia_noir.jpg" type="image/avif">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/multi.css">
+<style>
+/* Dropdown Panels */
+.tb-panel {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 0;
+  width: 380px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+  padding: 24px;
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  cursor: default;
+}
+.tb-panel.visible { display: flex; animation: slideIn 0.2s ease; }
+
+/* History Drawer */
+.history-drawer {
+  position: fixed;
+  top: 56px;
+  left: -340px;
+  width: 340px;
+  height: calc(100vh - 56px);
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 12px 0 32px rgba(0,0,0,0.1);
+  z-index: 200;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+   <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="diagnostic.html">Mode Diagnostic</a></li>
+    <li><a href="multi.html" style="color:var(--blue);font-weight:500;">Mode Comparaison</a></li>
+    <li><a href="chat.html">Mode Chat</a></li>
+  </ul>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<!-- PAGE -->
+<div class="page" style="padding-top: 56px; min-height: 100vh; background: var(--paper);">
+  
+  <!-- Body layout -->
+  <div class="layout">
+
+    <!-- Topbar Horizontal -->
+    <div class="multi-topbar">
+      <!-- Historique -->
+      <button id="btnHistoryToggle" class="tb-btn">
+        <span class="tb-icon">⏱️</span>
+        <div class="tb-text">
+          <span class="tb-label">Historique</span>
+          <span class="tb-val">Analyses passées</span>
+        </div>
+      </button>
+
+      <div class="tb-divider"></div>
+
+      <!-- Step 1 -->
+      <div class="tb-step">
+        <span class="step-num">01</span>
+        <button id="btnDocsToggle" class="tb-btn">
+          <span class="tb-icon">📄</span>
+          <div class="tb-text">
+            <span class="tb-label">Documents</span>
+            <span class="tb-val" id="tbDocsCount">0 doc</span>
+          </div>
+          <span class="tb-chevron">▼</span>
+        </button>
+        <!-- Panel 1 -->
+        <div id="docsPanel" class="tb-panel">
+          <input type="file" id="multiFileInput" multiple accept=".pdf,.docx,.txt,.md" style="display:none">
+          <div id="multiDropZone" class="drop-zone" role="button" tabindex="0">
+            <span class="dz-icon">📄</span>
+            <div class="dz-title">Glissez vos fichiers ici</div>
+            <div class="dz-hint">PDF · DOCX · TXT · MD</div>
+          </div>
+          <ul id="multiFileList" class="file-list"></ul>
+        </div>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <!-- Step 2 -->
+      <div class="tb-step">
+        <span class="step-num">02</span>
+        <button id="btnQuestionsToggle" class="tb-btn">
+          <span class="tb-icon">❓</span>
+          <div class="tb-text">
+            <span class="tb-label">Questions</span>
+            <span class="tb-val" id="tbQuestionsCount">0 question</span>
+          </div>
+          <span class="tb-chevron">▼</span>
+        </button>
+        <!-- Panel 2 -->
+        <div id="questionsPanel" class="tb-panel">
+          <div class="q-row">
+            <select id="multiPredefSelect" class="q-select">
+              <option value="">Question prédéfinie…</option>
+              <option value="Quel est le chiffre d'affaires total ?">Chiffre d'affaires</option>
+              <option value="Quel est le taux de croissance ?">Taux de croissance</option>
+              <option value="Quels sont les principaux concurrents cités ?">Concurrents</option>
+              <option value="Quel est l'effectif total de l'entreprise ?">Effectif total</option>
+              <option value="Quel est le résultat net ?">Résultat net</option>
+              <option value="Quelles sont les mesures de conformité RGPD / NIST ?">Conformité Cyber</option>
+              <option value="Quels sont les risques identifiés dans le rapport ?">Risques identifiés</option>
+              <option value="Quelle est la stratégie annoncée pour l'année suivante ?">Stratégie</option>
+            </select>
+            <button id="btnAddPredef" class="btn-add">+ Ajouter</button>
+          </div>
+          <div class="q-row">
+            <input type="text" id="multiCustomQuestion" class="q-input" placeholder="Votre propre question…">
+            <button id="btnAddCustom" class="btn-add">+ Ajouter</button>
+          </div>
+          <ul id="multiQuestionList" class="question-list"></ul>
+        </div>
+      </div>
+
+      <div class="tb-divider"></div>
+
+      <!-- Step 3 & Launch -->
+      <div class="tb-step" style="flex:1; justify-content: flex-end; gap: 16px;">
+        <div id="multiStatus" class="status-line" style="display:none; margin-right: auto;">
+          <div class="status-spinner"></div>
+          Analyse en cours…
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span class="tb-label">Modèle LLM</span>
+          <select id="modelSelect" class="model-select" style="padding: 6px 32px 6px 12px; font-size: 11px; height: 32px;">
+            <option value="groq">⚡ Groq — LLaMA 3.1</option>
+            <option value="mistral">🦙 Mistral 7B</option>
+            <option value="qwen3:8b">🐉 Qwen 3 8B</option>
+          </select>
+        </div>
+        
+        <button id="btnMultiExtract" class="btn-launch" style="padding: 0 20px; height: 32px; width: auto; margin-top: 14px;">
+          Lancer la Comparaison <span class="launch-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Historique Drawer -->
+    <div id="historyDrawer" class="history-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">Historique</div>
+        <button id="btnCloseHistory" class="file-remove" style="font-size:16px;">✕</button>
+      </div>
+      <div class="drawer-content">
+        <button id="btnNewMulti" class="btn-add" style="width: 100%; margin-bottom: 16px; justify-content: center; display: flex; padding: 12px;">+ Nouvelle Comparaison</button>
+        <div id="multiHistoryList" class="history-list"></div>
+      </div>
+    </div>
+    <div id="historyOverlay" class="drawer-overlay"></div>
+
+    <!-- Results Area -->
+    <div class="results-area">
+      
+      <!-- Top header for results -->
+      <div style="padding: 24px 40px; background: white; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1 style="font-family: var(--display); font-size: 32px; margin-bottom: 4px; color: var(--ink);">Résultats Comparatifs</h1>
+          <p style="font-family: var(--body); font-size: 13px; color: var(--muted);">Uploadez vos documents en haut pour voir la comparaison.</p>
+        </div>
+        <div class="header-meta">
+          <div class="meta-badge" id="headerDocs"><span class="dot dot-teal"></span> 0 doc</div>
+          <div class="meta-badge" id="headerQuestions"><span class="dot dot-amber"></span> 0 question</div>
+        </div>
+      </div>
+
+      <div class="results-panel" id="multiResultsContainer" style="padding: 32px 40px;">
+        <div class="results-empty">
+          <div class="empty-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18"/>
+              <line x1="3" y1="9" x2="21" y2="9"/>
+              <line x1="9" y1="21" x2="9" y2="9"/>
+            </svg>
+          </div>
+          <div class="results-empty-text">Aucun résultat</div>
+          <div class="results-empty-sub">
+            Ajoutez vos documents et vos questions via le menu en haut, puis lancez l'analyse pour voir les résultats s'afficher ici.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="js/common.js" onerror="void 0"></script>
+<script>
+
+// ── STATE ──
+let multiId        = null;
+let multiFiles     = [];
+let multiQuestions = [];
+let lastResults    = null;
+
+// ── DOM ──
+const multiFileInput    = document.getElementById('multiFileInput');
+const multiDropZone     = document.getElementById('multiDropZone');
+const multiFileList     = document.getElementById('multiFileList');
+const multiQuestionList = document.getElementById('multiQuestionList');
+const headerDocs        = document.getElementById('headerDocs');
+const headerQuestions   = document.getElementById('headerQuestions');
+const tbDocsCount       = document.getElementById('tbDocsCount');
+const tbQuestionsCount  = document.getElementById('tbQuestionsCount');
+const multiStatus       = document.getElementById('multiStatus');
+const modelSelect       = document.getElementById('modelSelect');
+
+// Topbar Toggles
+const btnHistoryToggle  = document.getElementById('btnHistoryToggle');
+const btnCloseHistory   = document.getElementById('btnCloseHistory');
+const historyDrawer     = document.getElementById('historyDrawer');
+const historyOverlay    = document.getElementById('historyOverlay');
+
+const btnDocsToggle     = document.getElementById('btnDocsToggle');
+const docsPanel         = document.getElementById('docsPanel');
+
+const btnQuestionsToggle= document.getElementById('btnQuestionsToggle');
+const questionsPanel    = document.getElementById('questionsPanel');
+
+// Toggle Functions
+btnHistoryToggle.addEventListener('click', () => {
+  historyDrawer.classList.add('open');
+  historyOverlay.classList.add('open');
+});
+btnCloseHistory.addEventListener('click', closeHistory);
+historyOverlay.addEventListener('click', closeHistory);
+
+function closeHistory() {
+  historyDrawer.classList.remove('open');
+  historyOverlay.classList.remove('open');
+}
+
+btnDocsToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  docsPanel.classList.toggle('visible');
+  btnDocsToggle.classList.toggle('active');
+  questionsPanel.classList.remove('visible');
+  btnQuestionsToggle.classList.remove('active');
+});
+
+btnQuestionsToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  questionsPanel.classList.toggle('visible');
+  btnQuestionsToggle.classList.toggle('active');
+  docsPanel.classList.remove('visible');
+  btnDocsToggle.classList.remove('active');
+});
+
+// Close panels on outside click
+document.addEventListener('click', (e) => {
+  if (!docsPanel.contains(e.target) && !btnDocsToggle.contains(e.target)) {
+    docsPanel.classList.remove('visible');
+    btnDocsToggle.classList.remove('active');
+  }
+  if (!questionsPanel.contains(e.target) && !btnQuestionsToggle.contains(e.target)) {
+    questionsPanel.classList.remove('visible');
+    btnQuestionsToggle.classList.remove('active');
+  }
+});
+
+// ── LOCAL STORAGE PERSISTENCE ──
+function saveMultiState() {
+  const state = {
+    id: multiId,
+    files: multiFiles.map(f => ({ name: f.name, isVirtual: true })),
+    questions: multiQuestions,
+    model: modelSelect.value,
+    results: lastResults
+  };
+  localStorage.setItem('holokia_multi_state', JSON.stringify(state));
+  saveMultiToHistory();
+}
+
+function initMulti() {
+  try {
+    const saved = localStorage.getItem('holokia_multi_state');
+    if (saved) {
+      const state = JSON.parse(saved);
+      
+      if (state.id) {
+        multiId = state.id;
+      }
+      
+      if (state.model) {
+        modelSelect.value = state.model;
+      }
+      
+      if (state.files && state.files.length > 0) {
+        // Ajouter les fichiers comme virtuels
+        handleMultiFiles(state.files, true);
+      }
+      
+      if (state.questions && state.questions.length > 0) {
+        state.questions.forEach(q => addQuestion(q, true));
+      }
+      
+      if (state.results) {
+        lastResults = state.results;
+        renderResults(state.results);
+      }
+      
+      // Sauvegarder l'état complet une fois restauré
+      saveMultiState();
+    }
+  } catch (e) {
+    console.error("Erreur au chargement de l'état multi:", e);
+  }
+  
+  renderMultiHistory();
+}
+
+// ── HISTORY FUNCTIONS ──
+function loadMultiHistory() {
+  return JSON.parse(localStorage.getItem('holokia_multi_history') || '[]');
+}
+
+function saveMultiToHistory() {
+  if (multiFiles.length === 0 && multiQuestions.length === 0 && !lastResults) return;
+  
+  let hist = loadMultiHistory();
+  
+  if (!multiId) {
+    multiId = Date.now().toString();
+  }
+  
+  const title = multiFiles.length > 0 
+    ? multiFiles.map(f => f.name.split('.')[0]).join(', ') 
+    : 'Nouvelle comparaison';
+  
+  // Chercher si la session existe déjà pour conserver sa date de création
+  const existingIdx = hist.findIndex(h => h.id === multiId);
+  const creationDate = existingIdx >= 0 && hist[existingIdx].date 
+    ? hist[existingIdx].date 
+    : new Date().toISOString();
+  
+  const sessionData = {
+    id: multiId,
+    title: title.length > 30 ? title.substring(0, 27) + '...' : title,
+    date: creationDate,
+    files: multiFiles.map(f => ({ name: f.name, isVirtual: true })),
+    questions: multiQuestions,
+    model: modelSelect.value,
+    results: lastResults
+  };
+  
+  if (existingIdx >= 0) {
+    hist[existingIdx] = sessionData;
+  } else {
+    hist.unshift(sessionData);
+  }
+  
+  localStorage.setItem('holokia_multi_history', JSON.stringify(hist));
+  renderMultiHistory();
+}
+
+function renderMultiHistory() {
+  const histList = document.getElementById('multiHistoryList');
+  if (!histList) return;
+  
+  const hist = loadMultiHistory();
+  histList.innerHTML = '';
+  
+  if (hist.length === 0) {
+    histList.innerHTML = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px;text-align:center;">Aucun historique</div>';
+    return;
+  }
+  
+  hist.forEach(h => {
+    const item = document.createElement('div');
+    item.className = `history-item ${h.id === multiId ? 'active' : ''}`;
+    
+    const dateObj = new Date(h.date);
+    const dateStr = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    
+    item.innerHTML = `
+      <div class="history-title" title="${esc(h.title)}">${esc(h.title)}</div>
+      <div class="history-date">${dateStr}</div>
+      <button class="history-delete" title="Supprimer">✕</button>
+    `;
+    
+    item.addEventListener('click', (e) => {
+      // Ne pas charger la session si on a cliqué sur le bouton supprimer
+      if (!e.target.classList.contains('history-delete')) {
+        loadMultiSession(h.id);
+      }
+    });
+    
+    const deleteBtn = item.querySelector('.history-delete');
+    deleteBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteMultiSession(h.id);
+    });
+    
+    histList.appendChild(item);
+  });
+}
+
+function deleteMultiSession(id) {
+  if (!confirm("Voulez-vous vraiment supprimer cet historique ?")) return;
+  
+  let hist = loadMultiHistory();
+  hist = hist.filter(h => h.id !== id);
+  localStorage.setItem('holokia_multi_history', JSON.stringify(hist));
+  
+  // Si on supprime la session active, on réinitialise l'interface
+  if (id === multiId) {
+    document.getElementById('btnNewMulti').click();
+  } else {
+    renderMultiHistory();
+  }
+}
+
+function loadMultiSession(id) {
+  const hist = loadMultiHistory();
+  const session = hist.find(h => h.id === id);
+  if (!session) return;
+  
+  multiId = session.id;
+  
+  // Clear current state
+  multiFiles = [];
+  multiQuestions = [];
+  lastResults = null;
+  multiFileList.innerHTML = '';
+  multiQuestionList.innerHTML = '';
+  
+  if (session.model) {
+    modelSelect.value = session.model;
+  }
+  
+  if (session.files && session.files.length > 0) {
+    handleMultiFiles(session.files, true);
+  }
+  
+  if (session.questions && session.questions.length > 0) {
+    session.questions.forEach(q => addQuestion(q, true));
+  }
+  
+  if (session.results) {
+    lastResults = session.results;
+    renderResults(session.results);
+  } else {
+    restoreEmptyState();
+  }
+  
+  updateHeader();
+  saveMultiState();
+  renderMultiHistory();
+}
+
+function restoreEmptyState() {
+  const container = document.getElementById('multiResultsContainer');
+  container.innerHTML = `
+    <div class="results-empty">
+      <div class="empty-icon-box">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>
+      </div>
+      <div class="results-empty-text">Aucun résultat</div>
+      <div class="results-empty-sub">
+        Ajoutez vos documents et vos questions via le menu en haut, puis lancez l'analyse pour voir les résultats s'afficher ici.
+      </div>
+    </div>
+  `;
+}
+
+// New comparison button
+document.getElementById('btnNewMulti').addEventListener('click', () => {
+  multiId = null;
+  multiFiles = [];
+  multiQuestions = [];
+  lastResults = null;
+  
+  multiFileList.innerHTML = '';
+  multiQuestionList.innerHTML = '';
+  
+  restoreEmptyState();
+  updateHeader();
+  saveMultiState();
+  renderMultiHistory();
+});
+
+// ── UTILS ──
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function getExt(filename) {
+  return filename.split('.').pop().toUpperCase().slice(0, 4);
+}
+
+function updateHeader() {
+  const dCount = multiFiles.length;
+  const qCount = multiQuestions.length;
+  
+  if (headerDocs) headerDocs.innerHTML = `<span class="dot dot-teal"></span> ${dCount} doc${dCount > 1 ? 's' : ''}`;
+  if (headerQuestions) headerQuestions.innerHTML = `<span class="dot dot-amber"></span> ${qCount} question${qCount > 1 ? 's' : ''}`;
+  
+  if (tbDocsCount) tbDocsCount.innerText = `${dCount} doc${dCount > 1 ? 's' : ''}`;
+  if (tbQuestionsCount) tbQuestionsCount.innerText = `${qCount} question${qCount > 1 ? 's' : ''}`;
+  
+  const btnLaunch = document.getElementById('btnMultiExtract');
+  if (btnLaunch) {
+    if (dCount > 0 && qCount > 0) {
+      btnLaunch.style.opacity = '1';
+      btnLaunch.style.pointerEvents = 'auto';
+    } else {
+      btnLaunch.style.opacity = '0.5';
+      btnLaunch.style.pointerEvents = 'none';
+    }
+  }
+}
+
+// ── FILES ──
+function handleMultiFiles(files, isVirtual = false) {
+  Array.from(files).forEach(f => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    if (!['pdf','docx','txt','md'].includes(ext)) return;
+    if (multiFiles.find(x => x.name === f.name)) return;
+    
+    // Si c'est un vrai fichier, on le garde tel quel. Si c'est virtuel, on ajoute le flag
+    const fileObj = isVirtual ? { name: f.name, isVirtual: true } : f;
+    multiFiles.push(fileObj);
+
+    const li = document.createElement('li');
+    li.className = 'file-item';
+    li.innerHTML = `
+      <span class="file-ext">${getExt(f.name)}</span>
+      <span class="file-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <button class="file-remove" title="Supprimer" data-name="${esc(f.name)}">✕</button>
+    `;
+    multiFileList.appendChild(li);
+  });
+
+  multiFileList.querySelectorAll('.file-remove').forEach(btn => {
+    btn.onclick = () => {
+      multiFiles = multiFiles.filter(x => x.name !== btn.dataset.name);
+      btn.closest('.file-item').remove();
+      updateHeader();
+      saveMultiState();
+    };
+  });
+
+  updateHeader();
+  saveMultiState();
+}
+
+multiDropZone.addEventListener('click', () => multiFileInput.click());
+multiDropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') multiFileInput.click(); });
+multiDropZone.addEventListener('dragover',  e => { e.preventDefault(); multiDropZone.classList.add('dragover'); });
+multiDropZone.addEventListener('dragleave', ()  => multiDropZone.classList.remove('dragover'));
+multiDropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  multiDropZone.classList.remove('dragover');
+  handleMultiFiles(e.dataTransfer.files);
+});
+multiFileInput.addEventListener('change', e => { handleMultiFiles(e.target.files); multiFileInput.value = ''; });
+
+// ── QUESTIONS ──
+function addQuestion(q, skipSave = false) {
+  q = q.trim();
+  if (!q || multiQuestions.includes(q)) return;
+  multiQuestions.push(q);
+
+  const num = multiQuestions.length;
+  const li = document.createElement('li');
+  li.className = 'question-item';
+  li.dataset.q = q;
+  li.innerHTML = `
+    <span class="q-num">${String(num).padStart(2,'0')}</span>
+    <span class="q-text">${esc(q)}</span>
+    <button class="btn-remove" title="Supprimer">×</button>
+  `;
+  li.querySelector('.btn-remove').onclick = () => {
+    multiQuestions = multiQuestions.filter(x => x !== q);
+    li.remove();
+    // Re-numéroter
+    multiQuestionList.querySelectorAll('.question-item').forEach((item, i) => {
+      item.querySelector('.q-num').textContent = String(i + 1).padStart(2, '0');
+    });
+    updateHeader();
+    saveMultiState();
+  };
+  multiQuestionList.appendChild(li);
+  updateHeader();
+  
+  if (!skipSave) saveMultiState();
+}
+
+document.getElementById('btnAddPredef').addEventListener('click', () => {
+  const sel = document.getElementById('multiPredefSelect');
+  addQuestion(sel.value);
+  sel.value = '';
+});
+
+document.getElementById('btnAddCustom').addEventListener('click', () => {
+  const inp = document.getElementById('multiCustomQuestion');
+  addQuestion(inp.value);
+  inp.value = '';
+});
+
+document.getElementById('multiCustomQuestion').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    addQuestion(e.target.value);
+    e.target.value = '';
+  }
+});
+
+modelSelect.addEventListener('change', saveMultiState);
+
+// ── LAUNCH ──
+document.getElementById('btnMultiExtract').addEventListener('click', async () => {
+  if (multiFiles.length === 0)     { alert('Veuillez ajouter au moins un document.'); return; }
+  if (multiQuestions.length === 0) { alert('Veuillez ajouter au moins une question.'); return; }
+
+  const status    = document.getElementById('multiStatus');
+  const btn       = document.getElementById('btnMultiExtract');
+  const container = document.getElementById('multiResultsContainer');
+  const model     = document.getElementById('modelSelect').value;
+
+  status.classList.add('visible');
+  btn.disabled = true;
+  container.innerHTML = `
+    <div class="loading-state">
+      <div class="loading-spinner-lg"></div>
+      <div class="loading-text">Analyse de ${multiFiles.length} document(s) en cours…</div>
+    </div>
+  `;
+
+  const formData = new FormData();
+  
+  // Séparer les vrais fichiers des fichiers virtuels (rechargés depuis le cache)
+  const realFiles = multiFiles.filter(f => !f.isVirtual);
+  realFiles.forEach(f => formData.append('files', f));
+  
+  // Si on n'a que des fichiers virtuels (rechargés depuis la sauvegarde)
+  if (realFiles.length === 0 && multiFiles.length > 0) {
+    const fileNames = multiFiles.map(f => f.name);
+    formData.append('cached_files', JSON.stringify(fileNames));
+  }
+  
+  formData.append('questions', JSON.stringify(multiQuestions));
+  
+  // Correction pour la gestion des modèles
+  const provider = model === 'groq' ? 'groq' : 'ollama';
+  const modelName = model === 'groq' ? 'llama-3.3-70b-versatile' : model;
+  
+  formData.append('provider', provider);
+  formData.append('model', modelName);
+
+  try {
+    const response = await fetch('http://localhost:8000/extract-multi', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await response.json();
+
+    if (data.ok) {
+      renderResults(data.results);
+    } else {
+      container.innerHTML = `<div class="error-block">Erreur serveur : ${esc(data.error || 'Inconnue')}</div>`;
+    }
+
+  } catch (err) {
+    // Démo si pas de serveur
+    renderDemoResults();
+  } finally {
+    status.classList.remove('visible');
+    btn.disabled = false;
+  }
+});
+
+// ── RENDER RESULTS ──
+function renderResults(results) {
+  lastResults = results;
+  saveMultiState();
+
+  const container = document.getElementById('multiResultsContainer');
+  container.innerHTML = '';
+
+  if (results.synthese_comparative) {
+    const block = document.createElement('div');
+    block.className = 'synthese-block';
+    block.innerHTML = `
+      <div class="synthese-label">Synthèse Comparative</div>
+      <div class="synthese-body">${esc(results.synthese_comparative)}</div>
+    `;
+    container.appendChild(block);
+  }
+
+  const label = document.createElement('div');
+  label.className = 'results-label';
+  label.textContent = `Résultats par document (${Object.keys(results.results_by_document || {}).length})`;
+  container.appendChild(label);
+
+  const grid = document.createElement('div');
+  grid.className = 'results-grid';
+  container.appendChild(grid);
+
+  const docs = results.results_by_document || {};
+  for (const [fname, qRes] of Object.entries(docs)) {
+    const qCount = Object.keys(qRes).length;
+    const card = document.createElement('div');
+    card.className = 'doc-card';
+    card.innerHTML = `
+      <div class="doc-card-header">
+        <div class="doc-card-icon">📄</div>
+        <span class="doc-card-name" title="${esc(fname)}">${esc(fname)}</span>
+        <span class="doc-card-count">${qCount} réponse${qCount !== 1 ? 's' : ''}</span>
+      </div>
+    `;
+
+    for (const [q, ans] of Object.entries(qRes)) {
+      const val    = ans.valeur || null;
+      const page   = ans.source?.page != null ? `<span class="page-badge">p. ${ans.source.page}</span>` : '';
+      const conf   = ans.confiance != null ? getConfBadge(ans.confiance) : '';
+      
+      const answerContent = document.createElement('div');
+      answerContent.className = 'qa-answer';
+      answerContent.style.flexDirection = 'row';
+      answerContent.innerHTML = val ? `${esc(val)} ${page} ${conf}` : '<span class="qa-empty">Non trouvé dans ce document</span>';
+
+      const row    = document.createElement('div');
+      row.className = 'qa-row';
+      row.innerHTML = `<div class="qa-question">${esc(q)}</div>`;
+      row.appendChild(answerContent);
+      
+      card.appendChild(row);
+    }
+
+    grid.appendChild(card);
+  }
+}
+
+function getConfBadge(conf) {
+  const cls = conf >= 0.8 ? 'high' : conf >= 0.5 ? 'medium' : 'low';
+  return `<span class="conf-badge conf-${cls}">${Math.round(conf * 100)}%</span>`;
+}
+
+// Démo si pas de serveur
+function renderDemoResults() {
+  const demoData = {
+    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Lancez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`,
+    results_by_document: {}
+  };
+  multiFiles.forEach(f => {
+    demoData.results_by_document[f.name] = {};
+    multiQuestions.forEach(q => {
+      demoData.results_by_document[f.name][q] = {
+        valeur: 'Donnée non disponible (mode démo)',
+        source: { page: null },
+        confiance: null
+      };
+    });
+  });
+  renderResults(demoData);
+}
+
+// Initialisation
+initMulti();
+</script>
+</body>
+</html>
