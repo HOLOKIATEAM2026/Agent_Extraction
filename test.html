@@ -303,6 +303,10 @@ btnExtract.addEventListener('click',async()=>{
   }
 });
 
+/**
+ * Affiche les résultats de l'traction.
+ * @param {Object} data - Les données extraites.
+ */
 function showResults(data){
   buildCards(data);
   jsonOutput.innerHTML=highlight(JSON.stringify(data,null,2));
