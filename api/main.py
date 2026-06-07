@@ -149,6 +149,12 @@ def _to_ui_schema(payload: Dict[str, Any]) -> Dict[str, Any]:
         model=str(meta.get("modele_utilise") or ""),
         approach=str(meta.get("approche") or ""),
     )
+    
+    # Préserver les questions utilisées si présentes (T8.26)
+    if "questions_utilisees" in meta:
+        ui["meta"]["questions_utilisees"] = meta["questions_utilisees"]
+    elif result_obj and "meta" in result_obj and "questions_utilisees" in result_obj["meta"]:
+        ui["meta"]["questions_utilisees"] = result_obj["meta"]["questions_utilisees"]
 
     ui["diagnostic_strategique"] = _normalize_group(
         result_obj.get("diagnostic_strategique"),
@@ -826,6 +832,16 @@ def get_all_extractions():
         store = SupabaseStore()
         results = store.get_all_extractions()
         
+        # Normaliser chaque résultat pour le format UI (T8.27)
+        for ext in results:
+            if "result" in ext and ext["result"]:
+                try:
+                    # On passe le payload raw stocké dans result
+                    ext["ui_result"] = _to_ui_schema(ext["result"])
+                except Exception as e:
+                    print(f"Erreur de normalisation pour l'extraction {ext.get('id')}: {e}")
+                    ext["ui_result"] = None
+        
         return {
             "ok": True,
             "count": len(results),
@@ -849,6 +865,14 @@ def get_extraction_by_id(extraction_id: str):
         if not result:
             raise HTTPException(status_code=404, detail="Extraction non trouvée")
             
+        # Normaliser pour le format UI
+        if "result" in result and result["result"]:
+            try:
+                result["ui_result"] = _to_ui_schema(result["result"])
+            except Exception as e:
+                print(f"Erreur de normalisation pour l'extraction {extraction_id}: {e}")
+                result["ui_result"] = None
+            
         return {
             "ok": True,
             "data": result
@@ -858,5 +882,93 @@ def get_extraction_by_id(extraction_id: str):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
+# ---------------------------------------------------------------------------
+# ROUTES: HISTORIQUE MULTI-DOCUMENTS & CHAT (Supabase)
+# ---------------------------------------------------------------------------
+
+@app.get("/history/multi")
+def get_multi_history():
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        return {"ok": True, "data": store.get_multi_history()}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+
+@app.post("/history/multi")
+async def save_multi_history(request: dict):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        # On renomme date -> created_at pour matcher la BDD
+        session_data = request.copy()
+        if "date" in session_data:
+            session_data["created_at"] = session_data.pop("date")
+        success = store.upsert_multi_session(session_data)
+        return {"ok": success}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+
+@app.delete("/history/multi/{session_id}")
+def delete_multi_history(session_id: str):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        success = store.delete_multi_session(session_id)
+        return {"ok": success}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+
+@app.get("/history/chat")
+def get_chat_history():
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        return {"ok": True, "data": store.get_chat_history()}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+
+@app.post("/history/chat")
+async def save_chat_history(request: dict):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        # On renomme date -> created_at pour matcher la BDD
+        session_data = request.copy()
+        if "date" in session_data:
+            session_data["created_at"] = session_data.pop("date")
+        success = store.upsert_chat_session(session_data)
+        return {"ok": success}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
+
+@app.delete("/history/chat/{session_id}")
+def delete_chat_history(session_id: str):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+        if not supabase_enabled():
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+        store = SupabaseStore()
+        success = store.delete_chat_session(session_id)
+        return {"ok": success}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 
