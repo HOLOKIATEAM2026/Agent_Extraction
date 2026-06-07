@@ -3,7 +3,7 @@ import os
 
 from benchmark.approach_a import run_approach_a, save_result
 
-
+"""Approach A Benchmark"""
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True, help="Chemin vers .pdf/.docx/.txt")
