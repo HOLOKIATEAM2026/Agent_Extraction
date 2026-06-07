@@ -270,6 +270,56 @@ class SupabaseStore:
         except Exception:
             return False
 
+    # --- Multi History ---
+    def get_multi_history(self) -> list:
+        data = self._get("multi_history", params={"order": "created_at.desc"})
+        return data if isinstance(data, list) else []
+
+    def get_multi_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        data = self._get("multi_history", params={"id": f"eq.{session_id}"})
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return None
+
+    def upsert_multi_session(self, session_data: Dict[str, Any]) -> bool:
+        try:
+            self._post("multi_history", json=session_data, prefer="resolution=merge-duplicates")
+            return True
+        except Exception:
+            return False
+
+    def delete_multi_session(self, session_id: str) -> bool:
+        try:
+            self._delete("multi_history", params={"id": f"eq.{session_id}"})
+            return True
+        except Exception:
+            return False
+
+    # --- Chat History ---
+    def get_chat_history(self) -> list:
+        data = self._get("chat_history", params={"order": "created_at.desc"})
+        return data if isinstance(data, list) else []
+
+    def get_chat_session(self, session_id: str) -> Optional[Dict[str, Any]]:
+        data = self._get("chat_history", params={"id": f"eq.{session_id}"})
+        if isinstance(data, list) and len(data) > 0:
+            return data[0]
+        return None
+
+    def upsert_chat_session(self, session_data: Dict[str, Any]) -> bool:
+        try:
+            self._post("chat_history", json=session_data, prefer="resolution=merge-duplicates")
+            return True
+        except Exception:
+            return False
+
+    def delete_chat_session(self, session_id: str) -> bool:
+        try:
+            self._delete("chat_history", params={"id": f"eq.{session_id}"})
+            return True
+        except Exception:
+            return False
+
 
 def _extract_meta(payload: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(payload.get("meta"), dict):
