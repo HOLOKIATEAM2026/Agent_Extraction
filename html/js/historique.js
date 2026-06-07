@@ -35,24 +35,40 @@ function populateCompareSelect(extractions) {
   });
 }
 
-function calculateAverageConfidence(result) {
-  if (!result) return 0;
+function calculateAverageConfidence(ext) {
+  if (!ext) return 0;
   
-  // Dans le JSON retourné par le serveur, l'objet contenant les diagnostics peut être directement dans result,
-  // ou imbriqué dans result.result (selon l'approche utilisée).
+  // Utiliser le résultat déjà normalisé par le serveur si disponible (T8.27)
+  if (ext.ui_result) {
+    let total = 0;
+    let count = 0;
+    const sections = ['diagnostic_strategique', 'diagnostic_financier', 'diagnostic_rh', 'diagnostic_data', 'diagnostic_cyber_gouvernance'];
+    
+    sections.forEach(sec => {
+      if (ext.ui_result[sec]) {
+        Object.values(ext.ui_result[sec]).forEach(field => {
+          if (field && typeof field === 'object' && typeof field.confiance === 'number') {
+            total += field.confiance;
+            count++;
+          }
+        });
+      }
+    });
+    return count > 0 ? (total / count) : 0;
+  }
+
+  // Fallback sur l'ancienne méthode si pas de ui_result
+  const result = ext.result;
+  if (!result) return 0;
   const dataToAnalyze = result.result ? result.result : result;
   
   let total = 0;
   let count = 0;
-  
-  // On itère dynamiquement sur toutes les clés qui commencent par "diagnostic_"
-  // au lieu de hardcoder les sections pour être sûr de ne rien rater.
   const sections = Object.keys(dataToAnalyze).filter(k => k.startsWith('diagnostic_'));
   
   sections.forEach(sec => {
     if (dataToAnalyze[sec]) {
       Object.values(dataToAnalyze[sec]).forEach(field => {
-        // Le backend peut parfois omettre la confiance si elle est de 0, on vérifie que le champ est bien un objet
         if (field && typeof field === 'object' && typeof field.confiance === 'number') {
           total += field.confiance;
           count++;
@@ -79,7 +95,7 @@ function renderHistorique(extractions) {
       hour: '2-digit', minute: '2-digit'
     });
     
-    const conf = calculateAverageConfidence(ext.result);
+    const conf = calculateAverageConfidence(ext);
     const confColor = conf > 0.8 ? 'var(--teal)' : (conf > 0.5 ? '#f39c12' : 'var(--red)');
     
     const tr = document.createElement('tr');
@@ -115,14 +131,13 @@ function renderHistorique(extractions) {
     btn.addEventListener('click', (e) => {
       const id = e.target.getAttribute('data-id');
       const ext = allExtractions.find(item => item.id == id);
-      if (ext && ext.result) {
+      if (ext) {
         try {
-          // L'approche D retourne un format où les diagnostics sont soit directement à la racine,
-          // soit imbriqués dans ext.result.result
-          let dataToStore = ext.result;
+          // Utiliser en priorité le résultat normalisé par le serveur (T8.27)
+          let dataToStore = ext.ui_result || ext.result;
           
-          // Si le backend a imbriqué les données (cas de l'approche D par exemple)
-          if (ext.result.result && (ext.result.result.diagnostic_strategique || ext.result.result.meta)) {
+          // Si on utilise ext.result (ancien format), on tente de désimbriquer
+          if (!ext.ui_result && ext.result && ext.result.result && (ext.result.result.diagnostic_strategique || ext.result.result.meta)) {
             dataToStore = ext.result.result;
           }
           
