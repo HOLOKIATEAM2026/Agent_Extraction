@@ -135,5 +135,25 @@ vectorstore:
 
 ---
 
+## 📐 Diagrammes
+
+### 1. Diagramme de Cas d'Utilisation
+Vue globale des interactions principales entre l'utilisateur et le système : upload de documents, extraction diagnostique, chat libre, comparaison multi-documents et consultation de l'historique.
+
+![Use Case](capture%20écran/UseCase.png)
+
+### 2. Diagramme de Classes
+Représentation de la structure logique du projet, des principales entités métier et des relations entre les modules backend, les composants RAG et les objets de données.
+
+![Diagramme de Classes](capture%20écran/Diagramme_de_Classe.png)
+
+### 3. Diagramme de Séquence
+Illustration du déroulement d'une extraction, depuis l'envoi d'un document par l'utilisateur jusqu'au traitement RAG, la génération de la réponse et le retour du résultat structuré.
+
+![Diagramme de Séquence](capture%20écran/DiagrammeSequence.png)
+
+---
+
+
 ## 👥 Auteur
 Projet développé dans le cadre de l'outil **Holokia Copilot Strategy IA**.
