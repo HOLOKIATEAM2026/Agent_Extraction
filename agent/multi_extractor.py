@@ -1,4 +1,3 @@
-import asyncio
 import os
 from typing import Dict, Any, List, Optional
 from langchain_core.documents import Document
@@ -11,36 +10,41 @@ def get_llm(provider: Optional[str] = None, model: Optional[str] = None, config_
         llm_manager.llm.temperature = temperature
     return llm_manager.llm
 
-async def _process_single_question(question: str, vectorstore, llm):
-    results = {}
+def run_multi_extraction(
+    vectorstore,
+    questions: List[str],
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    config_path: str = "config.yaml",
+) -> Dict[str, Any]:
+    llm = get_llm(provider=provider, model=model, config_path=config_path)
     
-    try:
+    results_by_doc = {}
+    
+    # Pour chaque question
+    for question in questions:
+        # On fait un retrieval global
         retrieved_docs = vectorstore.similarity_search(question, k=15)
-    except Exception as e:
-        print(f"Erreur similarity_search pour question '{question}': {e}")
-        retrieved_docs = []
-    
-    docs_by_file = {}
-    for doc in retrieved_docs:
-        try:
+        
+        # On groupe les docs par fichier source
+        docs_by_file = {}
+        for doc in retrieved_docs:
             fname = doc.metadata.get("file_name", "Inconnu")
             if fname not in docs_by_file:
                 docs_by_file[fname] = []
             docs_by_file[fname].append(doc)
-        except Exception as e:
-            print(f"Erreur traitement doc pour question '{question}': {e}")
-    
-    for fname, docs in docs_by_file.items():
-        context_text = ""
-        try:
+            
+        # Pour chaque fichier trouvé, on pose la question au LLM
+        for fname, docs in docs_by_file.items():
+            if fname not in results_by_doc:
+                results_by_doc[fname] = {}
+                
             context_text = "\n\n".join(
                 [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
                  for i, doc in enumerate(docs[:3])]
             )
-        except Exception as e:
-            print(f"Erreur construction contexte pour {fname}, question '{question}': {e}")
-        
-        prompt_str = f"""Tu es un expert en analyse de documents.
+            
+            prompt_str = f"""Tu es un expert en analyse de documents.
 Ta mission est de répondre à la question suivante en te basant UNIQUEMENT sur le contexte fourni.
 Si l'information n'est pas présente dans le contexte, tu DOIS répondre "NON_TROUVE". Ne devine rien.
 
@@ -53,62 +57,37 @@ Règles de formatage :
 1. Donne une réponse claire et concise.
 2. Si tu as trouvé l'information, indique le numéro de la page source entre crochets à la fin de ta réponse (ex: [Page 12]).
 """
-        try:
-            response = await llm.ainvoke(prompt_str)
-            response = response.content.strip()
-            
-            if response == "NON_TROUVE" or response == "" or "NON_TROUVE" in response:
-                results[fname] = {
-                    "valeur": None,
-                    "source": None,
-                    "confiance": 0.0
-                }
-            else:
-                page_num = None
-                if "[Page " in response:
-                    try:
-                        page_str = response.split("[Page ")[1].split("]")[0]
-                        page_num = int(page_str)
-                        response = response.split("[Page ")[0].strip()
-                    except:
-                        pass
-                        
-                results[fname] = {
-                    "valeur": response,
-                    "source": {
-                        "fichier": fname,
-                        "page": page_num,
-                        "extrait": context_text[:200] + "..."
-                    },
-                    "confiance": 0.85
-                }
-        except Exception as e:
-            print(f"Erreur d'extraction multi pour le fichier {fname}, question '{question}': {e}")
-            results[fname] = {"valeur": None, "source": None, "confiance": 0.0}
-    
-    return question, results
-
-async def run_multi_extraction(
-    vectorstore,
-    questions: List[str],
-    provider: Optional[str] = None,
-    model: Optional[str] = None,
-    config_path: str = "config.yaml",
-) -> Dict[str, Any]:
-    llm = get_llm(provider=provider, model=model, config_path=config_path)
-    
-    results_by_doc = {}
-    
-    # ✅ PARALLÉLISATION : Traiter toutes les questions en même temps avec asyncio.gather
-    tasks = [_process_single_question(q, vectorstore, llm) for q in questions]
-    question_results = await asyncio.gather(*tasks)
-    
-    # Fusionner les résultats
-    for question, doc_results in question_results:
-        for fname, value in doc_results.items():
-            if fname not in results_by_doc:
-                results_by_doc[fname] = {}
-            results_by_doc[fname][question] = value
+            try:
+                response = llm.invoke(prompt_str).content.strip()
+                
+                if response == "NON_TROUVE" or response == "" or "NON_TROUVE" in response:
+                    results_by_doc[fname][question] = {
+                        "valeur": None,
+                        "source": None,
+                        "confiance": 0.0
+                    }
+                else:
+                    page_num = None
+                    if "[Page " in response:
+                        try:
+                            page_str = response.split("[Page ")[1].split("]")[0]
+                            page_num = int(page_str)
+                            response = response.split("[Page ")[0].strip()
+                        except:
+                            pass
+                            
+                    results_by_doc[fname][question] = {
+                        "valeur": response,
+                        "source": {
+                            "fichier": fname,
+                            "page": page_num,
+                            "extrait": context_text[:200] + "..."
+                        },
+                        "confiance": 0.85
+                    }
+            except Exception as e:
+                print(f"Erreur d'extraction multi pour le fichier {fname}, question '{question}': {e}")
+                results_by_doc[fname][question] = {"valeur": None, "source": None, "confiance": 0.0}
 
     # Remplir les questions manquantes pour les documents qui n'ont pas eu de résultats dans la recherche vectorielle
     all_fnames = list(results_by_doc.keys())
@@ -134,7 +113,7 @@ Résultats par document :
         synth_prompt += "\nFais une synthèse comparative courte (2-3 paragraphes) mettant en évidence les similitudes et différences entre ces documents."
         
         try:
-            synthese = (await llm.ainvoke(synth_prompt)).content.strip()
+            synthese = llm.invoke(synth_prompt).content.strip()
         except:
             synthese = "Erreur lors de la génération de la synthèse."
 

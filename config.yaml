@@ -2,12 +2,11 @@ default_provider: "groq"
 default_model: "llama-3.1-8b-instant"
 
 embeddings:
-  provider: "sentence-transformers"
-  model: "all-MiniLM-L6-v2"
-  model_kwargs:
-    device: "cpu"
-  encode_kwargs:
-    normalize_embeddings: True
+  provider: "ollama"
+  model: "nomic-embed-text"
+  base_url: "http://localhost:11434"
+  sync_client_kwargs:
+    timeout: 300.0
 
 vectorstore:
   type: "chroma"

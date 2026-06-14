@@ -27,21 +27,6 @@ def get_embeddings(config: Dict[str, Any]):
             base_url=base_url,
             client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
-    elif provider == "huggingface" or provider == "sentence-transformers":
-        try:
-            from langchain_huggingface import HuggingFaceEmbeddings
-        except ImportError:
-            from langchain_community.embeddings import HuggingFaceEmbeddings
-        
-        model = emb_cfg.get("model", "all-MiniLM-L6-v2")
-        model_kwargs = emb_cfg.get("model_kwargs", {})
-        encode_kwargs = emb_cfg.get("encode_kwargs", {"normalize_embeddings": True})
-        
-        return HuggingFaceEmbeddings(
-            model_name=model,
-            model_kwargs=model_kwargs,
-            encode_kwargs=encode_kwargs
-        )
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
@@ -110,30 +95,18 @@ def get_or_create_faiss_vectorstore(
         print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
         return FAISS.load_local(cache_path, embeddings, allow_dangerous_deserialization=True)
     
-    # Si pas de chunks, return None or empty? Wait no—if chunks is empty but cache doesn't exist?
-    if len(chunks) == 0:
-        # Create an empty vectorstore? Wait no—maybe create a dummy one? Or raise error?
-        print(f"[WARNING] Pas de chunks pour {doc_name}, création d'un vectorstore vide!")
-        from langchain_core.documents import Document
-        dummy_doc = Document(page_content="dummy", metadata={})
-        vectorstore = FAISS.from_documents([dummy_doc], embeddings)
-        vectorstore.save_local(cache_path)
-        return vectorstore
-    
     # Sinon -> créer et sauvegarder en batchs pour éviter le timeout Ollama
     print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
     
     # On initialise le vectorstore avec le premier batch
     batch_size = 10
-    if len(chunks) <= batch_size:
-        vectorstore = FAISS.from_documents(chunks, embeddings)
-    else:
-        vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
-        # On ajoute le reste par batchs
-        for start in range(batch_size, len(chunks), batch_size):
-            end = start + batch_size
-            print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
-            vectorstore.add_documents(chunks[start:end])
+    vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
+    
+    # On ajoute le reste par batchs
+    for start in range(batch_size, len(chunks), batch_size):
+        end = start + batch_size
+        print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
+        vectorstore.add_documents(chunks[start:end])
         
     vectorstore.save_local(cache_path)
     print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
