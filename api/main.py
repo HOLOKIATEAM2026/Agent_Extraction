@@ -576,19 +576,10 @@ async def extract_multi(
         
         doc_name = "multi_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
         
-        if files and lc_docs:
+        if files and lc_docs and len(lc_docs) > 0:
             embeddings = get_embeddings({})
-            if len(lc_docs) == 1:
-                vectorstore = FAISS.from_documents(lc_docs, embeddings)
-            else:
-                vectorstore = FAISS.from_documents([lc_docs[0]], embeddings)
-                batch_size = 10
-                for start in range(1, len(lc_docs), batch_size):
-                    end = start + batch_size
-                    print(f"[INFO] Multi-Docs (FAISS) : upsert batch {start}:{min(end, len(lc_docs))}/{len(lc_docs)}")
-                    vectorstore.add_documents(lc_docs[start:end])
-            # Sauvegarder le vectorstore avec le doc_name pour pouvoir le récupérer plus tard
-            vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
+            # Use get_or_create_faiss_vectorstore directly since we fixed it!
+            vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings)
         else:
             # Charger depuis le cache
             vectorstore = get_or_create_faiss_vectorstore([], doc_name)
