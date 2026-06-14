@@ -14,20 +14,31 @@ def get_llm(provider: Optional[str] = None, model: Optional[str] = None, config_
 async def _process_single_question(question: str, vectorstore, llm):
     results = {}
     
-    retrieved_docs = vectorstore.similarity_search(question, k=15)
+    try:
+        retrieved_docs = vectorstore.similarity_search(question, k=15)
+    except Exception as e:
+        print(f"Erreur similarity_search pour question '{question}': {e}")
+        retrieved_docs = []
     
     docs_by_file = {}
     for doc in retrieved_docs:
-        fname = doc.metadata.get("file_name", "Inconnu")
-        if fname not in docs_by_file:
-            docs_by_file[fname] = []
-        docs_by_file[fname].append(doc)
+        try:
+            fname = doc.metadata.get("file_name", "Inconnu")
+            if fname not in docs_by_file:
+                docs_by_file[fname] = []
+            docs_by_file[fname].append(doc)
+        except Exception as e:
+            print(f"Erreur traitement doc pour question '{question}': {e}")
     
     for fname, docs in docs_by_file.items():
-        context_text = "\n\n".join(
-            [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
-             for i, doc in enumerate(docs[:3])]
-        )
+        context_text = ""
+        try:
+            context_text = "\n\n".join(
+                [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
+                 for i, doc in enumerate(docs[:3])]
+            )
+        except Exception as e:
+            print(f"Erreur construction contexte pour {fname}, question '{question}': {e}")
         
         prompt_str = f"""Tu es un expert en analyse de documents.
 Ta mission est de répondre à la question suivante en te basant UNIQUEMENT sur le contexte fourni.

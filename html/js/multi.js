@@ -582,7 +582,7 @@ function getConfBadge(conf) {
 
 function renderDemoResults() {
   const demoData = {
-    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Lancez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`,
+    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Vérifiez que votre backend FastAPI est correctement configuré.`,
     results_by_document: {}
   };
   multiFiles.forEach(f => {
