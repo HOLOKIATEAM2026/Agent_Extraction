@@ -152,7 +152,7 @@ let cachedMultiHistory = [];
 
 async function loadMultiHistory() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/history/multi');
+    const res = await fetch(`${API_URL}/history/multi`);
     const data = await res.json();
     if (data.ok && data.data) {
       cachedMultiHistory = data.data.map(h => {
@@ -194,7 +194,7 @@ async function saveMultiToHistory() {
   };
   
   try {
-    await fetch('http://127.0.0.1:8000/history/multi', {
+    await fetch(`${API_URL}/history/multi`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -256,7 +256,7 @@ async function deleteMultiSession(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet historique ?")) return;
   
   try {
-    await fetch(`http://127.0.0.1:8000/history/multi/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/history/multi/${id}`, { method: 'DELETE' });
   } catch (e) {
     console.error("Erreur suppression historique multi:", e);
     let hist = JSON.parse(localStorage.getItem('holokia_multi_history') || '[]');
@@ -491,7 +491,7 @@ if (btnMultiExtract) {
     formData.append('model', modelName);
 
     try {
-      const response = await fetch('http://localhost:8000/extract-multi', {
+      const response = await fetch(`${API_URL}/extract-multi`, {
         method: 'POST',
         body: formData
       });

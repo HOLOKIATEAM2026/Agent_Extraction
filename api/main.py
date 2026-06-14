@@ -225,7 +225,7 @@ def _index_single_file(*, file_path: str, config_path: str) -> Dict[str, Any]:
     return {"chunks": len(lc_docs)}
 
 
-def _run_approach(
+async def _run_approach(
     *,
     approach: str,
     file_path: str,
@@ -237,7 +237,7 @@ def _run_approach(
     
     # 🆕 NOUVELLE APPROCHE PAR DÉFAUT : L'AGENT FINAL (T4.1)
     if a in {"agent", "final", "t4"}:
-        result_dict = run_agent_extraction(
+        result_dict = await run_agent_extraction(
             file_path=file_path, 
             provider=provider, 
             model=model, 
@@ -267,7 +267,7 @@ def _run_approach(
     }
 
 
-def _process_extraction_job(
+async def _process_extraction_job(
     job_id: str,
     stored_path: str,
     provider: Optional[str],
@@ -292,7 +292,7 @@ def _process_extraction_job(
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
 
-        raw_payload = _run_approach(
+        raw_payload = await _run_approach(
             approach=approach,
             file_path=stored_path,
             provider=provider,
@@ -423,7 +423,7 @@ async def extract_document(
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
 
-        raw_payload = _run_approach(
+        raw_payload = await _run_approach(
             approach=approach,
             file_path=stored,
             provider=provider,
@@ -591,7 +591,7 @@ async def extract_multi(
             vectorstore = get_or_create_faiss_vectorstore([], doc_name)
         
         # 3. Extraction
-        result = run_multi_extraction(
+        result = await run_multi_extraction(
             vectorstore=vectorstore,
             questions=questions_list,
             provider=provider,

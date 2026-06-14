@@ -299,7 +299,7 @@ async function sendMessage() {
         formData.append('cached_files', JSON.stringify(fileNames));
     }
 
-    const res = await fetch('http://localhost:8000/chat', {
+    const res = await fetch(`${API_URL}/chat`, {
       method: 'POST',
       body: formData
     });
@@ -444,7 +444,7 @@ let cachedChatHistory = [];
 
 async function loadHistory() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/history/chat');
+    const res = await fetch(`${API_URL}/history/chat`);
     const data = await res.json();
     if (data.ok && data.data) {
       cachedChatHistory = data.data.map(h => {
@@ -486,7 +486,7 @@ async function saveToHistory() {
   };
   
   try {
-    await fetch('http://127.0.0.1:8000/history/chat', {
+    await fetch(`${API_URL}/history/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -546,7 +546,7 @@ async function deleteSession(id) {
   if (!confirm("Voulez-vous vraiment supprimer cette conversation ?")) return;
   
   try {
-    await fetch(`http://127.0.0.1:8000/history/chat/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/history/chat/${id}`, { method: 'DELETE' });
   } catch (e) {
     console.error("Erreur suppression historique chat:", e);
     let hist = JSON.parse(localStorage.getItem('holokia_chat_history') || '[]');

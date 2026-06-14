@@ -4,7 +4,7 @@ let currentExtractionId = null;
 async function loadHistorique() {
   const tbody = document.getElementById('historiqueTableBody');
   try {
-    const res = await fetch('http://127.0.0.1:8000/extractions');
+    const res = await fetch(`${API_URL}/extractions`);
     const data = await res.json();
     if (data.ok) {
       allExtractions = data.data || [];

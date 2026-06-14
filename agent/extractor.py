@@ -1,3 +1,4 @@
+import asyncio
 import os
 from typing import Dict, Any, List, Optional
 from datetime import datetime
@@ -17,45 +18,33 @@ from agent.analyzer import analyze_document_type
 from agent.prompts import build_dynamic_queries, get_empty_category_result
 from schema.v1.models import CopilotExtraction, MetaInfo
 
-def _extract_category_data(
-    category_name: str,
-    questions: List[Dict[str, str]],
-    vectorstore,
-    llm,
-    top_k: int = 3
-) -> Dict[str, Any]:
-    """
-    Extrait les données pour une catégorie spécifique en utilisant le RAG.
-    """
-    category_results = {}
+# Helper to safely extract page numbers from document metadata
+def get_page(doc):
+    p = doc.metadata.get('page')
+    if p is not None:
+        return str(p)
+    pages = doc.metadata.get('pages')
+    if pages and len(pages) > 0:
+        if isinstance(pages, list):
+            return str(pages[0])
+        return str(pages)
+    return 'Inconnue'
+
+async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k: int = 3):
+    champ = q_info["champ"]
+    question = q_info["question"]
+    is_list = q_info["type"] == "list"
     
-    for q_info in questions:
-        champ = q_info["champ"]
-        question = q_info["question"]
-        is_list = q_info["type"] == "list"
+    # 1. Retrieval (Recherche vectorielle)
+    retrieved_docs = vectorstore.similarity_search(question, k=top_k)
         
-        # 1. Retrieval (Recherche vectorielle)
-        retrieved_docs = vectorstore.similarity_search(question, k=top_k)
-        
-        # Helper to safely extract page numbers from document metadata
-        def get_page(doc):
-            p = doc.metadata.get('page')
-            if p is not None:
-                return str(p)
-            pages = doc.metadata.get('pages')
-            if pages and len(pages) > 0:
-                if isinstance(pages, list):
-                    return str(pages[0])
-                return str(pages)
-            return 'Inconnue'
-            
-        context_text = "\n\n".join(
-            [f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc.page_content}" 
-             for i, doc in enumerate(retrieved_docs)]
-        )
-        
-        # 2. Prompting strict
-        prompt_str = f"""Tu es un expert en analyse de documents d'entreprise.
+    context_text = "\n\n".join(
+        [f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc.page_content}" 
+         for i, doc in enumerate(retrieved_docs)]
+    )
+    
+    # 2. Prompting strict
+    prompt_str = f"""Tu es un expert en analyse de documents d'entreprise.
 Ta mission est de répondre à la question suivante en te basant UNIQUEMENT sur le contexte fourni.
 Si l'information n'est pas présente dans le contexte, tu DOIS répondre "NON_TROUVE". Ne devine rien.
 
@@ -69,77 +58,96 @@ Règles de formatage de ta réponse :
 2. Si tu as trouvé l'information, indique le numéro de la page source entre crochets à la fin de ta réponse (ex: [Page 12]).
 3. Si la question attend une liste (ex: concurrents), sépare les éléments par des virgules.
 """
+    
+    try:
+        response = await llm.ainvoke(prompt_str)
+        response = response.content.strip()
         
-        try:
-            response = llm.invoke(prompt_str).content.strip()
-            
-            # 3. Parsing de la réponse
-            if response == "NON_TROUVE" or response == "" or "NON_TROUVE" in response:
-                if is_list:
-                    category_results[champ] = {"valeur": [], "source": None, "confiance": 0.0}
-                else:
-                    category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
-                continue
-                
-            # Extraction basique de la page
-            page_num = None
-            if "[Page " in response:
-                try:
-                    page_str = response.split("[Page ")[1].split("]")[0]
-                    if page_str.isdigit():
-                        page_num = int(page_str)
-                    elif page_str.lower() != "inconnue":
-                        # Essayer d'extraire juste les chiffres si possible (ex: "1, 2" -> 1)
-                        import re
-                        m = re.search(r'\d+', page_str)
-                        if m:
-                            page_num = int(m.group())
-                    response = response.split("[Page ")[0].strip()
-                except:
-                    pass
-                    
+        # 3. Parsing de la réponse
+        if response == "NON_TROUVE" or response == "" or "NON_TROUVE" in response:
             if is_list:
-                valeur = [v.strip() for v in response.split(",") if v.strip()]
+                return champ, {"valeur": [], "source": None, "confiance": 0.0}
             else:
-                valeur = response
-                
-            # Trouver l'extrait le plus pertinent pour la justification (celui de la bonne page si possible)
-            best_extrait = context_text[:200] + "..."
-            if page_num is not None:
-                for doc in retrieved_docs:
-                    doc_page = get_page(doc)
-                    if str(page_num) == doc_page:
-                        best_extrait = doc.page_content[:200] + "..."
-                        break
-            else:
-                if retrieved_docs:
-                    best_extrait = retrieved_docs[0].page_content[:200] + "..."
-                    # Essayer de récupérer la page du premier document si on n'en a pas
-                    doc_page = get_page(retrieved_docs[0])
-                    if doc_page and doc_page.isdigit():
-                        page_num = int(doc_page)
-                
-            category_results[champ] = {
-                "valeur": valeur,
-                "source": {
-                    "page": page_num,
-                    "section": None,
-                    "extrait": best_extrait
-                },
-                "confiance": 0.85 # Confiance arbitraire pour l'instant
-            }
+                return champ, {"valeur": None, "source": None, "confiance": 0.0}
             
-        except Exception as e:
-            print(f"Erreur d'extraction pour le champ {champ}: {e}")
-            if is_list:
-                category_results[champ] = {"valeur": [], "source": None, "confiance": 0.0}
-            else:
-                category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
+        # Extraction basique de la page
+        page_num = None
+        if "[Page " in response:
+            try:
+                page_str = response.split("[Page ")[1].split("]")[0]
+                if page_str.isdigit():
+                    page_num = int(page_str)
+                elif page_str.lower() != "inconnue":
+                    # Essayer d'extraire juste les chiffres si possible (ex: "1, 2" -> 1)
+                    import re
+                    m = re.search(r'\d+', page_str)
+                    if m:
+                        page_num = int(m.group())
+                response = response.split("[Page ")[0].strip()
+            except:
+                pass
+                
+        if is_list:
+            valeur = [v.strip() for v in response.split(",") if v.strip()]
+        else:
+            valeur = response
+            
+        # Trouver l'extrait le plus pertinent pour la justification (celui de la bonne page si possible)
+        best_extrait = context_text[:200] + "..."
+        if page_num is not None:
+            for doc in retrieved_docs:
+                doc_page = get_page(doc)
+                if str(page_num) == doc_page:
+                    best_extrait = doc.page_content[:200] + "..."
+                    break
+        else:
+            if retrieved_docs:
+                best_extrait = retrieved_docs[0].page_content[:200] + "..."
+                # Essayer de récupérer la page du premier document si on n'en a pas
+                doc_page = get_page(retrieved_docs[0])
+                if doc_page and doc_page.isdigit():
+                    page_num = int(doc_page)
+            
+        return champ, {
+            "valeur": valeur,
+            "source": {
+                "page": page_num,
+                "section": None,
+                "extrait": best_extrait
+            },
+            "confiance": 0.85 # Confiance arbitraire pour l'instant
+        }
+        
+    except Exception as e:
+        print(f"Erreur d'extraction pour le champ {champ}: {e}")
+        if is_list:
+            return champ, {"valeur": [], "source": None, "confiance": 0.0}
+        else:
+            return champ, {"valeur": None, "source": None, "confiance": 0.0}
+            
+async def _extract_category_data(
+    category_name: str,
+    questions: List[Dict[str, str]],
+    vectorstore,
+    llm,
+    top_k: int = 3
+) -> Dict[str, Any]:
+    """
+    Extrait les données pour une catégorie spécifique en utilisant le RAG (en PARALLÈLE).
+    """
+    category_results = {}
+    
+    # ✅ PARALLÉLISATION : Traiter tous les champs de la catégorie en même temps
+    tasks = [_process_single_field(q_info, vectorstore, llm, top_k) for q_info in questions]
+    field_results = await asyncio.gather(*tasks)
+    
+    for champ, value in field_results:
+        category_results[champ] = value
                 
     return category_results
 
 
-def run_agent_extraction(
+async def run_agent_extraction(
     file_path: str,
     provider: Optional[str] = None,
     model: Optional[str] = None,
@@ -149,7 +157,7 @@ def run_agent_extraction(
     Pipeline principal de l'Agent RAG (Phase 4).
     1. Analyse préliminaire (T4.0)
     2. Génération de questions dynamiques
-    3. RAG ciblé
+    3. RAG ciblé (PARALLÉLE)
     4. Validation Pydantic (Phase 5)
     """
     print(f"\n[Agent] Début de l'extraction pour {file_path}")
@@ -201,21 +209,36 @@ def run_agent_extraction(
         "cyber": "diagnostic_cyber_gouvernance"
     }
     
-    # ÉTAPE 3 : Extraction RAG ciblée
+    # ÉTAPE 3 : Extraction RAG ciblée (PARALLÉLISATION DES CATÉGORIES)
     print("[Agent] Étape 3: Extraction RAG ciblée...")
+    
+    # Collecter toutes les tâches async pour les catégories actives
+    category_tasks = []
+    category_keys = []
+    
     for cat_key, schema_key in schema_mapping.items():
         if cat_key in active_cats and cat_key in dynamic_queries:
             print(f"  -> Extraction de la catégorie : {cat_key} ({len(dynamic_queries[cat_key])} questions)")
-            cat_data = _extract_category_data(
-                category_name=cat_key,
-                questions=dynamic_queries[cat_key],
-                vectorstore=vectorstore,
-                llm=llm
+            # Ajouter la tâche async pour cette catégorie
+            category_tasks.append(
+                _extract_category_data(
+                    category_name=cat_key,
+                    questions=dynamic_queries[cat_key],
+                    vectorstore=vectorstore,
+                    llm=llm
+                )
             )
-            raw_results[schema_key] = cat_data
+            category_keys.append(schema_key)
         else:
             print(f"  -> Catégorie ignorée : {cat_key} (génération de valeurs nulles)")
             raw_results[schema_key] = get_empty_category_result(cat_key)
+    
+    # ✅ Exécuter toutes les catégories en parallèle avec asyncio.gather
+    category_results_list = await asyncio.gather(*category_tasks)
+    
+    # Ajouter les résultats de chaque catégorie
+    for schema_key, cat_data in zip(category_keys, category_results_list):
+        raw_results[schema_key] = cat_data
             
     # ÉTAPE 4 : Validation Pydantic
     print("[Agent] Étape 4: Validation Pydantic...")
