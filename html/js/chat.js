@@ -321,8 +321,11 @@ async function sendMessage() {
 
   } catch (err) {
     typing.remove();
+    console.error("Error in sendMessage:", err);
+    console.error("API URL used:", API_URL);
+    const errorDetails = err.message ? `Erreur détaillée: ${err.message}` : '';
     const demo = state.files.length > 0
-      ? `J'ai analysé vos ${state.files.length} document(s) via le pipeline RAG. Voici ce que j'ai trouvé concernant votre question : "${text}"\n\nRéponse simulée — vérifiez que votre backend FastAPI est correctement configuré et accessible.`
+      ? `J'ai analysé vos ${state.files.length} document(s) via le pipeline RAG. Voici ce que j'ai trouvé concernant votre question : "${text}"\n\nRéponse simulée — vérifiez que votre backend FastAPI est correctement configuré et accessible.\n${errorDetails}`
       : `Aucun document chargé. Uploadez un rapport d'activité dans la sidebar pour que je puisse analyser son contenu et répondre à : "${text}"`;
 
     addMessage('assistant', demo, state.files.length > 0 ? [{ fichier: state.files[0]?.name, page: 1 }] : [], state.files.length > 0 ? 0.78 : null);
