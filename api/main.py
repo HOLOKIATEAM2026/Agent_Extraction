@@ -566,32 +566,20 @@ async def extract_multi(
         if not all_chunks and not file_names:
             return JSONResponse(status_code=400, content={"ok": False, "error": "Veuillez uploader au moins un fichier."})
             
-        # 2. Indexer tout dans un vectorstore temporaire avec des batchs plus petits
+        # 2. Indexer tout dans un vectorstore temporaire
         lc_docs = []
         if files:
             lc_docs, _ = chunks_to_langchain_docs(all_chunks)
             
-        from langchain_community.vectorstores import FAISS
         from agent.vectorstore import get_embeddings, get_or_create_faiss_vectorstore
         
         doc_name = "multi_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
         
-        if files and lc_docs:
-            embeddings = get_embeddings({})
-            vectorstore = FAISS.from_documents([lc_docs[0]], embeddings)
-            batch_size = 10
-            for start in range(1, len(lc_docs), batch_size):
-                end = start + batch_size
-                print(f"[INFO] Multi-Docs (FAISS) : upsert batch {start}:{min(end, len(lc_docs))}/{len(lc_docs)}")
-                vectorstore.add_documents(lc_docs[start:end])
-            # Sauvegarder le vectorstore avec le doc_name pour pouvoir le récupérer plus tard
-            vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
-        else:
-            # Charger depuis le cache
-            vectorstore = get_or_create_faiss_vectorstore([], doc_name)
+        embeddings = get_embeddings({})
+        vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings)
         
         # 3. Extraction
-        result = run_multi_extraction(
+        result = await run_multi_extraction(
             vectorstore=vectorstore,
             questions=questions_list,
             provider=provider,

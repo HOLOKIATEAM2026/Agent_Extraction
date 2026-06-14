@@ -113,8 +113,9 @@ Résultats par document :
         synth_prompt += "\nFais une synthèse comparative courte (2-3 paragraphes) mettant en évidence les similitudes et différences entre ces documents."
         
         try:
-            synthese = llm.invoke(synth_prompt).content.strip()
-        except:
+            synthese = (await llm.ainvoke(synth_prompt)).content.strip()
+        except Exception as e:
+            print(f"Erreur génération synthèse: {e}")
             synthese = "Erreur lors de la génération de la synthèse."
 
     return {
