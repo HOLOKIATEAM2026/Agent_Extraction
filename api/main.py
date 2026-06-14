@@ -761,11 +761,42 @@ class CustomQuestionCreate(BaseModel):
 def get_questions():
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
+        from agent.prompts import QUESTIONS_PAR_CATEGORIE
         if not supabase_enabled():
-            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
+            # Return default questions as flat list
+            default_questions = []
+            q_id = 1
+            for cat, q_list in QUESTIONS_PAR_CATEGORIE.items():
+                for q in q_list:
+                    default_questions.append({
+                        "id": str(q_id),
+                        "categorie": cat,
+                        "champ": q["champ"],
+                        "question_text": q["question"],
+                        "type": q["type"],
+                        "is_default": True
+                    })
+                    q_id += 1
+            return {"ok": True, "data": default_questions}
             
         store = SupabaseStore()
         questions = store.get_custom_questions()
+        if not questions:
+            # If no custom questions in DB, return default
+            default_questions = []
+            q_id = 1
+            for cat, q_list in QUESTIONS_PAR_CATEGORIE.items():
+                for q in q_list:
+                    default_questions.append({
+                        "id": str(q_id),
+                        "categorie": cat,
+                        "champ": q["champ"],
+                        "question_text": q["question"],
+                        "type": q["type"],
+                        "is_default": True
+                    })
+                    q_id += 1
+            return {"ok": True, "data": default_questions}
         return {"ok": True, "data": questions}
     except Exception as e:
         traceback.print_exc()
