@@ -27,6 +27,21 @@ def get_embeddings(config: Dict[str, Any]):
             base_url=base_url,
             client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
+    elif provider == "huggingface" or provider == "sentence-transformers":
+        try:
+            from langchain_huggingface import HuggingFaceEmbeddings
+        except ImportError:
+            from langchain_community.embeddings import HuggingFaceEmbeddings
+        
+        model = emb_cfg.get("model", "all-MiniLM-L6-v2")
+        model_kwargs = emb_cfg.get("model_kwargs", {})
+        encode_kwargs = emb_cfg.get("encode_kwargs", {"normalize_embeddings": True})
+        
+        return HuggingFaceEmbeddings(
+            model_name=model,
+            model_kwargs=model_kwargs,
+            encode_kwargs=encode_kwargs
+        )
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
