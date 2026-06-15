@@ -194,7 +194,7 @@ async function saveMultiToHistory() {
   };
   
   try {
-    await fetch('http://127.0.0.1:8000/history/multi', {
+    await fetch(`${API_URL}/history/multi`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -490,7 +490,7 @@ if (btnMultiExtract) {
     formData.append('model', modelName);
 
     try {
-      const response = await fetch('http://localhost:8000/extract-multi', {
+      const response = await fetch(`${API_URL}/extract-multi`, {
         method: 'POST',
         body: formData
       });

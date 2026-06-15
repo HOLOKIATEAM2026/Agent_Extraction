@@ -231,7 +231,7 @@ btnExtract.addEventListener('click', async () => {
 async function pollJobStatus(jobId) {
   pollInterval = setInterval(async () => {
     try {
-      const res = await fetch(`http://localhost:8000/status/${jobId}`);
+      const res = await fetch(`${API_URL}/status/${jobId}`);
       const data = await res.json();
       
       if (data.status === "completed") {
@@ -431,7 +431,7 @@ if (addQuestionForm) {
         type: document.getElementById('qType').value
       };
       
-      const res = await fetch('http://127.0.0.1:8000/questions', {
+      const res = await fetch(`${API_URL}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -467,7 +467,7 @@ if (btnResetQuestions) {
     if (!confirm("Attention, cela supprimera toutes vos questions personnalisées pour revenir à celles par défaut. Continuer ?")) return;
     btnResetQuestions.textContent = 'RÉINITIALISATION...';
     try {
-      const res = await fetch('http://127.0.0.1:8000/questions/reset', { method: 'POST' });
+      const res = await fetch(`${API_URL}/questions/reset`, { method: 'POST' });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       await loadQuestions();
