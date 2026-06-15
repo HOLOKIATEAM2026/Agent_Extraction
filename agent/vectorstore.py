@@ -85,21 +85,31 @@ def get_or_create_faiss_vectorstore(
     from langchain_community.vectorstores import FAISS
     import os
     
+    # Remplacer les caractères spéciaux dans doc_name pour éviter des problèmes de chemin
+    safe_doc_name = "".join([c if c.isalnum() else "_" for c in doc_name])
+    
     if config is None:
         config = load_config()
         
     if embeddings is None:
         embeddings = get_embeddings(config)
         
-    cache_dir = os.path.join("data", "vectors")
+    cache_dir = os.path.join("data", "faiss_cache", safe_doc_name)
     os.makedirs(cache_dir, exist_ok=True)
-    cache_path = os.path.join(cache_dir, f"{doc_name}.faiss")
     
     # Si déjà indexé -> charger depuis le disque (instantané)
-    if os.path.exists(cache_path):
+    if os.path.exists(os.path.join(cache_dir, "index.faiss")):
         print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
-        return FAISS.load_local(cache_path, embeddings, allow_dangerous_deserialization=True)
+        return FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
     
+    if not chunks:
+        print("[WARNING] Aucun document fourni et aucun cache trouvé.")
+        # Create an empty vectorstore with a dummy document to prevent errors
+        from langchain_core.documents import Document
+        dummy_doc = Document(page_content="empty", metadata={"source": "empty"})
+        vectorstore = FAISS.from_documents([dummy_doc], embeddings)
+        return vectorstore
+        
     # Sinon -> créer et sauvegarder en batchs pour éviter le timeout Ollama
     print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
     
@@ -113,7 +123,7 @@ def get_or_create_faiss_vectorstore(
         print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
         vectorstore.add_documents(chunks[start:end])
         
-    vectorstore.save_local(cache_path)
+    vectorstore.save_local(cache_dir)
     print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
     
     return vectorstore
