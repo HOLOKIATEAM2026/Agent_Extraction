@@ -127,11 +127,33 @@ async def run_multi_extraction(
             results_by_doc[fname][question] = value
 
     # Remplir les questions manquantes pour les documents qui n'ont pas eu de résultats dans la recherche vectorielle
-    all_fnames = list(results_by_doc.keys())
-    for fname in all_fnames:
+    all_files = set()
+    for fname in results_by_doc.keys():
+        if fname != "dummy":
+            all_files.add(fname)
+            
+    # Si le document est vide, s'assurer que all_files récupère bien les documents à partir du vectorstore
+    if not all_files:
+        try:
+            # Récupérer tous les fichiers depuis le vectorstore (via une recherche générique)
+            all_docs = vectorstore.similarity_search(" ", k=100)
+            for doc in all_docs:
+                fname = doc.metadata.get("file_name")
+                if fname and fname != "dummy":
+                    all_files.add(fname)
+        except Exception:
+            pass
+
+    for fname in all_files:
+        if fname not in results_by_doc:
+            results_by_doc[fname] = {}
         for q in questions:
             if q not in results_by_doc[fname]:
                 results_by_doc[fname][q] = {"valeur": None, "source": None, "confiance": 0.0}
+
+    # Nettoyer l'index dummy s'il s'est glissé dans les résultats
+    if "dummy" in results_by_doc:
+        del results_by_doc["dummy"]
 
     # Maintenant, générer une synthèse comparative finale si plus d'un doc
     synthese = None
