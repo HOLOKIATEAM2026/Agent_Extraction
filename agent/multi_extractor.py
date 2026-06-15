@@ -42,6 +42,9 @@ async def _process_single_question(question: str, vectorstore, llm, semaphore: a
         docs_by_file[fname].append(doc)
     
     for fname, docs in docs_by_file.items():
+        if fname == "dummy":
+            continue
+            
         context_text = "\n\n".join(
             [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
              for i, doc in enumerate(docs[:3])]
