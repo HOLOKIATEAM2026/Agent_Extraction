@@ -28,6 +28,11 @@ def get_embeddings(config: Dict[str, Any]):
             client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
 
+    if provider == "huggingface":
+        from langchain_huggingface import HuggingFaceEmbeddings
+        model = emb_cfg.get("model", "all-MiniLM-L6-v2")
+        return HuggingFaceEmbeddings(model_name=model)
+
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
 

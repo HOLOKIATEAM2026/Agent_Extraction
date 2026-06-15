@@ -2,11 +2,8 @@ default_provider: "groq"
 default_model: "llama-3.1-8b-instant"
 
 embeddings:
-  provider: "ollama"
-  model: "nomic-embed-text"
-  base_url: "http://localhost:11434"
-  sync_client_kwargs:
-    timeout: 300.0
+  provider: "huggingface"
+  model: "all-MiniLM-L6-v2"
 
 vectorstore:
   type: "chroma"
