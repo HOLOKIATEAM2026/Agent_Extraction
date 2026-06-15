@@ -371,7 +371,7 @@ if (questionsOverlay) questionsOverlay.addEventListener('click', () => toggleQue
 async function loadQuestions() {
   questionsList.innerHTML = '<div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>';
   try {
-    const res = await fetch('http://127.0.0.1:8000/questions');
+    const res = await fetch(`${API_URL}/questions`);
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Erreur inconnue");
     

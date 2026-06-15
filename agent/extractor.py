@@ -199,7 +199,11 @@ async def run_agent_extraction(
     # Préparation des outils RAG
     llm = get_llm(provider=provider, model=model, config_path=config_path, temperature=0.0)
     config = load_config(config_path)
-    vectorstore = get_chroma_vectorstore(config)
+    
+    # Charger le vectorstore FAISS créé par _index_single_file
+    from agent.vectorstore import get_or_create_faiss_vectorstore
+    doc_name = os.path.basename(file_path).split('.')[0]
+    vectorstore = get_or_create_faiss_vectorstore([], doc_name, config=config)
     
     # Dictionnaire brut qui contiendra toutes les réponses
     raw_results = {}

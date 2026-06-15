@@ -577,20 +577,31 @@ async def extract_multi(
             lc_docs, _ = chunks_to_langchain_docs(all_chunks)
             
         from langchain_community.vectorstores import FAISS
-        from agent.vectorstore import get_embeddings, get_or_create_faiss_vectorstore
+        from agent.vectorstore import get_embeddings, get_or_create_faiss_vectorstore, load_config
         
         doc_name = "multi_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
         
+        config = load_config()
         if files and lc_docs:
-            embeddings = get_embeddings({})
+            embeddings = get_embeddings(config)
             if len(lc_docs) > 0:
-                vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings)
+                vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings, config=config)
             else:
-                vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings)
+                vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings, config=config)
         else:
             # Charger depuis le cache
-            embeddings = get_embeddings({})
-            vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings)
+            embeddings = get_embeddings(config)
+            
+            # Vérifier si le cache existe vraiment sur le serveur (important pour le déploiement Cloud éphémère)
+            safe_doc_name = "".join([c if c.isalnum() else "_" for c in doc_name])
+            cache_dir = os.path.join("data", "faiss_cache", safe_doc_name)
+            if not os.path.exists(os.path.join(cache_dir, "index.faiss")):
+                return JSONResponse(status_code=400, content={
+                    "ok": False, 
+                    "error": "Les fichiers de cette session ne sont plus sur le serveur (cache expiré). Veuillez créer une nouvelle comparaison et ré-uploader les documents."
+                })
+                
+            vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings, config=config)
         
         # 3. Extraction
         result = await run_multi_extraction(
@@ -701,6 +712,16 @@ async def chat_endpoint(
         # Pour le chat multi-fichiers, on utilise une clé de cache combinée
         doc_name = "chat_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
         
+        # Vérifier si on charge depuis le cache et si le cache existe
+        if not files:
+            safe_doc_name = "".join([c if c.isalnum() else "_" for c in doc_name])
+            cache_dir = os.path.join("data", "faiss_cache", safe_doc_name)
+            if not os.path.exists(os.path.join(cache_dir, "index.faiss")):
+                return JSONResponse(status_code=400, content={
+                    "ok": False, 
+                    "error": "Les fichiers de cette session ne sont plus sur le serveur (cache expiré). Veuillez créer un nouveau chat et ré-uploader les documents."
+                })
+
         vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
         
         # 3. Réponse du LLM (Chat)
