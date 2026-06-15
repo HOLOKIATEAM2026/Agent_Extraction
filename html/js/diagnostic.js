@@ -202,7 +202,7 @@ btnExtract.addEventListener('click', async () => {
   setStored("holokia_async", isAsync ? "1" : "0");
 
   try {
-    const response = await fetch('http://localhost:8000/extract', {
+    const response = await fetch(`${API_URL}/extract`, {
       method: 'POST',
       body: fd
     });
@@ -453,7 +453,7 @@ if (addQuestionForm) {
 async function deleteQuestion(id) {
   if (!confirm("Voulez-vous vraiment supprimer cette question ?")) return;
   try {
-    const res = await fetch(`http://127.0.0.1:8000/questions/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_URL}/questions/${id}`, { method: 'DELETE' });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     await loadQuestions();

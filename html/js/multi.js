@@ -256,7 +256,7 @@ async function deleteMultiSession(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet historique ?")) return;
   
   try {
-    await fetch(`http://127.0.0.1:8000/history/multi/${id}`, { method: 'DELETE' });
+    await fetch(`${API_URL}/history/multi/${id}`, { method: 'DELETE' });
   } catch (e) {
     console.error("Erreur suppression historique multi:", e);
     let hist = JSON.parse(localStorage.getItem('holokia_multi_history') || '[]');

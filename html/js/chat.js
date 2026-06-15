@@ -300,7 +300,7 @@ async function sendMessage() {
         formData.append('cached_files', JSON.stringify(fileNames));
     }
 
-    const res = await fetch('http://localhost:8000/chat', {
+    const res = await fetch(`${API_URL}/chat`, {
       method: 'POST',
       body: formData
     });
