@@ -152,7 +152,7 @@ let cachedMultiHistory = [];
 
 async function loadMultiHistory() {
   try {
-    const res = await fetch(`${API_URL}/history/multi`);
+    const res = await fetch('http://127.0.0.1:8000/history/multi');
     const data = await res.json();
     if (data.ok && data.data) {
       cachedMultiHistory = data.data.map(h => {
@@ -194,7 +194,7 @@ async function saveMultiToHistory() {
   };
   
   try {
-    await fetch(`${API_URL}/history/multi`, {
+    await fetch('http://127.0.0.1:8000/history/multi', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -256,7 +256,7 @@ async function deleteMultiSession(id) {
   if (!confirm("Voulez-vous vraiment supprimer cet historique ?")) return;
   
   try {
-    await fetch(`${API_URL}/history/multi/${id}`, { method: 'DELETE' });
+    await fetch(`http://127.0.0.1:8000/history/multi/${id}`, { method: 'DELETE' });
   } catch (e) {
     console.error("Erreur suppression historique multi:", e);
     let hist = JSON.parse(localStorage.getItem('holokia_multi_history') || '[]');
@@ -484,14 +484,13 @@ if (btnMultiExtract) {
     
     formData.append('questions', JSON.stringify(multiQuestions));
     
-    const provider = model === 'groq' ? 'groq' : 'ollama';
-    const modelName = model === 'groq' ? 'llama-3.3-70b-versatile' : model;
-    
+    const provider = 'groq';
+    const modelName = 'llama-3.1-8b-instant';
     formData.append('provider', provider);
     formData.append('model', modelName);
 
     try {
-      const response = await fetch(`${API_URL}/extract-multi`, {
+      const response = await fetch('http://localhost:8000/extract-multi', {
         method: 'POST',
         body: formData
       });
@@ -582,7 +581,7 @@ function getConfBadge(conf) {
 
 function renderDemoResults() {
   const demoData = {
-    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Vérifiez que votre backend FastAPI est correctement configuré.`,
+    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Lancez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`,
     results_by_document: {}
   };
   multiFiles.forEach(f => {

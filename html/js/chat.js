@@ -274,8 +274,9 @@ async function sendMessage() {
       .map(m => ({ role: m.role, content: m.content }));
     formData.append('history', JSON.stringify(historyPayload));
 
+    // Fixation du modèle sur llama-3.1-8b-instant
     let provider = 'groq';
-    let model = 'llama-3.3-70b-versatile';
+    let model = 'llama-3.1-8b-instant';
     
     if (state.model === 'mistral') {
         provider = 'ollama';
@@ -299,7 +300,7 @@ async function sendMessage() {
         formData.append('cached_files', JSON.stringify(fileNames));
     }
 
-    const res = await fetch(`${API_URL}/chat`, {
+    const res = await fetch('http://localhost:8000/chat', {
       method: 'POST',
       body: formData
     });
@@ -321,11 +322,8 @@ async function sendMessage() {
 
   } catch (err) {
     typing.remove();
-    console.error("Error in sendMessage:", err);
-    console.error("API URL used:", API_URL);
-    const errorDetails = err.message ? `Erreur détaillée: ${err.message}` : '';
     const demo = state.files.length > 0
-      ? `J'ai analysé vos ${state.files.length} document(s) via le pipeline RAG. Voici ce que j'ai trouvé concernant votre question : "${text}"\n\nRéponse simulée — vérifiez que votre backend FastAPI est correctement configuré et accessible.\n${errorDetails}`
+      ? `J'ai analysé vos ${state.files.length} document(s) via le pipeline RAG. Voici ce que j'ai trouvé concernant votre question : "${text}"\n\nRéponse simulée — connectez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`
       : `Aucun document chargé. Uploadez un rapport d'activité dans la sidebar pour que je puisse analyser son contenu et répondre à : "${text}"`;
 
     addMessage('assistant', demo, state.files.length > 0 ? [{ fichier: state.files[0]?.name, page: 1 }] : [], state.files.length > 0 ? 0.78 : null);
@@ -447,7 +445,7 @@ let cachedChatHistory = [];
 
 async function loadHistory() {
   try {
-    const res = await fetch(`${API_URL}/history/chat`);
+    const res = await fetch('http://127.0.0.1:8000/history/chat');
     const data = await res.json();
     if (data.ok && data.data) {
       cachedChatHistory = data.data.map(h => {
@@ -489,7 +487,7 @@ async function saveToHistory() {
   };
   
   try {
-    await fetch(`${API_URL}/history/chat`, {
+    await fetch('http://127.0.0.1:8000/history/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -549,7 +547,7 @@ async function deleteSession(id) {
   if (!confirm("Voulez-vous vraiment supprimer cette conversation ?")) return;
   
   try {
-    await fetch(`${API_URL}/history/chat/${id}`, { method: 'DELETE' });
+    await fetch(`http://127.0.0.1:8000/history/chat/${id}`, { method: 'DELETE' });
   } catch (e) {
     console.error("Erreur suppression historique chat:", e);
     let hist = JSON.parse(localStorage.getItem('holokia_chat_history') || '[]');

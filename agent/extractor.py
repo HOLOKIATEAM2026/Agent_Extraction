@@ -30,7 +30,25 @@ def get_page(doc):
         return str(pages)
     return 'Inconnue'
 
-async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k: int = 3):
+async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 5):
+    import re
+    for attempt in range(max_retries):
+        try:
+            return await llm.ainvoke(prompt_str)
+        except Exception as e:
+            err_str = str(e).lower()
+            if "rate limit" in err_str or "429" in err_str:
+                wait_time = 10.0
+                m = re.search(r"try again in (\d+\.?\d*)s", err_str)
+                if m:
+                    wait_time = float(m.group(1)) + 1.0
+                print(f"[Rate Limit] Limite API atteinte. Attente de {wait_time:.2f}s (Tentative {attempt+1}/{max_retries})...")
+                await asyncio.sleep(wait_time)
+            else:
+                raise e
+    return await llm.ainvoke(prompt_str)
+
+async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k: int = 3, semaphore: asyncio.Semaphore = None):
     champ = q_info["champ"]
     question = q_info["question"]
     is_list = q_info["type"] == "list"
@@ -60,7 +78,12 @@ Règles de formatage de ta réponse :
 """
     
     try:
-        response = await llm.ainvoke(prompt_str)
+        if semaphore:
+            async with semaphore:
+                response = await _safe_ainvoke(llm, prompt_str)
+        else:
+            response = await _safe_ainvoke(llm, prompt_str)
+            
         response = response.content.strip()
         
         # 3. Parsing de la réponse
@@ -130,7 +153,8 @@ async def _extract_category_data(
     questions: List[Dict[str, str]],
     vectorstore,
     llm,
-    top_k: int = 3
+    top_k: int = 3,
+    semaphore: asyncio.Semaphore = None
 ) -> Dict[str, Any]:
     """
     Extrait les données pour une catégorie spécifique en utilisant le RAG (en PARALLÈLE).
@@ -138,7 +162,7 @@ async def _extract_category_data(
     category_results = {}
     
     # ✅ PARALLÉLISATION : Traiter tous les champs de la catégorie en même temps
-    tasks = [_process_single_field(q_info, vectorstore, llm, top_k) for q_info in questions]
+    tasks = [_process_single_field(q_info, vectorstore, llm, top_k, semaphore) for q_info in questions]
     field_results = await asyncio.gather(*tasks)
     
     for champ, value in field_results:
@@ -212,6 +236,11 @@ async def run_agent_extraction(
     # ÉTAPE 3 : Extraction RAG ciblée (PARALLÉLISATION DES CATÉGORIES)
     print("[Agent] Étape 3: Extraction RAG ciblée...")
     
+    # Création d'un sémaphore pour limiter le nombre de requêtes LLM simultanées
+    # et éviter de saturer le Rate Limit de l'API (ex: Groq 6000 TPM)
+    concurrency_limit = 3
+    semaphore = asyncio.Semaphore(concurrency_limit)
+    
     # Collecter toutes les tâches async pour les catégories actives
     category_tasks = []
     category_keys = []
@@ -225,7 +254,8 @@ async def run_agent_extraction(
                     category_name=cat_key,
                     questions=dynamic_queries[cat_key],
                     vectorstore=vectorstore,
-                    llm=llm
+                    llm=llm,
+                    semaphore=semaphore
                 )
             )
             category_keys.append(schema_key)

@@ -1,4 +1,5 @@
 import asyncio
+import os
 from typing import Dict, Any, List, Optional
 from langchain_core.documents import Document
 
@@ -10,34 +11,41 @@ def get_llm(provider: Optional[str] = None, model: Optional[str] = None, config_
         llm_manager.llm.temperature = temperature
     return llm_manager.llm
 
-async def _process_single_question(question: str, vectorstore, llm):
+async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 5):
+    import re
+    for attempt in range(max_retries):
+        try:
+            return await llm.ainvoke(prompt_str)
+        except Exception as e:
+            err_str = str(e).lower()
+            if "rate limit" in err_str or "429" in err_str:
+                wait_time = 10.0
+                m = re.search(r"try again in (\d+\.?\d*)s", err_str)
+                if m:
+                    wait_time = float(m.group(1)) + 1.0
+                print(f"[Rate Limit] Limite API atteinte. Attente de {wait_time:.2f}s (Tentative {attempt+1}/{max_retries})...")
+                await asyncio.sleep(wait_time)
+            else:
+                raise e
+    return await llm.ainvoke(prompt_str)
+
+async def _process_single_question(question: str, vectorstore, llm, semaphore: asyncio.Semaphore = None):
     results = {}
     
-    try:
-        retrieved_docs = vectorstore.similarity_search(question, k=15)
-    except Exception as e:
-        print(f"Erreur similarity_search pour question '{question}': {e}")
-        retrieved_docs = []
+    retrieved_docs = vectorstore.similarity_search(question, k=15)
     
     docs_by_file = {}
     for doc in retrieved_docs:
-        try:
-            fname = doc.metadata.get("file_name", "Inconnu")
-            if fname not in docs_by_file:
-                docs_by_file[fname] = []
-            docs_by_file[fname].append(doc)
-        except Exception as e:
-            print(f"Erreur traitement doc pour question '{question}': {e}")
+        fname = doc.metadata.get("file_name", "Inconnu")
+        if fname not in docs_by_file:
+            docs_by_file[fname] = []
+        docs_by_file[fname].append(doc)
     
     for fname, docs in docs_by_file.items():
-        context_text = ""
-        try:
-            context_text = "\n\n".join(
-                [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
-                 for i, doc in enumerate(docs[:3])]
-            )
-        except Exception as e:
-            print(f"Erreur construction contexte pour {fname}, question '{question}': {e}")
+        context_text = "\n\n".join(
+            [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
+             for i, doc in enumerate(docs[:3])]
+        )
         
         prompt_str = f"""Tu es un expert en analyse de documents.
 Ta mission est de répondre à la question suivante en te basant UNIQUEMENT sur le contexte fourni.
@@ -53,7 +61,12 @@ Règles de formatage :
 2. Si tu as trouvé l'information, indique le numéro de la page source entre crochets à la fin de ta réponse (ex: [Page 12]).
 """
         try:
-            response = await llm.ainvoke(prompt_str)
+            if semaphore:
+                async with semaphore:
+                    response = await _safe_ainvoke(llm, prompt_str)
+            else:
+                response = await _safe_ainvoke(llm, prompt_str)
+                
             response = response.content.strip()
             
             if response == "NON_TROUVE" or response == "" or "NON_TROUVE" in response:
@@ -98,8 +111,12 @@ async def run_multi_extraction(
     
     results_by_doc = {}
     
+    # Création d'un sémaphore pour limiter la concurrence (Rate Limit)
+    concurrency_limit = 3
+    semaphore = asyncio.Semaphore(concurrency_limit)
+    
     # ✅ PARALLÉLISATION : Traiter toutes les questions en même temps avec asyncio.gather
-    tasks = [_process_single_question(q, vectorstore, llm) for q in questions]
+    tasks = [_process_single_question(q, vectorstore, llm, semaphore) for q in questions]
     question_results = await asyncio.gather(*tasks)
     
     # Fusionner les résultats
@@ -133,9 +150,8 @@ Résultats par document :
         synth_prompt += "\nFais une synthèse comparative courte (2-3 paragraphes) mettant en évidence les similitudes et différences entre ces documents."
         
         try:
-            synthese = (await llm.ainvoke(synth_prompt)).content.strip()
-        except Exception as e:
-            print(f"Erreur génération synthèse: {e}")
+            synthese = (await _safe_ainvoke(llm, synth_prompt)).content.strip()
+        except:
             synthese = "Erreur lors de la génération de la synthèse."
 
     return {

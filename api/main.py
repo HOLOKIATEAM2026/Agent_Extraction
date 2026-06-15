@@ -225,7 +225,7 @@ def _index_single_file(*, file_path: str, config_path: str) -> Dict[str, Any]:
     return {"chunks": len(lc_docs)}
 
 
-def _run_approach(
+async def _run_approach(
     *,
     approach: str,
     file_path: str,
@@ -237,7 +237,7 @@ def _run_approach(
     
     # 🆕 NOUVELLE APPROCHE PAR DÉFAUT : L'AGENT FINAL (T4.1)
     if a in {"agent", "final", "t4"}:
-        result_dict = run_agent_extraction(
+        result_dict = await run_agent_extraction(
             file_path=file_path, 
             provider=provider, 
             model=model, 
@@ -267,7 +267,7 @@ def _run_approach(
     }
 
 
-def _process_extraction_job(
+async def _process_extraction_job(
     job_id: str,
     stored_path: str,
     provider: Optional[str],
@@ -292,7 +292,7 @@ def _process_extraction_job(
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
 
-        raw_payload = _run_approach(
+        raw_payload = await _run_approach(
             approach=approach,
             file_path=stored_path,
             provider=provider,
@@ -382,13 +382,18 @@ async def extract_document(
             
             _ensure_dir("data/processed")
             md_filename = orig_name.replace('.pdf', '.md')
-            md_path = os.path.join("data/processed", f"{uuid.uuid4().hex}_{md_filename}")
+            # Retirer le UUID pour profiter du cache
+            md_path = os.path.join("data/processed", md_filename)
             
             # Convertir en Markdown si c'est un PDF
             if orig_name.lower().endswith('.pdf'):
-                md_content = pdf_to_markdown_with_tables(stored)
-                with open(md_path, 'w', encoding='utf-8') as f:
-                    f.write(md_content)
+                if not os.path.exists(md_path):
+                    print(f"[INFO] Conversion de {orig_name} en Markdown...")
+                    md_content = pdf_to_markdown_with_tables(stored)
+                    with open(md_path, 'w', encoding='utf-8') as f:
+                        f.write(md_content)
+                else:
+                    print(f"[INFO] Fichier Markdown trouvé en cache pour {orig_name}")
                 # On utilise le Markdown pour la suite du pipeline
                 stored = md_path
         except Exception as e:
@@ -423,7 +428,7 @@ async def extract_document(
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
 
-        raw_payload = _run_approach(
+        raw_payload = await _run_approach(
             approach=approach,
             file_path=stored,
             provider=provider,
@@ -480,7 +485,7 @@ async def extract_multi(
     files: List[UploadFile] = File(None),
     questions: str = Form(...),
     provider: str = Form("groq"),
-    model: str = Form("llama-3.3-70b-versatile"),
+    model: str = Form("llama-3.1-8b-instant"),
     cached_files: str = Form(None)
 ):
     """
@@ -566,17 +571,29 @@ async def extract_multi(
         if not all_chunks and not file_names:
             return JSONResponse(status_code=400, content={"ok": False, "error": "Veuillez uploader au moins un fichier."})
             
-        # 2. Indexer tout dans un vectorstore temporaire
+        # 2. Indexer tout dans un vectorstore temporaire avec des batchs plus petits
         lc_docs = []
         if files:
             lc_docs, _ = chunks_to_langchain_docs(all_chunks)
             
+        from langchain_community.vectorstores import FAISS
         from agent.vectorstore import get_embeddings, get_or_create_faiss_vectorstore
         
         doc_name = "multi_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
         
-        embeddings = get_embeddings({})
-        vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings)
+        if files and lc_docs:
+            embeddings = get_embeddings({})
+            vectorstore = FAISS.from_documents([lc_docs[0]], embeddings)
+            batch_size = 10
+            for start in range(1, len(lc_docs), batch_size):
+                end = start + batch_size
+                print(f"[INFO] Multi-Docs (FAISS) : upsert batch {start}:{min(end, len(lc_docs))}/{len(lc_docs)}")
+                vectorstore.add_documents(lc_docs[start:end])
+            # Sauvegarder le vectorstore avec le doc_name pour pouvoir le récupérer plus tard
+            vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
+        else:
+            # Charger depuis le cache
+            vectorstore = get_or_create_faiss_vectorstore([], doc_name)
         
         # 3. Extraction
         result = await run_multi_extraction(
@@ -605,7 +622,7 @@ async def chat_endpoint(
     message: str = Form(...),
     history: str = Form("[]"),
     provider: str = Form("groq"),
-    model: str = Form("llama-3.3-70b-versatile"),
+    model: str = Form("llama-3.1-8b-instant"),
     files: List[UploadFile] = File(None),
     cached_files: str = Form(None)
 ):
@@ -749,42 +766,11 @@ class CustomQuestionCreate(BaseModel):
 def get_questions():
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
-        from agent.prompts import QUESTIONS_PAR_CATEGORIE
         if not supabase_enabled():
-            # Return default questions as flat list
-            default_questions = []
-            q_id = 1
-            for cat, q_list in QUESTIONS_PAR_CATEGORIE.items():
-                for q in q_list:
-                    default_questions.append({
-                        "id": str(q_id),
-                        "categorie": cat,
-                        "champ": q["champ"],
-                        "question_text": q["question"],
-                        "type": q["type"],
-                        "is_default": True
-                    })
-                    q_id += 1
-            return {"ok": True, "data": default_questions}
+            return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
             
         store = SupabaseStore()
         questions = store.get_custom_questions()
-        if not questions:
-            # If no custom questions in DB, return default
-            default_questions = []
-            q_id = 1
-            for cat, q_list in QUESTIONS_PAR_CATEGORIE.items():
-                for q in q_list:
-                    default_questions.append({
-                        "id": str(q_id),
-                        "categorie": cat,
-                        "champ": q["champ"],
-                        "question_text": q["question"],
-                        "type": q["type"],
-                        "is_default": True
-                    })
-                    q_id += 1
-            return {"ok": True, "data": default_questions}
         return {"ok": True, "data": questions}
     except Exception as e:
         traceback.print_exc()

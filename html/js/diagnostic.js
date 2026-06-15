@@ -187,7 +187,7 @@ btnExtract.addEventListener('click', async () => {
   
   if(['groq','gpt-4o'].includes(selectedModel)){
     provider = selectedModel === 'gpt-4o' ? 'openai' : selectedModel;
-    model = ''; // Le serveur utilise le modèle par défaut du provider
+    model = selectedModel === 'groq' ? 'llama-3.1-8b-instant' : '';
   } else if (selectedModel === 'qwen3:8b') {
     provider = 'ollama';
     model = 'qwen3:8b';
@@ -202,7 +202,7 @@ btnExtract.addEventListener('click', async () => {
   setStored("holokia_async", isAsync ? "1" : "0");
 
   try {
-    const response = await fetch(`${API_URL}/extract`, {
+    const response = await fetch('http://localhost:8000/extract', {
       method: 'POST',
       body: fd
     });
@@ -231,7 +231,7 @@ btnExtract.addEventListener('click', async () => {
 async function pollJobStatus(jobId) {
   pollInterval = setInterval(async () => {
     try {
-      const res = await fetch(`${API_URL}/status/${jobId}`);
+      const res = await fetch(`http://localhost:8000/status/${jobId}`);
       const data = await res.json();
       
       if (data.status === "completed") {
@@ -371,8 +371,8 @@ if (questionsOverlay) questionsOverlay.addEventListener('click', () => toggleQue
 async function loadQuestions() {
   questionsList.innerHTML = '<div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>';
   try {
-      const res = await fetch(`${API_URL}/questions`);
-      const data = await res.json();
+    const res = await fetch('http://127.0.0.1:8000/questions');
+    const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Erreur inconnue");
     
     // Grouper par catégorie
@@ -431,7 +431,7 @@ if (addQuestionForm) {
         type: document.getElementById('qType').value
       };
       
-      const res = await fetch(`${API_URL}/questions`, {
+      const res = await fetch('http://127.0.0.1:8000/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -453,7 +453,7 @@ if (addQuestionForm) {
 async function deleteQuestion(id) {
   if (!confirm("Voulez-vous vraiment supprimer cette question ?")) return;
   try {
-    const res = await fetch(`${API_URL}/questions/${id}`, { method: 'DELETE' });
+    const res = await fetch(`http://127.0.0.1:8000/questions/${id}`, { method: 'DELETE' });
     const data = await res.json();
     if (!data.ok) throw new Error(data.error);
     await loadQuestions();
@@ -467,7 +467,7 @@ if (btnResetQuestions) {
     if (!confirm("Attention, cela supprimera toutes vos questions personnalisées pour revenir à celles par défaut. Continuer ?")) return;
     btnResetQuestions.textContent = 'RÉINITIALISATION...';
     try {
-      const res = await fetch(`${API_URL}/questions/reset`, { method: 'POST' });
+      const res = await fetch('http://127.0.0.1:8000/questions/reset', { method: 'POST' });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error);
       await loadQuestions();
