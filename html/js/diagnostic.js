@@ -218,7 +218,7 @@ btnExtract.addEventListener('click', async () => {
       showResults(data);
     }
   } catch(e) {
-    statusText.textContent = "Erreur: Serveur FastAPI injoignable (port 8000).";
+    statusText.textContent = "Erreur: Serveur FastAPI injoignable ou erreur serveur.";
     btnExtract.disabled = false;
     setFormLocked(false);
     btnExtract.textContent = "LANCER L'EXTRACTION";
