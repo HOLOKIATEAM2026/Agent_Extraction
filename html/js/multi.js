@@ -152,7 +152,7 @@ let cachedMultiHistory = [];
 
 async function loadMultiHistory() {
   try {
-    const res = await fetch('http://127.0.0.1:8000/history/multi');
+    const res = await fetch(`${API_URL}/history/multi`);
     const data = await res.json();
     if (data.ok && data.data) {
       cachedMultiHistory = data.data.map(h => {
