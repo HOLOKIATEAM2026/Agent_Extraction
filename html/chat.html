@@ -423,7 +423,7 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 180px;
+  max-height: 400px;
   overflow-y: auto;
 }
 .history-list::-webkit-scrollbar { width: 3px; }
@@ -1159,12 +1159,6 @@ nav {
   <aside class="sidebar">
     <div class="sidebar-scroll">
 
-      <!-- Historique -->
-      <div class="sidebar-block">
-        <div class="block-label">Historique</div>
-        <div id="historyList" class="history-list"></div>
-      </div>
-
       <!-- Stats -->
       <div class="sidebar-block">
         <div class="block-label">Session</div>
@@ -1189,6 +1183,12 @@ nav {
         <button id="btnReset" class="btn-reset" aria-label="Réinitialiser la conversation">
           ⟳ &nbsp;Nouvelle conversation
         </button>
+      </div>
+
+      <!-- Historique -->
+      <div class="sidebar-block">
+        <div class="block-label">Historique</div>
+        <div id="historyList" class="history-list"></div>
       </div>
 
     </div>
