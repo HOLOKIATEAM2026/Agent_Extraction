@@ -48,7 +48,7 @@ async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 5):
                 raise e
     return await llm.ainvoke(prompt_str)
 
-async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k: int = 3, semaphore: asyncio.Semaphore = None):
+async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k: int = 2, semaphore: asyncio.Semaphore = None):
     champ = q_info["champ"]
     question = q_info["question"]
     is_list = q_info["type"] == "list"
