@@ -13,7 +13,7 @@ def get_llm(provider: Optional[str] = None, model: Optional[str] = None, config_
     if temperature != 0.0:
         llm_manager.llm.temperature = temperature
     return llm_manager.llm
-from agent.vectorstore import get_chroma_vectorstore, load_config
+from agent.vectorstore import get_chroma_vectorstore, load_config, get_embeddings
 from agent.analyzer import analyze_document_type
 from agent.prompts import build_dynamic_queries, get_empty_category_result
 from schema.v1.models import CopilotExtraction, MetaInfo
@@ -165,11 +165,9 @@ async def _extract_category_data(
     """
     category_results = {}
     
-    # ✅ PARALLÉLISATION : Traiter tous les champs de la catégorie en même temps
-    tasks = [_process_single_field(q_info, vectorstore, llm, top_k, semaphore) for q_info in questions]
-    field_results = await asyncio.gather(*tasks)
-    
-    for champ, value in field_results:
+    # ✅ SÉQUENTIEL : Traiter tous les champs de la catégorie un par un
+    for q_info in questions:
+        champ, value = await _process_single_field(q_info, vectorstore, llm, top_k, semaphore)
         category_results[champ] = value
                 
     return category_results
@@ -203,11 +201,12 @@ async def run_agent_extraction(
     # Préparation des outils RAG
     llm = get_llm(provider=provider, model=model, config_path=config_path, temperature=0.0)
     config = load_config(config_path)
+    embeddings = get_embeddings(config)
     
     # Charger le vectorstore FAISS créé par _index_single_file
     from agent.vectorstore import get_or_create_faiss_vectorstore
     doc_name = os.path.basename(file_path).split('.')[0]
-    vectorstore = get_or_create_faiss_vectorstore([], doc_name, config=config)
+    vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings, config=config)
     
     # Dictionnaire brut qui contiendra toutes les réponses
     raw_results = {}
@@ -250,32 +249,27 @@ async def run_agent_extraction(
     semaphore = asyncio.Semaphore(concurrency_limit)
     
     # Collecter toutes les tâches async pour les catégories actives
-    category_tasks = []
+    active_cats_keys = []
     category_keys = []
     
     for cat_key, schema_key in schema_mapping.items():
         if cat_key in active_cats and cat_key in dynamic_queries:
             print(f"  -> Extraction de la catégorie : {cat_key} ({len(dynamic_queries[cat_key])} questions)")
-            # Ajouter la tâche async pour cette catégorie
-            category_tasks.append(
-                _extract_category_data(
-                    category_name=cat_key,
-                    questions=dynamic_queries[cat_key],
-                    vectorstore=vectorstore,
-                    llm=llm,
-                    semaphore=semaphore
-                )
-            )
+            active_cats_keys.append(cat_key)
             category_keys.append(schema_key)
         else:
             print(f"  -> Catégorie ignorée : {cat_key} (génération de valeurs nulles)")
             raw_results[schema_key] = get_empty_category_result(cat_key)
     
-    # ✅ Exécuter toutes les catégories en parallèle avec asyncio.gather
-    category_results_list = await asyncio.gather(*category_tasks)
-    
-    # Ajouter les résultats de chaque catégorie
-    for schema_key, cat_data in zip(category_keys, category_results_list):
+    # ✅ Exécuter toutes les catégories SÉQUENTIELLEMENT
+    for cat_key, schema_key in zip(active_cats_keys, category_keys):
+        cat_data = await _extract_category_data(
+            category_name=cat_key,
+            questions=dynamic_queries[cat_key],
+            vectorstore=vectorstore,
+            llm=llm,
+            semaphore=semaphore
+        )
         raw_results[schema_key] = cat_data
             
     # ÉTAPE 4 : Validation Pydantic

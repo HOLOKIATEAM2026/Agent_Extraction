@@ -211,7 +211,7 @@ def _to_ui_schema(payload: Dict[str, Any]) -> Dict[str, Any]:
 def _index_single_file(*, file_path: str, config_path: str) -> Dict[str, Any]:
     from agent.chunking import chunk_document
     from agent.indexing import chunks_to_langchain_docs
-    from agent.vectorstore import get_or_create_faiss_vectorstore
+    from agent.vectorstore import get_or_create_faiss_vectorstore, load_config, get_embeddings
     import os
 
     chunks = chunk_document(file_path)
@@ -220,7 +220,9 @@ def _index_single_file(*, file_path: str, config_path: str) -> Dict[str, Any]:
 
     lc_docs, _ = chunks_to_langchain_docs(chunks)
     doc_name = os.path.basename(file_path).split('.')[0]
-    vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
+    config = load_config(config_path)
+    embeddings = get_embeddings(config)
+    vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings, config=config)
 
     return {"chunks": len(lc_docs)}
 

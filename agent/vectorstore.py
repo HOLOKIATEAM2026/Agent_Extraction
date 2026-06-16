@@ -3,6 +3,8 @@ from typing import Any, Dict, Optional
 
 import yaml
 
+_EMBEDDINGS_CACHE: Dict[Any, Any] = {}
+
 
 def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
     if not os.path.exists(config_path):
@@ -22,16 +24,31 @@ def get_embeddings(config: Dict[str, Any]):
         base_url = emb_cfg.get("base_url", "http://localhost:11434")
         # On augmente drastiquement le timeout pour éviter les httpx.ReadTimeout
         sync_client_kwargs = emb_cfg.get("sync_client_kwargs") or {"timeout": 900.0}
-        return OllamaEmbeddings(
+        cache_key = (
+            "ollama",
+            model,
+            base_url,
+            tuple(sorted((sync_client_kwargs or {}).items())),
+        )
+        if cache_key in _EMBEDDINGS_CACHE:
+            return _EMBEDDINGS_CACHE[cache_key]
+        embeddings = OllamaEmbeddings(
             model=model,
             base_url=base_url,
             client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
+        _EMBEDDINGS_CACHE[cache_key] = embeddings
+        return embeddings
 
     if provider == "huggingface":
         from langchain_huggingface import HuggingFaceEmbeddings
         model = emb_cfg.get("model", "all-MiniLM-L6-v2")
-        return HuggingFaceEmbeddings(model_name=model)
+        cache_key = ("huggingface", model)
+        if cache_key in _EMBEDDINGS_CACHE:
+            return _EMBEDDINGS_CACHE[cache_key]
+        embeddings = HuggingFaceEmbeddings(model_name=model)
+        _EMBEDDINGS_CACHE[cache_key] = embeddings
+        return embeddings
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
