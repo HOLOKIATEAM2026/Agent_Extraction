@@ -122,9 +122,11 @@ async def run_multi_extraction(
     concurrency_limit = 1
     semaphore = asyncio.Semaphore(concurrency_limit)
     
-    # ✅ PARALLÉLISATION : Traiter toutes les questions en même temps avec asyncio.gather
-    tasks = [_process_single_question(q, vectorstore, llm, semaphore) for q in questions]
-    question_results = await asyncio.gather(*tasks)
+    # ✅ SÉQUENTIEL : Traiter toutes les questions une par une
+    question_results = []
+    for q in questions:
+        res = await _process_single_question(q, vectorstore, llm, semaphore)
+        question_results.append(res)
     
     # Fusionner les résultats
     for question, doc_results in question_results:
