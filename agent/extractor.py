@@ -62,8 +62,8 @@ async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k:
     )
     
     # HARD LIMIT: Tronquer le contexte pour respecter strictement les 6000 TPM de Groq
-    if len(context_text) > 8000:
-        context_text = context_text[:8000] + "\n...[Tronqué]"
+    if len(context_text) > 4000:
+        context_text = context_text[:4000] + "\n...[Tronqué]"
     
     # 2. Prompting strict
     prompt_str = f"""Tu es un expert en analyse de documents d'entreprise.
@@ -246,7 +246,7 @@ async def run_agent_extraction(
     
     # Création d'un sémaphore pour limiter le nombre de requêtes LLM simultanées
     # et éviter de saturer le Rate Limit de l'API (ex: Groq 6000 TPM)
-    concurrency_limit = 2
+    concurrency_limit = 1
     semaphore = asyncio.Semaphore(concurrency_limit)
     
     # Collecter toutes les tâches async pour les catégories actives

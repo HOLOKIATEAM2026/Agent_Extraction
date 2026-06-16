@@ -51,8 +51,8 @@ async def _process_single_question(question: str, vectorstore, llm, semaphore: a
         )
         
         # HARD LIMIT: Tronquer le contexte
-        if len(context_text) > 8000:
-            context_text = context_text[:8000] + "\n...[Tronqué]"
+        if len(context_text) > 4000:
+            context_text = context_text[:4000] + "\n...[Tronqué]"
         
         prompt_str = f"""Tu es un expert en analyse de documents.
 Ta mission est de répondre à la question suivante en te basant UNIQUEMENT sur le contexte fourni.
@@ -119,7 +119,7 @@ async def run_multi_extraction(
     results_by_doc = {}
     
     # Création d'un sémaphore pour limiter la concurrence (Rate Limit)
-    concurrency_limit = 2
+    concurrency_limit = 1
     semaphore = asyncio.Semaphore(concurrency_limit)
     
     # ✅ PARALLÉLISATION : Traiter toutes les questions en même temps avec asyncio.gather
