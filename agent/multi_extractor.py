@@ -32,7 +32,7 @@ async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 5):
 async def _process_single_question(question: str, vectorstore, llm, semaphore: asyncio.Semaphore = None):
     results = {}
     
-    retrieved_docs = vectorstore.similarity_search(question, k=15)
+    retrieved_docs = vectorstore.similarity_search(question, k=50)
     
     docs_by_file = {}
     for doc in retrieved_docs:
@@ -47,7 +47,7 @@ async def _process_single_question(question: str, vectorstore, llm, semaphore: a
             
         context_text = "\n\n".join(
             [f"--- Extrait {i+1} (Page {doc.metadata.get('page', 'Inconnue')}) ---\n{doc.page_content}" 
-             for i, doc in enumerate(docs[:2])]
+             for i, doc in enumerate(docs[:4])]
         )
         
         # HARD LIMIT: Tronquer le contexte
