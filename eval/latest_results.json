@@ -1,13 +1,93 @@
 {
-  "model": "llama-3.3-70b-versatile",
   "provider": "groq",
+  "model": "llama-3.1-8b-instant",
   "accuracy": 0.0,
   "hallucination_rate": 0.0,
+  "missing_rate": 100.0,
   "raw_metrics": {
-    "total": 6,
+    "total": 5,
     "correct": 0,
     "hallucinations": 0,
-    "missing": 6,
-    "source_issues": 0
+    "missing": 5
+  },
+  "per_category": {
+    "financier": {
+      "total": 2,
+      "correct": 0,
+      "missing": 2,
+      "hallucinations": 0,
+      "accuracy": 0.0,
+      "missing_rate": 100.0,
+      "hallucination_rate": 0.0
+    },
+    "rh": {
+      "total": 1,
+      "correct": 0,
+      "missing": 1,
+      "hallucinations": 0,
+      "accuracy": 0.0,
+      "missing_rate": 100.0,
+      "hallucination_rate": 0.0
+    },
+    "strategique": {
+      "total": 1,
+      "correct": 0,
+      "missing": 1,
+      "hallucinations": 0,
+      "accuracy": 0.0,
+      "missing_rate": 100.0,
+      "hallucination_rate": 0.0
+    }
+  },
+  "per_document": {
+    "totalenergies_form-20-f-2023_2023_en_pdf.pdf": {
+      "metrics": {
+        "accuracy": 0.0,
+        "hallucination_rate": 0.0,
+        "missing_rate": 100.0,
+        "total_fields": 3,
+        "correct": 0,
+        "hallucinations": 0,
+        "missing": 3
+      },
+      "per_field": {
+        "chiffre_affaires": "missing",
+        "resultat_net": "missing",
+        "effectif_total": "missing"
+      },
+      "expected": {
+        "chiffre_affaires": "23713",
+        "resultat_net": "21384",
+        "effectif_total": "102579"
+      },
+      "extracted": {
+        "chiffre_affaires": null,
+        "resultat_net": null,
+        "effectif_total": null
+      }
+    },
+    "Maroc_Telecom_RFA_2024.pdf": {
+      "metrics": {
+        "accuracy": 0.0,
+        "hallucination_rate": 0.0,
+        "missing_rate": 100.0,
+        "total_fields": 2,
+        "correct": 0,
+        "hallucinations": 0,
+        "missing": 2
+      },
+      "per_field": {
+        "chiffre_affaires": "missing",
+        "concurrents": "missing"
+      },
+      "expected": {
+        "chiffre_affaires": "36.8",
+        "concurrents": "Moov Africa"
+      },
+      "extracted": {
+        "chiffre_affaires": null,
+        "concurrents": null
+      }
+    }
   }
 }
