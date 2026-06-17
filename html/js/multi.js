@@ -126,6 +126,38 @@ function saveMultiState() {
   saveMultiToHistory();
 }
 
+function clearMultiState() {
+  localStorage.removeItem('holokia_multi_state');
+  multiId = null;
+  multiFiles = [];
+  multiQuestions = [];
+  lastResults = null;
+  const list = document.getElementById('multiFileList');
+  if (list) list.innerHTML = '';
+  const qList = document.getElementById('multiQuestionList');
+  if (qList) qList.innerHTML = '';
+  updateHeader();
+  renderMultiHistory();
+  const container = document.getElementById('multiResultsContainer');
+  if (container) {
+    container.innerHTML = `
+      <div class="results-empty">
+        <div class="empty-icon-box">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="9"/>
+          </svg>
+        </div>
+        <div class="results-empty-text">Aucun résultat</div>
+        <div class="results-empty-sub">
+          Ajoutez vos documents et vos questions via le menu en haut, puis lancez l'analyse pour voir les résultats s'afficher ici.
+        </div>
+      </div>
+    `;
+  }
+}
+
 function initMulti() {
   try {
     const saved = localStorage.getItem('holokia_multi_state');
@@ -494,16 +526,34 @@ if (btnMultiExtract) {
         method: 'POST',
         body: formData
       });
-      const data = await response.json();
-
-      if (data.ok) {
-        renderResults(data.results);
-      } else {
-        if (container) container.innerHTML = `<div class="error-block">Erreur serveur : ${esc(data.error || 'Inconnue')}</div>`;
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (e) {
+        data = null;
       }
 
+      if (!response.ok) {
+        const msg = (data && (data.error || data.detail)) ? (data.error || data.detail) : `HTTP ${response.status}`;
+        if (typeof msg === 'string' && msg.toLowerCase().includes('cache expir')) {
+          clearMultiState();
+          alert(msg);
+          return;
+        }
+        if (container) container.innerHTML = `<div class="error-block">Erreur serveur (${response.status}) : ${esc(msg)}</div>`;
+        return;
+      }
+
+      if (data && data.ok) {
+        renderResults(data.results);
+        return;
+      }
+
+      const msg = data && (data.error || data.detail) ? (data.error || data.detail) : 'Inconnue';
+      if (container) container.innerHTML = `<div class="error-block">Erreur serveur : ${esc(msg)}</div>`;
+
     } catch (err) {
-      renderDemoResults();
+      if (container) container.innerHTML = `<div class="error-block">Erreur réseau : ${esc(err && err.message ? err.message : 'Inconnue')}</div>`;
     } finally {
       if (multiStatus) multiStatus.classList.remove('visible');
       btnMultiExtract.disabled = false;
