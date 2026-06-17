@@ -246,8 +246,8 @@ nav {
 .history-drawer {
   position: fixed;
   top: 56px;
-  left: -340px;
-  width: 340px;
+  left: -380px;
+  width: 380px;
   height: calc(100vh - 56px);
   background: var(--surface);
   border-right: 1px solid var(--line);
@@ -256,10 +256,10 @@ nav {
   display: flex;
   flex-direction: column;
 }
-.history-drawer.open { transform: translateX(340px); }
-.drawer-header { padding: 20px 24px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+.history-drawer.open { transform: translateX(380px); }
+.drawer-header { padding: 12px 18px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
 .drawer-title { font-family: var(--display); font-size: 20px; font-weight: 500; color: var(--ink); }
-.drawer-content { padding: 20px 24px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+.drawer-content { padding: 12px 18px 16px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-height: 0; }
 .drawer-overlay {
   position: fixed; inset: 0; top: 56px; background: rgba(0,0,0,0.2); z-index: 190;
   opacity: 0; pointer-events: none; transition: opacity 0.3s;
@@ -869,9 +869,10 @@ nav {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-height: 140px;
+  flex: 1;
   overflow-y: auto;
-  margin-top: 12px;
+  margin-top: 8px;
+  min-height: 0;
 }
 .history-list::-webkit-scrollbar { width: 3px; }
 .history-list::-webkit-scrollbar-thumb { background: var(--line); }

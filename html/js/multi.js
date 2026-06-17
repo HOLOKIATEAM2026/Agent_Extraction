@@ -330,6 +330,7 @@ async function loadMultiSession(id) {
   updateHeader();
   saveMultiState();
   renderMultiHistory();
+  closeHistory();
 }
 
 function restoreEmptyState() {

@@ -1,0 +1,124 @@
+L'intégration croissante de la numérisation et l'adoption du travail flexible exposent de plus en plus d'entreprises et de consommateurs à des risques. Des études du FMI indiquent que la cybercriminalité coûtera 23 000 milliards de dollars à l'échelle mondiale en 2027, soit une augmentation de 175 % par rapport à 2022. À mesure que notre dépendance aux plateformes numériques augmente, nous sommes de plus en plus exposés aux cyberattaques, qu'il s'agisse de&nbsp;malware aux attaques par hameçonnage, en passant par les dénis de service et les attaques de type " man-in-the-middle ".
+
+Cet environnement numérique hautement vulnérable exige des gouvernements et des consommateurs qu'ils soient plus sensibilisés aux mesures de cybersécurité et à la confidentialité des données. C'est dans ce contexte que nous rédigeons cet article afin d'analyser les principales statistiques en matière de cybersécurité et d'en extraire les thèmes et les récits communs, afin de vous aider à comprendre l'évolution des cybermenaces. Les statistiques et les informations mentionnées ci-dessous vous permettront de surveiller les menaces et les vulnérabilités existantes et émergentes et d'élaborer un plan global pour détecter et prévenir les cyberattaques de manière proactive.
+
+Cyber Security Statistics - Image en vedette | SentinelOneAperçu de la cybersécurité pour 2025
+Selon Gartner, l'IA générative (GenAI), le comportement non sécurisé des employés, les risques liés aux tiers, l'exposition continue aux menaces et les approches de sécurité axées sur l'identité sont les principales tendances qui façonneront le paysage de la cybersécurité en 2024. Environ 50 % des cadres supérieurs estiment que la GenAI renforcera les capacités adverses telles que le phishing, les logiciels malveillants et les deepfakes. Même si la GenAI crée de nouveaux risques, elle permet également aux organisations de tirer parti de ses capacités pour renforcer la sécurité au niveau opérationnel.
+
+Deuxièmement, le déficit persistant de compétences en matière de cybersécurité continue de poser un défi aux entreprises, la demande dépassant l'offre de candidats qualifiés. Et ce, malgré une croissance de 12,6 % de la main-d'œuvre mondiale dans le domaine de la cybersécurité en 2023. Il manquera quatre millions de professionnels de la cybersécurité en 2024, et ce chiffre pourrait atteindre 85 millions d'ici 2030 si l'on ne s'y attaque pas avec les dernières technologies et des solutions innovantes.
+
+Le fossé entre les organisations résilientes et celles en difficulté s'est creusé en 2024, le nombre d'organisations qui maintiennent une cyber-résilience minimale viable ayant diminué de 30 %. Le manque de ressources et de compétences est le plus grand défi pour 52 % de ces organisations dans la conception de la cyber-résilience, même si la transformation des technologies et des processus hérités constitue un autre obstacle important.
+
+Prévisions pour la cybersécurité en 2024
+Parmi les nombreux cas d'utilisation de l'IA générative dans le domaine de la cybersécurité, deux opportunités prometteuses consistent à remédier à la pénurie de compétences et au comportement humain non sécurisé. L'adoption de l'IA générative permettra aux organisations de combler le déficit de compétences et de supprimer le besoin de connaissances spécialisées pour 50 % des postes de niveau débutant d'ici 2028.
+
+Les organisations passent désormais de la sensibilisation à l'incitation au changement de comportement afin de réduire les incidents de cybersécurité causés par des initiés. La GenAI peut aider les organisations à générer des supports de formation hyper-personnalisés, en tenant compte du rôle des employés dans l'organisation et de leurs caractéristiques uniques. Elle aidera les organisations à réduire les incidents de cybersécurité causés par les employés en40 % d'ici 2026.
+
+Avec 45 % des organisations ayant subi des perturbations commerciales liées à des tiers au cours des deux dernières années, elles doivent se concentrer sur le renforcement des plans d'urgence et l'amélioration de la gestion des risques liés aux engagements de tiers qui présentent les risques de sécurité les plus élevés. À mesure que de plus en plus d'organisations adoptent une approche de la sécurité axée sur l'identité, la gestion des identités et des accès (IAM) deviendra essentielle à la cybersécurité et améliorera la résilience.
+
+Principales menaces en matière de cybersécurité (chiffres)
+Le paysage des menaces en matière de cybersécurité évolue constamment, de nouvelles vulnérabilités apparaissant même lorsque les vulnérabilités existantes sont atténuées. Cette section met en évidence les menaces de cybersécurité les plus courantes afin de fournir aux organisations une vision claire des risques cybernétiques et leur permettre d'élaborer un plan d'atténuation.
+
+1. Ransomware
+35 % de toutes les attaques étaient des ransomwares, soit une augmentation de 84 % par rapport à l'année précédente.
+Les ransomwares ont augmenté de 15 % en Amérique du Nord, tandis qu'ils ont diminué de 49 % dans la région EMEA (Europe, Moyen-Orient et Afrique)
+70 % des ransomwares ont ciblé des PME
+2. Hameçonnage
+Les attaques de phishing ont augmenté de 1 265 % sous l'effet de la croissance de l'IA générique
+De nombreuses cyberattaques ciblées commencent par des e-mails, et 40 % de toutes les menaces par e-mail sont des attaques de phishing
+Les compromissions d'e-mails professionnels ont représenté 6 % des incidents, avec des liens de spear phishing utilisés dans 50 % des cas
+3. Sécurité du cloud
+Les intrusions dans le cloud ont augmenté de 75 % en 2023
+23 % des incidents de sécurité du cloud peuvent être attribués à une mauvaise configuration du cloud, et&nbsp;27 % des entreprises sont confrontées à des failles de sécurité dans leur infrastructure cloud publique
+Plus de la moitié des organisations ont déclaré que le phishing était l'attaque la plus courante pour voler les identifiants de sécurité du cloud
+4. Attaques contre les appareils
+En 2023, les pirates ont couramment utilisé des périphériques de passerelle périphérique pour s'introduire dans le réseau sans se faire remarquer
+Seules 4 % des organisations considèrent que leurs périphériques connectés à Internet et les technologies associées sont sécurisés
+5. Attaques par déni de service distribué (DDOS)
+DDOS ont augmenté de 31 %, les cybercriminels lançant en moyenne 44 000 attaques par jour en 2023
+Le Federal Bureau of Investigation (FBI) a fermé 13 marchés de DDoS à louer au cours du premier semestre 2023. De même, en juillet 2024, les autorités britanniques ont démantelé DigitalStress, un service illégal permettant de lancer des attaques DDOS
+Il existe d'autres menaces, telles que les attaques basées sur l'IA, les risques liés à la 5G, etc., dont les organisations doivent être conscientes et pour lesquelles elles doivent disposer de plans d'atténuation.
+
+
+
+Cybersécurité alimentée par l'IA
+Améliorez votre posture de sécurité grâce à la détection en temps réel, à une réponse à la vitesse de la machine et à une visibilité totale de l'ensemble de votre environnement numérique.
+
+Obtenir une démonstration
+Statistiques sur les vulnérabilités et les violations
+À mesure que les entreprises adoptent de plus en plus les technologies et les plateformes numériques, l'explosion des points de contact avec les données a accru les vulnérabilités. La base de données nationale sur les vulnérabilités (NVD) a enregistré plus de 30 000 nouvelles vulnérabilités et expositions courantes (CVE), dont la moitié ont été classées comme étant de gravité élevée ou critique.
+
+Les cyberincidents, tels que la vulnérabilité MoveIt de 2023 et Log4j dans le monde open source, ont posé de nombreux défis aux organisations du monde entier. En outre, les violations de données ont connu une tendance à la hausse au cours de la dernière décennie, augmentant de 200 %.
+
+Une nouvelle vulnérabilité est identifiée et publiée toutes les 17 minutes. La moitié de toutes les vulnérabilités ont été publiées au cours des cinq dernières années
+Le nombre de violations de données a augmenté de 200 % entre 2013 et 2022. Selon une étude, plus de&nbsp;2,6 milliards de dossiers personnels ont été compromis entre 2021 et 2023
+En 2024, le coût moyen mondial d'une violation de données s'élevait à&nbsp;4,88 millions de dollars, soit une augmentation de 10 % par rapport à l'année précédente
+Les équipes de sécurité mettent en moyenne 277 jours pour identifier et contenir une violation de données, tandis que les violations impliquant la perte ou le vol d'identifiants prennent 328 jours à identifier et à contenir
+Selon le " Rapport d'enquête sur les violations de données " de Verizon, le facteur humain est la cause première de 68 % des violations de données
+Coût et fréquence des cyberattaques
+Selon le FMI (Fonds monétaire international), la fréquence des cyberattaques a doublé depuis la pandémie de COVID-19. Les coûts déclarés des cyberattaques varient : Cybersecurity Ventures estime leur valeur à 10 500 milliards de dollars d'ici 2025, tandis qu'une autre prévision mentionne un coût de la cybercriminalité de&nbsp;23 000 milliards de dollars d'ici 2027. Voici quelques statistiques pertinentes en matière de cybersécurité dans le contexte du coût et de la fréquence des cyberattaques.
+
+Le coût moyen des cyberattaques contre les entreprises de plus de 1 000 employés en Europe et aux États-Unis est estimé à plus de 53 000 dollars
+MKS Instruments, un fournisseur de l'industrie des semi-conducteurs, a déclaré avoir subi un impact négatif de 200 millions de dollars sur son chiffre d'affaires à la suite d'une attaque par ransomware
+Le coût moyen mondial d'une violation de données en 2024 est de&nbsp;4,88 millions de dollars, soit une augmentation de 10 % par rapport à l'année précédente
+Les organisations qui utilisent largement l'intelligence artificielle et l'automatisation en matière de sécurité pour prévenir les violations de données réalisent une économie annuelle moyenne de&nbsp;2,22 millions de dollars par rapport à celles qui n'y ont pas recours.
+Le nombre moyen de cyberattaques par organisation et par an a augmenté de 25 %, passant de trois à quatre.lt;/li>
+75 % des grandes organisations dont le chiffre d'affaires est supérieur à 5,5 milliards de dollars ont souscrit une cyberassurance, contre seulement 25 % des organisations dont le chiffre d'affaires est inférieur à 250 millions de dollars.
+
+Statistiques notables sur la cybersécurité en 2025
+Même si les cybercriminels sont devenus plus sophistiqués, les entreprises et les consommateurs ont pris conscience des risques en se tenant informés des dernières menaces, telles que les attaques basées sur l'IA. Cependant, il est tout aussi important d'analyser les données relatives à la cybersécurité afin de comprendre les coûts et les conséquences d'une attaque, les technologies permettant de la prévenir et les plans d'atténuation visant à en limiter les répercussions une fois qu'elle s'est produite. Nous mettons en évidence certains faits notables concernant la cybersécurité afin de vous tenir informé des dernières tendances et évolutions.
+
+En 2024, 183 000 clients ont été touchés par des cyberattaques visant la chaîne d'approvisionnement, soit une augmentation de 33 % par rapport à l'année précédente.
+Selon Gartner,&nbsp;60 % des organisations de la chaîne d'approvisionnement utiliseront les risques liés à la cybersécurité comme critères d'évaluation essentiels pour les engagements commerciaux et les transactions avec des tiers
+Les menaces cryptées ont augmenté de 92 % en 2024, soulignant la sophistication croissante des cybercriminels
+Les logiciels malveillants ont augmenté de 30 % au cours du premier semestre 2024. 15 % de tous les logiciels malveillants utilisent le packing comme principale technique, tactique et procédure (TTP) MITRE.
+À l'échelle mondiale, le cryptojacking a diminué de 60 %, sauf en Inde où il a augmenté de 409 %.
+Les 5 États les plus touchés par la cybercriminalité en termes de pertes subies par les victimes
+Un grand nombre d'entreprises et de consommateurs ont déclaré avoir été victimes de cybercriminalité. Selon le Centre de signalement des crimes sur Internet du FBI, 3,26 millions de plaintes ont été déposées au cours des cinq dernières années, pour un montant total de 27,6 milliards de dollars. En plus de compromettre des informations et des données sensibles et de nuire à la sécurité des utilisateurs et des clients, la cybercriminalité a de graves répercussions financières et psychologiques.
+
+Outre les coûts directs, les cyberattaques entraînent des coûts indirects, tels que les frais juridiques, les amendes réglementaires, la perte de réputation, le vol de propriété intellectuelle et les perturbations opérationnelles. Le coût varie selon les lieux et les secteurs d'activité. Le coût le plus élevé des violations de données, qui s'élève en moyenne à&nbsp;9,36 millions de dollars, est signalé aux États-Unis.
+
+Le tableau suivant présente les données relatives à la cybersécurité pour les cinq États américains les moins performants.
+
+Classement	État	Pertes des victimes en millions
+1	Californie	2 159
+2	Texas	1021,5
+3	Floride	874,72
+4	New York	749,9
+5	New Jersey	441,1
+Emplois et perspectives de carrière dans le domaine de la cybersécurité
+À l'échelle mondiale, la demande en professionnels de la cybersécurité dépasse l'offre. En 2024, le ratio offre-demande aux États-Unis est de 85 %. Le nombre total d'offres d'emploi liées à la cybersécurité au cours de l'année dernière est estimé à 470 000. Les entreprises ont généralement recours à une approche descendante pour recruter des talents en cybersécurité, en pourvoyant d'abord les postes les plus élevés avant de recruter pour les postes situés plus bas dans l'organigramme. Cependant, en raison de la pénurie de talents et de la nature changeante des cyberrisques, l'approche traditionnelle en matière de recrutement est moins efficace. Les entreprises doivent adapter leur approche en matière de recrutement afin de se concentrer sur les compétences spécifiques dont elles ont besoin plutôt que sur les postes.
+
+Le Bureau of Labor Statistics (BLS) prévoit&nbsp;une croissance de 32 % des emplois dans le domaine de la cybersécurité entre 2022 et 2032, ce qui est bien supérieur à la moyenne de l'ensemble des professions
+Selon le&nbsp;2023 ISC2 Global Workforce Study, le nombre de professionnels de la cybersécurité dans le monde a atteint 5,5 millions
+Le salaire annuel médian de départ des analystes en sécurité de l'information aux États-Unis est de 112 000 dollars
+La fourchette salariale des professionnels de la cybersécurité varie, avec un salaire annuel moyen de 138 180 dollars pour un ingénieur en sécurité des applications et de 244 096 dollars pour un responsable de la sécurité des systèmes d'information (RSSI)
+Le nombre d'emplois non pourvus dans le domaine de la cybersécurité en 2023 s'élève à 3,5 millions, dont plus d'un cinquième aux États-Unis.
+Statistiques sur la cybersécurité spécifiques à certains secteurs
+Les secteurs tels que l'industrie manufacturière sont exposés à des risques accrus, car les cyberattaques contre leurs systèmes technologiques opérationnels peuvent avoir des conséquences plus graves, telles que des arrêts, des pannes ou des explosions, que celles qui touchent les technologies de l'information. Les statistiques suivantes sur les cyberattaques dans différents secteurs verticaux soulignent la nécessité pour les organisations de préparer un plan de sécurité complet afin de prévenir toute perturbation.
+
+1. Faits relatifs à la cybersécurité dans le secteur manufacturier
+Le nombre le plus élevé de cyberincidents, soit 32,43 % du total des incidents signalés en 2023, concerne le secteur manufacturier
+L'action la plus courante dans les incidents survenus dans le secteur manufacturier a été le déploiement de portes dérobées, qui a eu lieu dans&nbsp;28 % des cas
+2. Faits relatifs à la cybersécurité dans le secteur de la santé
+Les activités de reconnaissance représentaient 50 % de tous les cas observés, les attaquants recherchant des vulnérabilités et des données précieuses
+Les attaques par ransomware ont augmenté de&nbsp;264 % au cours des cinq dernières années
+Le coût moyen des violations de données dans le secteur de la santé a augmenté de 10 % pour atteindre 10,10 millions de dollars
+On estime que deux tiers des organismes de santé ont été victimes d'attaques visant leur chaîne d'approvisionnement au cours des deux dernières années
+3. Faits relatifs à la cybersécurité dans le secteur de la finance et de l'assurance
+Environ les trois quarts (74 %) des attaques dans le secteur de la finance et de l'assurance concernaient les données personnelles des clients
+Le coût moyen d'une violation de données dans le secteur financier s'élève à 5,9 millions de dollars
+Le secteur financier est le&nbsp;secteur le plus ciblé par les attaques visant les applications web
+D'autres secteurs sont également confrontés à des cybermenaces, et ces faits relatifs à la cybersécurité soulignent la nécessité pour les organisations de tous les secteurs de renforcer leurs cyberdéfenses afin de s'adapter à l'évolution du paysage des menaces en 2024.Alors que les entreprises investissent davantage dans la cybersécurité, il est essentiel de mettre en œuvre des solutions complètes telles que Singularity&trade; XDR. Cette plateforme offre une sécurité intégrée avec une détection avancée, des réponses automatisées et une protection multi-environnements, garantissant que votre investissement se traduise par une défense efficace.
+
+
+Plate-forme Singularity™
+Améliorez votre posture de sécurité grâce à la détection en temps réel, à une réponse à la vitesse de la machine et à une visibilité totale de l'ensemble de votre environnement numérique.
+
+Obtenir une démonstration
+Conclusion
+L'environnement numérique à haut risque exige un gouvernement proactif et des consommateurs et entreprises vigilants pour se prémunir contre la cybercriminalité. Les statistiques sur la cybersécurité sont des indicateurs essentiels de l'évolution du paysage des cybermenaces et peuvent aider les organisations à sécuriser leurs actifs numériques.
+
+Les organisations doivent examiner périodiquement les statistiques sur les cyberattaques et les faits relatifs à la cybersécurité afin d'évaluer leurs défenses et leurs plans d'atténuation. Comme la plupart des attaques sont dues à des erreurs humaines, les organisations doivent tirer parti de l'IA générique pour automatiser et éliminer le facteur humain afin de prévenir les attaques. Il n'y a pas lieu de se reposer sur ses lauriers, et les organisations doivent toujours être prêtes à contrecarrer toute tentative d'attaque par des acteurs malveillants.
+
+L'avenir de la cybersécurité réside dans l'automatisation, l'IA et la protection des terminaux de nouvelle génération. La solution Singularity&trade; Endpoint Security de SentinelOne utilise l'IA pour détecter, bloquer et répondre de manière autonome aux menaces, offrant ainsi une solution avant-gardiste pour le paysage évolutif de la cybersécurité.
