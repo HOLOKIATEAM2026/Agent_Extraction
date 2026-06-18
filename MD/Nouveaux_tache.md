@@ -22,7 +22,10 @@
 | Phase 5 | Structuration des Données | ✅ Terminée |
 | Phase 6 | Validation & Évaluation | ✅ Terminée |
 | Phase 7 | Intégration dans le Copilot Holokia | ✅ Terminée |
-| Phase 8 | Interface Avancée : Multi-Documents & Historique | ⏳ À venir |
+| Phase 8 | Interface Avancée : Multi-Documents & Historique | ✅ Terminée |
+| Phase 9 | Authentification & Multi-tenant | ⏳ À venir |
+| Phase 10 | Mémoire Court / Moyen / Long terme | ⏳ À venir |
+| Phase 11 | Perspectives futures | 🔭 Vision |
 
 ---
 
@@ -101,7 +104,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   - Stocker les résultats d'extraction JSON
   - Stocker les métadonnées des documents ingérés
   - Configurer les accès via variables d'environnement
-- [x] **T2.10** — Mettre à jour `architecture.md` avec Supabase + stack frontend (HTML / Netlify / Render)
+- [x] **T2.10** — Mettre à jour `architecture.md` avec Supabase + stack frontend (HTML / Netlify / Railway)
 - [x] **T2.11** — Veille sécurité : vérifier les dépendances Python (versions à jour)
 - [x] **T2.12** — Verrouiller le dépôt GitHub (branches protégées, secrets hors du code)
 
@@ -256,7 +259,7 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 > **Changement de statut réunion 18/05** : cette phase n'est **plus optionnelle**.  
 > L'agent doit exposer une API pour s'intégrer dans le Copilot Holokia comme brique agentique autonome.
 
-**Livrable :** `api/` + `interface/` + déploiement Render
+**Livrable :** `api/` + `interface/` + déploiement Railway
 
 - [x] **T7.1** — API REST (FastAPI) : endpoint `POST /extract`
   - Accepte un PDF → retourne le JSON structuré complet
@@ -266,13 +269,13 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
   - Récupérer les extractions stockées dans Supabase
 - [x] **T7.4** — Interface démo simple (HTML / CSS)
   - Upload fichier → affichage résultats + JSON + citations
-- [x] **T7.5** — 🆕 Déploiement backend sur **Render**
+- [x] **T7.5** — 🆕 Déploiement backend sur **Railway**
 - [x] **T7.6** — Documentation API (Swagger / OpenAPI auto-générée par FastAPI)
 - [x] **T7.7** — (Optionnel) Connecteur direct vers le Copilot Holokia
 
 ---
 
-## Phase 8 — Interface Avancée : Multi-Documents & Historique ⏳ À VENIR
+## Phase 8 — Interface Avancée : Multi-Documents & Historique ✅ TERMINÉE
 
 > **Objectif :** Faire évoluer l'interface de démo vers un produit professionnel utilisable par un consultant ou analyste, avec analyse multi-rapports et traçabilité complète des extractions.
 
@@ -359,25 +362,25 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 > d'adapter les questions selon son secteur ou son client,
 > sans modifier le code.
 
-- [ ] **T8.22** — Ajouter un panneau latéral "Mes questions" dans
+- [x] **T8.22** — Ajouter un panneau latéral "Mes questions" dans
   l'interface du Mode Diagnostic :
   - Liste des questions actives (modifiables inline)
   - Bouton *"Ajouter une question"*
   - Bouton *"Supprimer"* par question
   - Bouton *"Réinitialiser aux questions par défaut"*
-- [ ] **T8.23** — Créer la table `custom_questions` dans **Supabase** :
+- [x] **T8.23** — Créer la table `custom_questions` dans **Supabase** :
   - Champs : `id`, `categorie`, `question_text`, `is_default`,
     `created_at`
   - Pré-remplir avec les questions actuelles du code comme valeurs
     par défaut
-- [ ] **T8.24** — Ajouter les endpoints dans FastAPI :
+- [x] **T8.24** — Ajouter les endpoints dans FastAPI :
   - `GET /questions` → retourner la liste des questions actives
   - `POST /questions` → sauvegarder une nouvelle question
   - `DELETE /questions/{id}` → supprimer une question
   - `POST /questions/reset` → restaurer les questions par défaut
-- [ ] **T8.25** — Modifier le pipeline d'extraction : charger les
+- [x] **T8.25** — Modifier le pipeline d'extraction : charger les
   questions depuis Supabase au lieu du code statique
-- [ ] **T8.26** — Afficher dans les résultats la liste des questions
+- [x] **T8.26** — Afficher dans les résultats la liste des questions
   utilisées pour cette extraction (traçabilité)
 
 **Livrable partiel :** Éditeur de questions fonctionnel +
@@ -405,6 +408,104 @@ T8.8  → Historique                       ← en dernier
 
 ---
 
+## Phase 9 — Authentification & Multi-tenant ⏳ À VENIR
+
+> **Objectif :** Chaque entreprise cliente a son propre espace 
+> isolé avec son historique — personne ne voit les données des autres.
+
+**Livrable :** Pages login/register + protection des routes + RLS Supabase
+
+- [ ] **T9.1** — Activer Supabase Auth (Email + Google OAuth)
+- [ ] **T9.2** — Créer `html/login.html` et `html/register.html`
+- [ ] **T9.3** — Protéger les 4 pages (diagnostic, chat, multi, historique)
+        → rediriger vers login si non connecté
+- [ ] **T9.4** — Ajouter `user_id` dans toutes les tables Supabase
+        (extractions, chat_history, multi_history)
+- [ ] **T9.5** — Envoyer le token Auth dans chaque appel API FastAPI
+- [ ] **T9.6** — Vérifier le token côté FastAPI (middleware Auth)
+- [ ] **T9.7** — Activer Row Level Security (RLS) sur Supabase
+        → chaque client voit uniquement ses données
+- [ ] **T9.8** — Ajouter `html/js/auth.js` — fonctions login/logout/session
+
+**Livrable :** `login.html` + `register.html` + `auth.js` + RLS Supabase
+
+---
+
+## Phase 10 — Mémoire de l'Agent ⏳ À VENIR
+
+> **Objectif :** L'agent se souvient du client, de ses analyses
+> passées et construit un profil qui s'enrichit dans le temps.
+
+**Livrable :** Mémoire 3 niveaux opérationnelle
+
+### 10A — Mémoire Court Terme (dans la session)
+
+- [ ] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
+        dans le mode Chat ← probablement déjà fait ✅
+- [ ] **T10.2** — Tester que le contexte est bien maintenu sur 5+ tours
+
+### 10B — Mémoire Moyen Terme (entre les sessions)
+
+- [ ] **T10.3** — Au démarrage de session : charger les 5 dernières
+        extractions de l'utilisateur depuis Supabase
+- [ ] **T10.4** — Injecter cet historique dans le contexte du prompt
+        système au début de chaque conversation
+- [ ] **T10.5** — Afficher "Bon retour [prénom] — voici vos
+        dernières analyses" sur la page d'accueil
+
+### 10C — Mémoire Long Terme (profil permanent entreprise)
+
+- [ ] **T10.6** — Créer table `entreprise_profil` dans Supabase :
+```sql
+  CREATE TABLE entreprise_profil (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id),
+    nom TEXT,
+    secteur TEXT,
+    score_nist_moyen FLOAT DEFAULT 0,
+    score_data_moyen FLOAT DEFAULT 0,
+    nb_rapports_analyses INT DEFAULT 0,
+    premier_diagnostic DATE,
+    dernier_diagnostic DATE,
+    points_forts TEXT[],
+    axes_amelioration TEXT[],
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+```
+- [ ] **T10.7** — Mettre à jour le profil automatiquement
+        après chaque extraction
+- [ ] **T10.8** — Afficher l'évolution des scores dans le temps
+        (graphique simple HTML/JS)
+- [ ] **T10.9** — Générer un résumé de profil :
+        "Depuis votre premier diagnostic en mai 2024,
+         votre score NIST est passé de 2,8 à 3,6"
+
+**Livrable :** Table `entreprise_profil` + mise à jour auto + affichage évolution
+
+---
+
+## Phase 11 — Perspectives Futures 🔭
+
+> Ces fonctionnalités dépassent le cadre du stage
+> mais représentent la vision produit long terme Holokia.
+
+- [ ] **T11.1** — Export PDF du diagnostic
+        (rapport professionnel avec logo Holokia)
+- [ ] **T11.2** — Génération automatique de recommandations IA
+        ("Voici les 3 actions prioritaires pour améliorer
+         votre score NIST de 2,8 à 4,0")
+- [ ] **T11.3** — Dashboard Analytics
+        (graphiques d'évolution, benchmark sectoriel)
+- [ ] **T11.4** — Support multilingue
+        (questions en français sur docs en anglais/arabe)
+- [ ] **T11.5** — Traitement automatique par email
+        (client envoie PDF → reçoit diagnostic automatiquement)
+- [ ] **T11.6** — Intégration LangGraph pour retry et routing
+        conditionnel (si RAG échoue → relancer avec autre stratégie)
+
+---
+
 ## 📦 Livrables Finaux
 
 | # | Livrable | Format | Phase | Statut |
@@ -416,8 +517,8 @@ T8.8  → Historique                       ← en dernier
 | L4 | Code source de l'agent final | Python (GitHub) | Phase 4 | ✅ |
 | L5 | Schéma JSON étendu (data + cyber) | JSON Schema + Pydantic | Phase 5 | ✅ |
 | L6 | Rapport de performance | Markdown / PDF | Phase 6 | ✅ |
-| L7 | API déployée sur Render + démo | URL + Vidéo | Phase 7 | ✅ |
-| L8 | Page 2 modes : Chat libre + Diagnostic éditable | Web app | Phase 8 | ⏳ |
+| L7 | API déployée sur Railway + démo | URL + Vidéo | Phase 7 | ✅ |
+| L8 | Page 2 modes : Chat libre + Diagnostic éditable | Web app | Phase 8 | ✅ |
 
 ---
 
@@ -437,7 +538,9 @@ T8.8  → Historique                       ← en dernier
 | Phase 8B — Historique            | ✅ Terminée | |
 | Phase 8C — Page sélection mode   | ✅ Terminée | | 
 | Phase 8D — Mode Chat libre       | ✅ Terminée | | 
-| Phase 8E — Mode Diagnostic édit. | ⏳ À venir | | 
+| Phase 8E — Mode Diagnostic édit. | ✅ Terminée | | 
+| Phase 9 — Authentification       | ⏳ À venir | |
+| Phase 10 — Mémoire agent         | ⏳ À venir | |
 
 ---
 
@@ -446,7 +549,7 @@ T8.8  → Historique                       ← en dernier
 | Couche | Technologie | Statut |
 |--------|-------------|--------|
 | Frontend | HTML + Netlify | 🆕 Réunion 18/05 |
-| Backend / API | FastAPI + **Render** | 🆕 Réunion 18/05 |
+| Backend / API | FastAPI + **Railway** | ✅ Déployé |
 | LLM | **Groq** (cloud gratuit) + **Ollama** (local) | ✅ Validé |
 | Base de données | **Supabase** (remplace SQLite) | 🆕 Réunion 18/05 |
 | Vectoriel | FAISS / ChromaDB | ✅ Déjà prévu |
@@ -458,7 +561,7 @@ T8.8  → Historique                       ← en dernier
 
 - [ ] Vérifier les vulnérabilités des dépendances Python (`pip audit`)
 - [ ] Verrouiller GitHub : branches protégées, aucun secret dans le code
-- [ ] Variables sensibles uniquement dans `.env` (jamais committées)
+- [x] Variables sensibles uniquement dans `.env` (jamais committées)
 - [ ] Maintenir les versions à jour (veille dépendances hebdomadaire)
 
 ---
