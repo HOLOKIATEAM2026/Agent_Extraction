@@ -1,9 +1,15 @@
 // auth.js
 // Supabase Client Initialization
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// On s'assure que supabase est chargé avant de l'utiliser
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+if (!supabaseClient) {
+  console.error("Supabase n'a pas pu être initialisé. Le script Supabase est manquant ou n'a pas été chargé.");
+}
 
 const Auth = {
   async register(email, password, nom) {
+    if (!supabaseClient) throw new Error("Supabase n'est pas initialisé");
     const { data, error } = await supabaseClient.auth.signUp({
       email,
       password,
@@ -18,6 +24,7 @@ const Auth = {
   },
 
   async login(email, password) {
+    if (!supabaseClient) throw new Error("Supabase n'est pas initialisé");
     const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
@@ -27,18 +34,21 @@ const Auth = {
   },
 
   async logout() {
+    if (!supabaseClient) return;
     const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
     window.location.href = 'login.html';
   },
 
   async getSession() {
+    if (!supabaseClient) return null;
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) return null;
     return data.session;
   },
 
   async getUser() {
+    if (!supabaseClient) return null;
     const { data: { user }, error } = await supabaseClient.auth.getUser();
     if (error) return null;
     return user;

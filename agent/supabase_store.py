@@ -174,9 +174,8 @@ class SupabaseStore:
             "order": "created_at.desc"
         }
         
-        # If user_id is set, only get their extractions (RLS should handle this, but adding it explicitly can help avoid 403s)
-        if self.user_id:
-            params["user_id"] = f"eq.{self.user_id}"
+        # NOTE: PostgREST sometimes throws 403 if we explicitly query by user_id but RLS policy uses OR user_id IS NULL
+        # It's better to let RLS handle the filtering automatically since the JWT token is passed in headers
             
         extractions = self._get("extractions", params=params)
         
@@ -190,8 +189,7 @@ class SupabaseStore:
             "id": f"eq.{extraction_id}",
             "select": "id,document_id,approach,provider,model,created_at,result"
         }
-        if self.user_id:
-            params["user_id"] = f"eq.{self.user_id}"
+        # NOTE: Let RLS handle user isolation automatically
             
         extractions = self._get("extractions", params=params)
         
