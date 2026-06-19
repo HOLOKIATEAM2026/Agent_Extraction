@@ -23,7 +23,7 @@
 | Phase 6 | Validation & Évaluation | ✅ Terminée |
 | Phase 7 | Intégration dans le Copilot Holokia | ✅ Terminée |
 | Phase 8 | Interface Avancée : Multi-Documents & Historique | ✅ Terminée |
-| Phase 9 | Authentification & Multi-tenant | ⏳ À venir |
+| Phase 9 | Authentification & Multi-tenant | ✅ Terminée |
 | Phase 10 | Mémoire Court / Moyen / Long terme | ⏳ À venir |
 | Phase 11 | Perspectives futures | 🔭 Vision |
 
@@ -408,24 +408,24 @@ T8.8  → Historique                       ← en dernier
 
 ---
 
-## Phase 9 — Authentification & Multi-tenant ⏳ À VENIR
+## Phase 9 — Authentification & Multi-tenant ✅ TERMINÉE
 
 > **Objectif :** Chaque entreprise cliente a son propre espace 
 > isolé avec son historique — personne ne voit les données des autres.
 
 **Livrable :** Pages login/register + protection des routes + RLS Supabase
 
-- [ ] **T9.1** — Activer Supabase Auth (Email + Google OAuth)
-- [ ] **T9.2** — Créer `html/login.html` et `html/register.html`
-- [ ] **T9.3** — Protéger les 4 pages (diagnostic, chat, multi, historique)
+- [x] **T9.1** — Activer Supabase Auth (Email + Google OAuth)
+- [x] **T9.2** — Créer `html/login.html` et `html/register.html`
+- [x] **T9.3** — Protéger les 4 pages (diagnostic, chat, multi, historique)
         → rediriger vers login si non connecté
-- [ ] **T9.4** — Ajouter `user_id` dans toutes les tables Supabase
+- [x] **T9.4** — Ajouter `user_id` dans toutes les tables Supabase
         (extractions, chat_history, multi_history)
-- [ ] **T9.5** — Envoyer le token Auth dans chaque appel API FastAPI
-- [ ] **T9.6** — Vérifier le token côté FastAPI (middleware Auth)
-- [ ] **T9.7** — Activer Row Level Security (RLS) sur Supabase
+- [x] **T9.5** — Envoyer le token Auth dans chaque appel API FastAPI
+- [x] **T9.6** — Vérifier le token côté FastAPI (middleware Auth)
+- [x] **T9.7** — Activer Row Level Security (RLS) sur Supabase
         → chaque client voit uniquement ses données
-- [ ] **T9.8** — Ajouter `html/js/auth.js` — fonctions login/logout/session
+- [x] **T9.8** — Ajouter `html/js/auth.js` — fonctions login/logout/session
 
 **Livrable :** `login.html` + `register.html` + `auth.js` + RLS Supabase
 
@@ -539,7 +539,7 @@ T8.8  → Historique                       ← en dernier
 | Phase 8C — Page sélection mode   | ✅ Terminée | | 
 | Phase 8D — Mode Chat libre       | ✅ Terminée | | 
 | Phase 8E — Mode Diagnostic édit. | ✅ Terminée | | 
-| Phase 9 — Authentification       | ⏳ À venir | |
+| Phase 9 — Authentification       | ✅ Terminée | |
 | Phase 10 — Mémoire agent         | ⏳ À venir | |
 
 ---

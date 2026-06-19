@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Connexion</title>
+<link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<!-- Inclure Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  .auth-container {
+    max-width: 400px;
+    margin: 80px auto;
+    background: var(--paper);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  }
+  .auth-title {
+    font-family: var(--display);
+    font-size: 32px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .auth-desc {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .auth-input {
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    background: #fff;
+  }
+  .auth-input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .auth-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .auth-btn:hover {
+    opacity: 0.9;
+  }
+  .auth-link {
+    text-align: center;
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .auth-link a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .auth-error {
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<div class="page" style="min-height: calc(100vh - 140px); display: flex; align-items: center; justify-content: center;">
+  <div class="auth-container">
+    <h1 class="auth-title">Connexion</h1>
+    <p class="auth-desc">Accédez à votre espace client Holokia</p>
+    
+    <form id="loginForm" class="auth-form">
+      <input type="email" id="email" class="auth-input" placeholder="Adresse email" required>
+      <input type="password" id="password" class="auth-input" placeholder="Mot de passe" required>
+      <button type="submit" class="auth-btn" id="submitBtn">SE CONNECTER</button>
+    </form>
+    
+    <div id="errorMsg" class="auth-error">Identifiants incorrects.</div>
+    
+    <div class="auth-link">
+      Pas encore de compte ? <a href="register.html">Créer un espace</a>
+    </div>
+  </div>
+</div>
+
+<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%;">
+  &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    
+    btn.textContent = 'CONNEXION...';
+    btn.disabled = true;
+    errorMsg.style.display = 'none';
+    
+    try {
+      await Auth.login(email, password);
+      window.location.href = 'index.html'; // Redirection vers l'accueil ou le dashboard
+    } catch (err) {
+      errorMsg.textContent = err.message || "Erreur de connexion";
+      errorMsg.style.display = 'block';
+      btn.textContent = 'SE CONNECTER';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

@@ -5,9 +5,10 @@ import asyncio
 from typing import Any, Dict, Optional, List
 from datetime import datetime
 
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException, BackgroundTasks
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+import requests
 
 from agent.chunking import chunk_document
 from agent.indexing import chunks_to_langchain_docs
@@ -34,6 +35,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def get_current_user(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token manquant ou invalide")
+    
+    token = authorization.replace("Bearer ", "")
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_anon_key = os.getenv("SUPABASE_ANON_KEY")
+    
+    if not supabase_url or not supabase_anon_key:
+        # En mode developpement local sans supabase, on bypass
+        if os.getenv("SUPABASE_ENABLED") not in {"1", "true", "yes", "on"}:
+            return {"id": "local-user", "email": "local@holokia.com"}
+        raise HTTPException(status_code=500, detail="Supabase non configuré")
+        
+    url = f"{supabase_url}/auth/v1/user"
+    headers = {"apikey": supabase_anon_key, "Authorization": f"Bearer {token}"}
+    
+    try:
+        res = requests.get(url, headers=headers, timeout=5)
+        if res.status_code != 200:
+            raise HTTPException(status_code=401, detail="Session expirée ou token invalide")
+        user_data = res.json()
+        return {"user": user_data, "token": token}
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Erreur d'authentification: {str(e)}")
 
 # In-memory job store for background processing
 JOBS_STORE: Dict[str, Dict[str, Any]] = {}
@@ -275,7 +301,9 @@ async def _process_extraction_job(
     provider: Optional[str],
     model: Optional[str],
     approach: str,
-    config: str
+    config: str,
+    user_id: Optional[str] = None,
+    token: Optional[str] = None
 ) -> None:
     try:
         JOBS_STORE[job_id]["status"] = "processing"
@@ -308,7 +336,7 @@ async def _process_extraction_job(
 
             storage["supabase_enabled"] = bool(supabase_enabled())
             if storage["supabase_enabled"]:
-                doc_id, extr_id = persist_extraction_payload(raw_payload)
+                doc_id, extr_id = persist_extraction_payload(raw_payload, user_id=user_id, token=token)
                 storage["document_id"] = doc_id
                 storage["extraction_id"] = extr_id
         except Exception as e:
@@ -365,6 +393,7 @@ async def extract_document(
     approach: str = Form("agent"),
     config: str = Form("config.yaml"),
     async_mode: bool = Form(False),
+    user_auth: dict = Depends(get_current_user),
 ):
     try:
         uploads_dir = "uploads"
@@ -415,7 +444,7 @@ async def extract_document(
             }
             background_tasks.add_task(
                 _process_extraction_job, 
-                job_id, stored, provider, model, approach, config
+                job_id, stored, provider, model, approach, config, user_auth["user"].get("id"), user_auth["token"]
             )
             return JSONResponse(content={"ok": True, "job_id": job_id, "status": "queued"})
 
@@ -444,7 +473,7 @@ async def extract_document(
 
             storage["supabase_enabled"] = bool(supabase_enabled())
             if storage["supabase_enabled"]:
-                doc_id, extr_id = persist_extraction_payload(raw_payload)
+                doc_id, extr_id = persist_extraction_payload(raw_payload, user_id=user_auth["user"].get("id"), token=user_auth["token"])
                 storage["document_id"] = doc_id
                 storage["extraction_id"] = extr_id
         except Exception as e:
@@ -488,7 +517,8 @@ async def extract_multi(
     questions: str = Form(...),
     provider: str = Form("groq"),
     model: str = Form("llama-3.1-8b-instant"),
-    cached_files: str = Form(None)
+    cached_files: str = Form(None),
+    user_auth: dict = Depends(get_current_user)
 ):
     """
     Endpoint pour le mode Multi-Documents (Phase 8A).
@@ -634,7 +664,8 @@ async def chat_endpoint(
     provider: str = Form("groq"),
     model: str = Form("llama-3.1-8b-instant"),
     files: List[UploadFile] = File(None),
-    cached_files: str = Form(None)
+    cached_files: str = Form(None),
+    user_auth: dict = Depends(get_current_user)
 ):
     """
     Endpoint pour le Mode Chat Libre (Phase 8D).
@@ -751,14 +782,14 @@ async def chat_endpoint(
         )
 
 @app.get("/results/{entreprise}")
-def get_results_by_entreprise(entreprise: str):
+def get_results_by_entreprise(entreprise: str, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         
         if not supabase_enabled():
             raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         results = store.get_extractions_by_company(entreprise)
         
         return {
@@ -783,13 +814,13 @@ class CustomQuestionCreate(BaseModel):
     type: str = "field"
 
 @app.get("/questions")
-def get_questions():
+def get_questions(user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         questions = store.get_custom_questions()
         return {"ok": True, "data": questions}
     except Exception as e:
@@ -797,13 +828,13 @@ def get_questions():
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.post("/questions")
-def add_question(q: CustomQuestionCreate):
+def add_question(q: CustomQuestionCreate, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         q_id = store.add_custom_question(
             categorie=q.categorie,
             champ=q.champ,
@@ -819,13 +850,13 @@ def add_question(q: CustomQuestionCreate):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.delete("/questions/{q_id}")
-def delete_question(q_id: str):
+def delete_question(q_id: str, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.delete_custom_question(q_id)
         return {"ok": success}
     except Exception as e:
@@ -833,13 +864,13 @@ def delete_question(q_id: str):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.post("/questions/reset")
-def reset_questions():
+def reset_questions(user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.reset_custom_questions()
         return {"ok": success}
     except Exception as e:
@@ -847,14 +878,14 @@ def reset_questions():
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.get("/extractions")
-def get_all_extractions():
+def get_all_extractions(user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         
         if not supabase_enabled():
             raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         results = store.get_all_extractions()
         
         # Normaliser chaque résultat pour le format UI (T8.27)
@@ -877,14 +908,14 @@ def get_all_extractions():
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
 
 @app.get("/extractions/{extraction_id}")
-def get_extraction_by_id(extraction_id: str):
+def get_extraction_by_id(extraction_id: str, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         
         if not supabase_enabled():
             raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
             
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         result = store.get_extraction_by_id(extraction_id)
         
         if not result:
@@ -913,24 +944,24 @@ def get_extraction_by_id(extraction_id: str):
 # ---------------------------------------------------------------------------
 
 @app.get("/history/multi")
-def get_multi_history():
+def get_multi_history(user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         return {"ok": True, "data": store.get_multi_history()}
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.post("/history/multi")
-async def save_multi_history(request: dict):
+async def save_multi_history(request: dict, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         # On renomme date -> created_at pour matcher la BDD
         session_data = request.copy()
         if "date" in session_data:
@@ -942,12 +973,12 @@ async def save_multi_history(request: dict):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.delete("/history/multi/{session_id}")
-def delete_multi_history(session_id: str):
+def delete_multi_history(session_id: str, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.delete_multi_session(session_id)
         return {"ok": success}
     except Exception as e:
@@ -955,24 +986,21 @@ def delete_multi_history(session_id: str):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.get("/history/chat")
-def get_chat_history():
+def get_chat_history(user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         return {"ok": True, "data": store.get_chat_history()}
-    except Exception as e:
-        traceback.print_exc()
-        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.post("/history/chat")
-async def save_chat_history(request: dict):
+async def save_chat_history(request: dict, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         # On renomme date -> created_at pour matcher la BDD
         session_data = request.copy()
         if "date" in session_data:
@@ -984,12 +1012,12 @@ async def save_chat_history(request: dict):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.delete("/history/chat/{session_id}")
-def delete_chat_history(session_id: str):
+def delete_chat_history(session_id: str, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if not supabase_enabled():
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
-        store = SupabaseStore()
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.delete_chat_session(session_id)
         return {"ok": success}
     except Exception as e:

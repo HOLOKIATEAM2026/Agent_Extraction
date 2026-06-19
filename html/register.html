@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Inscription</title>
+<link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<!-- Inclure Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  .auth-container {
+    max-width: 400px;
+    margin: 80px auto;
+    background: var(--paper);
+    padding: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+  }
+  .auth-title {
+    font-family: var(--display);
+    font-size: 32px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .auth-desc {
+    font-family: var(--body);
+    font-size: 14px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .auth-input {
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    background: #fff;
+  }
+  .auth-input:focus {
+    outline: none;
+    border-color: var(--blue);
+  }
+  .auth-btn {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .auth-btn:hover {
+    opacity: 0.9;
+  }
+  .auth-link {
+    text-align: center;
+    margin-top: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .auth-link a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .auth-error {
+    color: var(--red);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+  .auth-success {
+    color: var(--teal);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<div class="page" style="min-height: calc(100vh - 140px); display: flex; align-items: center; justify-content: center;">
+  <div class="auth-container">
+    <h1 class="auth-title">Créer un espace</h1>
+    <p class="auth-desc">Créez votre espace client sécurisé Holokia</p>
+    
+    <form id="registerForm" class="auth-form">
+      <input type="text" id="nom" class="auth-input" placeholder="Nom de l'entreprise" required>
+      <input type="email" id="email" class="auth-input" placeholder="Adresse email" required>
+      <input type="password" id="password" class="auth-input" placeholder="Mot de passe (min 6 car.)" required minlength="6">
+      <button type="submit" class="auth-btn" id="submitBtn">S'INSCRIRE</button>
+    </form>
+    
+    <div id="errorMsg" class="auth-error">Erreur lors de l'inscription.</div>
+    <div id="successMsg" class="auth-success">Compte créé avec succès ! Veuillez vérifier votre boîte mail pour valider votre compte avant de vous connecter.</div>
+    
+    <div class="auth-link">
+      Déjà un compte ? <a href="login.html">Se connecter</a>
+    </div>
+  </div>
+</div>
+
+<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%;">
+  &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nom = document.getElementById('nom').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('submitBtn');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+    
+    btn.textContent = 'INSCRIPTION...';
+    btn.disabled = true;
+    errorMsg.style.display = 'none';
+    successMsg.style.display = 'none';
+    
+    try {
+      const data = await Auth.register(email, password, nom);
+      
+      // Si la session est null après l'inscription, cela signifie que Supabase attend une validation par email
+      if (data && data.user && !data.session) {
+        successMsg.textContent = "Compte créé ! Un email de confirmation vous a été envoyé. Veuillez valider votre adresse avant de vous connecter.";
+      } else {
+        successMsg.textContent = "Compte créé avec succès ! Redirection...";
+      }
+      
+      successMsg.style.display = 'block';
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 4000);
+    } catch (err) {
+      errorMsg.textContent = err.message || "Erreur lors de l'inscription";
+      errorMsg.style.display = 'block';
+      btn.textContent = 'S\'INSCRIRE';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

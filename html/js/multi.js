@@ -184,7 +184,7 @@ let cachedMultiHistory = [];
 
 async function loadMultiHistory() {
   try {
-    const res = await fetch(`${API_URL}/history/multi`);
+    const res = await Auth.apiFetch(`${API_URL}/history/multi`);
     const data = await res.json();
     if (data.ok && data.data) {
       cachedMultiHistory = data.data.map(h => {
@@ -226,7 +226,7 @@ async function saveMultiToHistory() {
   };
   
   try {
-    await fetch(`${API_URL}/history/multi`, {
+    await Auth.apiFetch(`${API_URL}/history/multi`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)
@@ -523,7 +523,7 @@ if (btnMultiExtract) {
     formData.append('model', modelName);
 
     try {
-      const response = await fetch(`${API_URL}/extract-multi`, {
+      const response = await Auth.apiFetch(`${API_URL}/extract-multi`, {
         method: 'POST',
         body: formData
       });

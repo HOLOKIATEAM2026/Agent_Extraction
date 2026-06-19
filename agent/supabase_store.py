@@ -63,19 +63,23 @@ class SupabaseStore:
         *,
         url: Optional[str] = None,
         key: Optional[str] = None,
+        token: Optional[str] = None,
+        user_id: Optional[str] = None,
         timeout_s: int = 20,
     ) -> None:
         self.url = (url or os.getenv("SUPABASE_URL") or "").strip()
-        self.key = (
-            (key or os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_ANON_KEY") or "").strip()
-        )
+        # On utilise toujours ANON_KEY comme apikey
+        self.key = (key or os.getenv("SUPABASE_ANON_KEY") or "").strip()
+        # Si un token utilisateur est fourni, on l'utilise, sinon on utilise le SERVICE_ROLE_KEY ou ANON_KEY
+        self.token = (token or os.getenv("SUPABASE_SERVICE_ROLE_KEY") or self.key).strip()
+        self.user_id = user_id
         self.timeout_s = timeout_s
         if not self.url or not self.key:
             raise ValueError("Missing SUPABASE_URL / SUPABASE_*_KEY")
         self.rest_url = self.url.rstrip("/") + "/rest/v1"
         self.base_headers = {
             "apikey": self.key,
-            "Authorization": f"Bearer {self.key}",
+            "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
         }
 
@@ -208,6 +212,8 @@ class SupabaseStore:
             "year": extra.get("year"),
             "language": extra.get("language"),
         }
+        if self.user_id:
+            payload["user_id"] = self.user_id
         data = self._post(
             "documents",
             params={"on_conflict": "file_path"},
@@ -230,6 +236,8 @@ class SupabaseStore:
             "model": meta.get("model"),
             "result": payload,
         }
+        if self.user_id:
+            row["user_id"] = self.user_id
         data = self._post("extractions", json=row, prefer="return=representation")
         if isinstance(data, list) and data:
             return str(data[0].get("id") or "")
@@ -283,6 +291,8 @@ class SupabaseStore:
 
     def upsert_multi_session(self, session_data: Dict[str, Any]) -> bool:
         try:
+            if self.user_id:
+                session_data["user_id"] = self.user_id
             self._post("multi_history", json=session_data, prefer="resolution=merge-duplicates")
             return True
         except Exception:
@@ -308,6 +318,8 @@ class SupabaseStore:
 
     def upsert_chat_session(self, session_data: Dict[str, Any]) -> bool:
         try:
+            if self.user_id:
+                session_data["user_id"] = self.user_id
             self._post("chat_history", json=session_data, prefer="resolution=merge-duplicates")
             return True
         except Exception:
@@ -331,14 +343,14 @@ def _extract_meta(payload: Dict[str, Any]) -> Dict[str, Any]:
     return {}
 
 
-def persist_extraction_payload(payload: Dict[str, Any]) -> Tuple[Optional[str], Optional[str]]:
+def persist_extraction_payload(payload: Dict[str, Any], user_id: Optional[str] = None, token: Optional[str] = None) -> Tuple[Optional[str], Optional[str]]:
     if not supabase_enabled():
         return None, None
     meta = _extract_meta(payload)
     source = meta.get("source_file")
     if not isinstance(source, str) or not source:
         return None, None
-    store = SupabaseStore()
+    store = SupabaseStore(user_id=user_id, token=token)
     doc_id = store.upsert_document(source)
     if not doc_id:
         return None, None
