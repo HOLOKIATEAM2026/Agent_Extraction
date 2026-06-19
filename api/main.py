@@ -993,6 +993,9 @@ def get_chat_history(user_auth: dict = Depends(get_current_user)):
             return JSONResponse(status_code=503, content={"ok": False, "error": "Supabase n'est pas activé"})
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         return {"ok": True, "data": store.get_chat_history()}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.post("/history/chat")
 async def save_chat_history(request: dict, user_auth: dict = Depends(get_current_user)):
