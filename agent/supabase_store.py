@@ -161,38 +161,27 @@ class SupabaseStore:
         return results
 
     def get_all_extractions(self) -> list:
-        # Get all extractions with their document info
+        # Get all extractions
+        # We don't join with documents here to avoid RLS/Foreign key issues if permissions are tight
         extractions = self._get("extractions", params={
-            "select": "id,document_id,approach,provider,model,created_at,result,documents(file_name,year,company)"
+            "select": "id,document_id,approach,provider,model,created_at,result"
         })
         
         if not extractions:
             return []
             
-        results = []
-        for ext in extractions:
-            doc = ext.get("documents", {}) or {}
-            ext["document_file"] = doc.get("file_name")
-            ext["document_year"] = doc.get("year")
-            ext["company"] = doc.get("company")
-            results.append(ext)
-            
-        return results
+        return extractions
 
     def get_extraction_by_id(self, extraction_id: str) -> Optional[Dict[str, Any]]:
         extractions = self._get("extractions", params={
             "id": f"eq.{extraction_id}",
-            "select": "id,document_id,approach,provider,model,created_at,result,documents(file_name,year,company)"
+            "select": "id,document_id,approach,provider,model,created_at,result"
         })
         
         if not extractions or len(extractions) == 0:
             return None
             
         ext = extractions[0]
-        doc = ext.get("documents", {}) or {}
-        ext["document_file"] = doc.get("file_name")
-        ext["document_year"] = doc.get("year")
-        ext["company"] = doc.get("company")
         return ext
 
     def upsert_document(self, file_path: str) -> Optional[str]:
