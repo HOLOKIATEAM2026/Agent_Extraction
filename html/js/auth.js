@@ -1,16 +1,58 @@
 // auth.js
 // Supabase Client Initialization
-// On s'assure que supabase est chargé avant de l'utiliser
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let supabaseClient = null;
+let supabaseClientPromise = null;
 
-if (!supabaseClient) {
-  console.error("Supabase n'a pas pu être initialisé. Le script Supabase est manquant ou n'a pas été chargé.");
+async function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (supabaseClientPromise) return supabaseClientPromise;
+
+  supabaseClientPromise = new Promise((resolve, reject) => {
+    const init = () => {
+      try {
+        if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+          throw new Error("SUPABASE_URL / SUPABASE_ANON_KEY manquants (config.js n'est pas chargé)");
+        }
+        if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+          throw new Error("Supabase JS n'est pas chargé");
+        }
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supabaseClient = supabaseClient;
+        resolve(supabaseClient);
+      } catch (e) {
+        reject(e);
+      }
+    };
+
+    if (!document.querySelector('script[data-supabase-js="1"]')) {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+      s.async = false;
+      s.setAttribute('data-supabase-js', '1');
+      s.onload = () => init();
+      s.onerror = () => reject(new Error("Impossible de charger le CDN Supabase"));
+      document.head.appendChild(s);
+    }
+
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (window.supabase && typeof window.supabase.createClient === 'function') {
+        clearInterval(timer);
+        init();
+      } else if (Date.now() - start > 8000) {
+        clearInterval(timer);
+        reject(new Error("Timeout: Supabase JS n'est pas disponible"));
+      }
+    }, 50);
+  });
+
+  return supabaseClientPromise;
 }
 
 const Auth = {
   async register(email, password, nom) {
-    if (!supabaseClient) throw new Error("Supabase n'est pas initialisé");
-    const { data, error } = await supabaseClient.auth.signUp({
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.signUp({
       email,
       password,
       options: {
@@ -24,8 +66,8 @@ const Auth = {
   },
 
   async login(email, password) {
-    if (!supabaseClient) throw new Error("Supabase n'est pas initialisé");
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.signInWithPassword({
       email,
       password
     });
@@ -34,24 +76,38 @@ const Auth = {
   },
 
   async logout() {
-    if (!supabaseClient) return;
-    const { error } = await supabaseClient.auth.signOut();
+    let client = null;
+    try {
+      client = await getSupabaseClient();
+    } catch (e) {
+      window.location.href = 'login.html';
+      return;
+    }
+    const { error } = await client.auth.signOut();
     if (error) throw error;
     window.location.href = 'login.html';
   },
 
   async getSession() {
-    if (!supabaseClient) return null;
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (error) return null;
-    return data.session;
+    try {
+      const client = await getSupabaseClient();
+      const { data, error } = await client.auth.getSession();
+      if (error) return null;
+      return data.session;
+    } catch (e) {
+      return null;
+    }
   },
 
   async getUser() {
-    if (!supabaseClient) return null;
-    const { data: { user }, error } = await supabaseClient.auth.getUser();
-    if (error) return null;
-    return user;
+    try {
+      const client = await getSupabaseClient();
+      const { data: { user }, error } = await client.auth.getUser();
+      if (error) return null;
+      return user;
+    } catch (e) {
+      return null;
+    }
   },
 
   // Récupérer le token pour l'envoyer à FastAPI

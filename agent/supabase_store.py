@@ -173,9 +173,9 @@ class SupabaseStore:
             "select": "id,document_id,approach,provider,model,created_at,result",
             "order": "created_at.desc"
         }
-        
-        # NOTE: PostgREST sometimes throws 403 if we explicitly query by user_id but RLS policy uses OR user_id IS NULL
-        # It's better to let RLS handle the filtering automatically since the JWT token is passed in headers
+
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
             
         extractions = self._get("extractions", params=params)
         
@@ -189,7 +189,9 @@ class SupabaseStore:
             "id": f"eq.{extraction_id}",
             "select": "id,document_id,approach,provider,model,created_at,result"
         }
-        # NOTE: Let RLS handle user isolation automatically
+
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
             
         extractions = self._get("extractions", params=params)
         
@@ -284,11 +286,17 @@ class SupabaseStore:
 
     # --- Multi History ---
     def get_multi_history(self) -> list:
-        data = self._get("multi_history", params={"order": "created_at.desc"})
+        params = {"order": "created_at.desc"}
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+        data = self._get("multi_history", params=params)
         return data if isinstance(data, list) else []
 
     def get_multi_session(self, session_id: str) -> Optional[Dict[str, Any]]:
-        data = self._get("multi_history", params={"id": f"eq.{session_id}"})
+        params = {"id": f"eq.{session_id}"}
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+        data = self._get("multi_history", params=params)
         if isinstance(data, list) and len(data) > 0:
             return data[0]
         return None
@@ -311,11 +319,17 @@ class SupabaseStore:
 
     # --- Chat History ---
     def get_chat_history(self) -> list:
-        data = self._get("chat_history", params={"order": "created_at.desc"})
+        params = {"order": "created_at.desc"}
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+        data = self._get("chat_history", params=params)
         return data if isinstance(data, list) else []
 
     def get_chat_session(self, session_id: str) -> Optional[Dict[str, Any]]:
-        data = self._get("chat_history", params={"id": f"eq.{session_id}"})
+        params = {"id": f"eq.{session_id}"}
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+        data = self._get("chat_history", params=params)
         if isinstance(data, list) and len(data) > 0:
             return data[0]
         return None
