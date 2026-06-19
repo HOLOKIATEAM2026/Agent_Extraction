@@ -54,5 +54,19 @@
 </footer>
 
 <script src="js/common.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Vérifier l'authentification : redirige vers l'inscription si non connecté
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session = await Auth.getSession();
+      if (!session) {
+        window.location.href = "register.html";
+      } else {
+        Auth.updateAuthUI();
+      }
+    });
+  </script>
 </body>
 </html>

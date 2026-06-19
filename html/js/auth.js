@@ -58,7 +58,31 @@ const Auth = {
       return null;
     }
     this.injectLogoutButton();
+    this.updateUserName(session.user);
     return session.user;
+  },
+
+  // Affiche le nom de l'utilisateur ou le bouton de connexion pour les pages non protégées
+  async updateAuthUI() {
+    const session = await this.getSession();
+    if (session) {
+      this.injectLogoutButton();
+      this.updateUserName(session.user);
+    } else {
+      const navStatus = document.querySelector('.nav-status');
+      if (navStatus) {
+        navStatus.innerHTML = '<a href="login.html" style="color: var(--blue); text-decoration: none; font-weight: 500;">Se connecter</a>';
+      }
+    }
+  },
+
+  updateUserName(user) {
+    const navStatus = document.querySelector('.nav-status');
+    if (navStatus) {
+      // Récupérer le nom depuis les user_metadata, sinon utiliser l'email
+      const userName = user.user_metadata?.nom || user.email.split('@')[0];
+      navStatus.innerHTML = `<span style="font-weight: 500; color: var(--blue);">👤 ${userName}</span>`;
+    }
   },
 
   injectLogoutButton() {
