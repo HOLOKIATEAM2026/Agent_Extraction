@@ -69,7 +69,7 @@ const Auth = {
       this.injectLogoutButton();
       this.updateUserName(session.user);
     } else {
-      const navStatus = document.querySelector('.nav-status');
+      const navStatus = document.querySelector('.nav-status') || document.querySelector('.nav-badge');
       if (navStatus) {
         navStatus.innerHTML = '<a href="login.html" style="color: var(--blue); text-decoration: none; font-weight: 500;">Se connecter</a>';
       }
@@ -77,7 +77,8 @@ const Auth = {
   },
 
   updateUserName(user) {
-    const navStatus = document.querySelector('.nav-status');
+    // Essaie d'abord .nav-status (index, etc), puis .nav-badge (chat, multi, diagnostic)
+    const navStatus = document.querySelector('.nav-status') || document.querySelector('.nav-badge');
     if (navStatus) {
       // Récupérer le nom depuis les user_metadata, sinon utiliser l'email
       const userName = user.user_metadata?.nom || user.email.split('@')[0];
