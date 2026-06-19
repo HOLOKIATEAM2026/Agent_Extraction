@@ -108,7 +108,12 @@ class SupabaseStore:
     def _get(self, path: str, *, params: Optional[Dict[str, str]] = None):
         url = self.rest_url.rstrip("/") + "/" + path.lstrip("/")
         r = requests.get(url, headers=self.base_headers, params=params, timeout=self.timeout_s)
-        r.raise_for_status()
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f"[Supabase Error] GET {path} failed: {r.status_code}")
+            print(f"[Supabase Error Response] {r.text}")
+            raise e
         if not r.text:
             return None
         try:
@@ -163,9 +168,17 @@ class SupabaseStore:
     def get_all_extractions(self) -> list:
         # Get all extractions
         # We don't join with documents here to avoid RLS/Foreign key issues if permissions are tight
-        extractions = self._get("extractions", params={
-            "select": "id,document_id,approach,provider,model,created_at,result"
-        })
+        # We need to make sure we only fetch rows for this user (or null)
+        params = {
+            "select": "id,document_id,approach,provider,model,created_at,result",
+            "order": "created_at.desc"
+        }
+        
+        # If user_id is set, only get their extractions (RLS should handle this, but adding it explicitly can help avoid 403s)
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+            
+        extractions = self._get("extractions", params=params)
         
         if not extractions:
             return []
@@ -173,10 +186,14 @@ class SupabaseStore:
         return extractions
 
     def get_extraction_by_id(self, extraction_id: str) -> Optional[Dict[str, Any]]:
-        extractions = self._get("extractions", params={
+        params = {
             "id": f"eq.{extraction_id}",
             "select": "id,document_id,approach,provider,model,created_at,result"
-        })
+        }
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+            
+        extractions = self._get("extractions", params=params)
         
         if not extractions or len(extractions) == 0:
             return None
