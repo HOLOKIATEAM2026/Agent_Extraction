@@ -1,10 +1,10 @@
 // auth.js
 // Supabase Client Initialization
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const Auth = {
   async register(email, password, nom) {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
       email,
       password,
       options: {
@@ -18,7 +18,7 @@ const Auth = {
   },
 
   async login(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
@@ -27,20 +27,20 @@ const Auth = {
   },
 
   async logout() {
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabaseClient.auth.signOut();
     if (error) throw error;
-    window.location.href = "login.html";
+    window.location.href = 'login.html';
   },
 
   async getSession() {
-    const { data, error } = await supabase.auth.getSession();
-    if (error) throw error;
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (error) return null;
     return data.session;
   },
 
   async getUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) throw error;
+    const { data: { user }, error } = await supabaseClient.auth.getUser();
+    if (error) return null;
     return user;
   },
 
