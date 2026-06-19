@@ -133,4 +133,4 @@ const Auth = {
 
 // Exposer globalement pour une utilisation facile dans les autres scripts
 window.Auth = Auth;
-window.supabaseClient = supabase;
+window.supabaseClient = supabaseClient;

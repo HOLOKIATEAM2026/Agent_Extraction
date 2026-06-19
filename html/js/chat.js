@@ -445,7 +445,7 @@ let cachedChatHistory = [];
 
 async function loadHistory() {
   try {
-    const res = await fetch(`${API_URL}/history/chat`);
+    const res = await Auth.apiFetch(`${API_URL}/history/chat`);
     const data = await res.json();
     if (data.ok && data.data) {
       cachedChatHistory = data.data.map(h => {
@@ -487,7 +487,7 @@ async function saveToHistory() {
   };
   
   try {
-    await fetch(`${API_URL}/history/chat`, {
+    await Auth.apiFetch(`${API_URL}/history/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(sessionData)

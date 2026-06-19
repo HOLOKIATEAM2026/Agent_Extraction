@@ -202,7 +202,7 @@ btnExtract.addEventListener('click', async () => {
   setStored("holokia_async", isAsync ? "1" : "0");
 
   try {
-    const response = await fetch(`${API_URL}/extract`, {
+    const response = await Auth.apiFetch(`${API_URL}/extract`, {
       method: 'POST',
       body: fd
     });
@@ -371,7 +371,7 @@ if (questionsOverlay) questionsOverlay.addEventListener('click', () => toggleQue
 async function loadQuestions() {
   questionsList.innerHTML = '<div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>';
   try {
-    const res = await fetch(`${API_URL}/questions`);
+    const res = await Auth.apiFetch(`${API_URL}/questions`);
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || "Erreur inconnue");
     
@@ -431,7 +431,7 @@ if (addQuestionForm) {
         type: document.getElementById('qType').value
       };
       
-      const res = await fetch(`${API_URL}/questions`, {
+      const res = await Auth.apiFetch(`${API_URL}/questions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
