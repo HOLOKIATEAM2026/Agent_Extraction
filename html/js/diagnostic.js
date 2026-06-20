@@ -270,7 +270,17 @@ async function pollJobStatus(jobId) {
 
 function showResults(data, options) {
   const scroll = !(options && options.scroll === false);
-  statusText.textContent = "Statut: Terminé !";
+  let statusMsg = "Statut: Terminé !";
+  if (data && data.storage) {
+    if (data.storage.extraction_id) {
+      statusMsg += " · Enregistré dans l'historique";
+    } else if (data.storage.supabase_enabled && data.storage.error) {
+      statusMsg += ` · Historique: ${data.storage.error}`;
+    } else if (data.storage.supabase_enabled) {
+      statusMsg += " · Historique: non enregistré";
+    }
+  }
+  statusText.textContent = statusMsg;
   setStored("holokia_status", statusText.textContent);
   setStored("holokia_processing", "0");
   setStored("holokia_job_id", null);
