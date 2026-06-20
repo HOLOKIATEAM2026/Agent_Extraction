@@ -2,7 +2,7 @@ import os
 import uuid
 import traceback
 import asyncio
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Tuple
 from datetime import datetime
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException, BackgroundTasks, Depends, Header
@@ -679,6 +679,35 @@ async def chat_endpoint(
     try:
         import json
         history_list = json.loads(history)
+
+        try:
+            from agent.supabase_store import SupabaseStore, supabase_enabled
+            if supabase_enabled():
+                store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
+                recent = store.get_recent_extractions(limit=5)
+                lines = []
+                for r in recent:
+                    payload = r.get("result") if isinstance(r, dict) else None
+                    meta = payload.get("meta") if isinstance(payload, dict) else None
+                    if not isinstance(meta, dict):
+                        continue
+                    ent = meta.get("entreprise")
+                    yr = meta.get("annee_rapport")
+                    dt = meta.get("date_extraction") or r.get("created_at")
+                    mdl = meta.get("modele_utilise") or r.get("model") or r.get("provider")
+                    parts = []
+                    if ent:
+                        parts.append(str(ent))
+                    if yr:
+                        parts.append(str(yr))
+                    head = " · ".join(parts) if parts else "Analyse"
+                    lines.append(f"- {head} | {mdl} | {dt}")
+                if lines:
+                    memory_text = "Mémoire (5 dernières extractions):\n" + "\n".join(lines[:5])
+                    if isinstance(history_list, list):
+                        history_list = [{"role": "system", "content": memory_text}] + history_list
+        except Exception:
+            pass
         
         # 1. Traiter les fichiers uploadés (si nouveaux)
         temp_dir = "uploads"
@@ -884,7 +913,7 @@ def reset_questions(user_auth: dict = Depends(get_current_user)):
         return JSONResponse(status_code=500, content={"ok": False, "error": str(e)})
 
 @app.get("/extractions")
-def get_all_extractions(user_auth: dict = Depends(get_current_user)):
+def get_all_extractions(limit: int = 0, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         
@@ -892,7 +921,10 @@ def get_all_extractions(user_auth: dict = Depends(get_current_user)):
             raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
             
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
-        results = store.get_all_extractions()
+        if limit and limit > 0:
+            results = store.get_recent_extractions(limit=limit)
+        else:
+            results = store.get_all_extractions()
         
         # Normaliser chaque résultat pour le format UI (T8.27)
         for ext in results:
@@ -909,6 +941,98 @@ def get_all_extractions(user_auth: dict = Depends(get_current_user)):
             "count": len(results),
             "data": results
         }
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
+@app.get("/profile")
+def get_profile(user_auth: dict = Depends(get_current_user)):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+
+        if not supabase_enabled():
+            raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
+
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
+        data = store._get("entreprise_profil", params={"order": "updated_at.desc"})
+        return {"ok": True, "data": data if isinstance(data, list) else []}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
+def _score_pair_from_payload(payload: dict) -> Tuple[float, float]:
+    try:
+        cyber = payload.get("diagnostic_cyber_gouvernance")
+        nist_score = 0.0
+        if isinstance(cyber, dict):
+            n = cyber.get("conformite_nist")
+            if isinstance(n, dict):
+                conf = n.get("confiance")
+                if isinstance(conf, (int, float)):
+                    nist_score = float(conf) * 5.0
+        data = payload.get("diagnostic_data")
+        data_score = 0.0
+        if isinstance(data, dict):
+            confs = []
+            for _, f in data.items():
+                if isinstance(f, dict) and isinstance(f.get("confiance"), (int, float)):
+                    confs.append(float(f["confiance"]))
+            if confs:
+                data_score = (sum(confs) / len(confs)) * 5.0
+        return nist_score, data_score
+    except Exception:
+        return 0.0, 0.0
+
+@app.get("/profile/evolution")
+def get_profile_evolution(limit: int = 30, user_auth: dict = Depends(get_current_user)):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+
+        if not supabase_enabled():
+            raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
+
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
+        rows = store.get_recent_extractions(limit=max(1, min(int(limit or 30), 100)))
+        points = []
+        for r in reversed(rows):
+            payload = r.get("result") if isinstance(r, dict) else None
+            if not isinstance(payload, dict):
+                continue
+            nist, data = _score_pair_from_payload(payload)
+            points.append({
+                "created_at": r.get("created_at"),
+                "score_nist": nist,
+                "score_data": data,
+            })
+        return {"ok": True, "data": points}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
+@app.get("/profile/summary")
+def get_profile_summary(user_auth: dict = Depends(get_current_user)):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+
+        if not supabase_enabled():
+            raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
+
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
+        rows = store.get_recent_extractions(limit=100)
+        if not rows:
+            return {"ok": True, "summary": ""}
+        oldest = rows[-1]
+        newest = rows[0]
+        p_old = oldest.get("result") if isinstance(oldest, dict) else None
+        p_new = newest.get("result") if isinstance(newest, dict) else None
+        if not isinstance(p_old, dict) or not isinstance(p_new, dict):
+            return {"ok": True, "summary": ""}
+        old_nist, _ = _score_pair_from_payload(p_old)
+        new_nist, _ = _score_pair_from_payload(p_new)
+        d0 = oldest.get("created_at") or ""
+        d1 = newest.get("created_at") or ""
+        summary = f"Depuis votre premier diagnostic ({d0}), votre score NIST est passé de {old_nist:.1f} à {new_nist:.1f} ({d1})."
+        return {"ok": True, "summary": summary}
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})

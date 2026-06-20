@@ -5,6 +5,7 @@ load_dotenv(override=True)
 from typing import Any, Dict, Optional, Tuple
 
 import requests
+from datetime import date, datetime
 
 
 def supabase_enabled() -> bool:
@@ -184,6 +185,17 @@ class SupabaseStore:
             
         return extractions
 
+    def get_recent_extractions(self, limit: int = 5) -> list:
+        params = {
+            "select": "id,document_id,approach,provider,model,created_at,result",
+            "order": "created_at.desc",
+            "limit": str(limit),
+        }
+        if self.user_id:
+            params["user_id"] = f"eq.{self.user_id}"
+        data = self._get("extractions", params=params)
+        return data if isinstance(data, list) else []
+
     def get_extraction_by_id(self, extraction_id: str) -> Optional[Dict[str, Any]]:
         params = {
             "id": f"eq.{extraction_id}",
@@ -351,6 +363,134 @@ class SupabaseStore:
             return False
 
 
+def _safe_float(v: Any) -> Optional[float]:
+    if v is None:
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, str):
+        s = v.strip().replace(",", ".")
+        num = ""
+        dot_used = False
+        for ch in s:
+            if ch.isdigit():
+                num += ch
+            elif ch == "." and not dot_used:
+                num += ch
+                dot_used = True
+        try:
+            return float(num) if num else None
+        except Exception:
+            return None
+    return None
+
+
+def _iter_conf_fields(payload: Dict[str, Any]):
+    for sec, sec_val in payload.items():
+        if not isinstance(sec, str) or not sec.startswith("diagnostic_"):
+            continue
+        if not isinstance(sec_val, dict):
+            continue
+        for k, field in sec_val.items():
+            if isinstance(field, dict) and isinstance(field.get("confiance"), (int, float)):
+                yield sec, k, field
+
+
+def _compute_scores(payload: Dict[str, Any]) -> Tuple[float, float]:
+    nist_score = 0.0
+    data_score = 0.0
+
+    cyber = payload.get("diagnostic_cyber_gouvernance")
+    if isinstance(cyber, dict):
+        n = cyber.get("conformite_nist")
+        if isinstance(n, dict):
+            v = _safe_float(n.get("valeur"))
+            if v is not None:
+                nist_score = float(v)
+            else:
+                conf = n.get("confiance")
+                if isinstance(conf, (int, float)):
+                    nist_score = float(conf) * 5.0
+
+    data = payload.get("diagnostic_data")
+    if isinstance(data, dict):
+        confs = []
+        for _, f in data.items():
+            if isinstance(f, dict) and isinstance(f.get("confiance"), (int, float)):
+                confs.append(float(f["confiance"]))
+        if confs:
+            data_score = (sum(confs) / len(confs)) * 5.0
+
+    return nist_score, data_score
+
+
+def _compute_strengths_axes(payload: Dict[str, Any], top_n: int = 3) -> Tuple[list, list]:
+    items = []
+    for sec, k, field in _iter_conf_fields(payload):
+        conf = float(field.get("confiance") or 0.0)
+        items.append((conf, f"{sec}.{k}"))
+    items.sort(key=lambda x: x[0])
+    axes = [x[1] for x in items[:top_n]]
+    forts = [x[1] for x in items[-top_n:]][::-1]
+    return forts, axes
+
+
+def _payload_core(payload: Dict[str, Any]) -> Dict[str, Any]:
+    if isinstance(payload.get("ui_result"), dict):
+        return payload["ui_result"]
+    if isinstance(payload.get("result"), dict) and isinstance(payload["result"].get("result"), dict):
+        return payload["result"]["result"]
+    if isinstance(payload.get("result"), dict):
+        return payload["result"]
+    return payload
+
+
+def _update_company_profile(store: SupabaseStore, payload: Dict[str, Any], company_name: Optional[str]) -> None:
+    if not store.user_id or not company_name:
+        return
+    core = _payload_core(payload)
+    nist_score, data_score = _compute_scores(core)
+    forts, axes = _compute_strengths_axes(core)
+    today = date.today().isoformat()
+
+    existing = store._get(
+        "entreprise_profil",
+        params={
+            "user_id": f"eq.{store.user_id}",
+            "nom": f"eq.{company_name}",
+            "limit": "1",
+        },
+    )
+    row = existing[0] if isinstance(existing, list) and existing else None
+    old_count = int(row.get("nb_rapports_analyses") or 0) if isinstance(row, dict) else 0
+    new_count = old_count + 1
+    old_nist = float(row.get("score_nist_moyen") or 0.0) if isinstance(row, dict) else 0.0
+    old_data = float(row.get("score_data_moyen") or 0.0) if isinstance(row, dict) else 0.0
+
+    score_nist_moyen = (old_nist * old_count + nist_score) / new_count if new_count else nist_score
+    score_data_moyen = (old_data * old_count + data_score) / new_count if new_count else data_score
+
+    premier = row.get("premier_diagnostic") if isinstance(row, dict) else None
+    payload_row: Dict[str, Any] = {
+        "user_id": store.user_id,
+        "nom": company_name,
+        "score_nist_moyen": score_nist_moyen,
+        "score_data_moyen": score_data_moyen,
+        "nb_rapports_analyses": new_count,
+        "premier_diagnostic": premier or today,
+        "dernier_diagnostic": today,
+        "points_forts": forts,
+        "axes_amelioration": axes,
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+    store._post(
+        "entreprise_profil",
+        params={"on_conflict": "user_id,nom"},
+        json=payload_row,
+        prefer="resolution=merge-duplicates",
+    )
+
+
 def _extract_meta(payload: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(payload.get("meta"), dict):
         return payload["meta"]
@@ -373,4 +513,14 @@ def persist_extraction_payload(payload: Dict[str, Any], user_id: Optional[str] =
     if not doc_id:
         return None, None
     extr_id = store.insert_extraction(document_id=doc_id, meta=meta, payload=payload)
+    try:
+        extra = _parse_corpus_path(source)
+        company = extra.get("company") if isinstance(extra, dict) else None
+        if not company:
+            company = meta.get("entreprise") if isinstance(meta, dict) else None
+        if not company and isinstance(payload.get("meta"), dict):
+            company = payload["meta"].get("entreprise")
+        _update_company_profile(store, payload, company)
+    except Exception:
+        pass
     return doc_id, extr_id

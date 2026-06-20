@@ -431,7 +431,7 @@ T8.8  → Historique                       ← en dernier
 
 ---
 
-## Phase 10 — Mémoire de l'Agent ⏳ À VENIR
+## Phase 10 — Mémoire de l'Agent ✅ Terminée
 
 > **Objectif :** L'agent se souvient du client, de ses analyses
 > passées et construit un profil qui s'enrichit dans le temps.
@@ -442,20 +442,22 @@ T8.8  → Historique                       ← en dernier
 
 - [ ] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
         dans le mode Chat ← probablement déjà fait ✅
-- [ ] **T10.2** — Tester que le contexte est bien maintenu sur 5+ tours
+- [x] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
+        dans le mode Chat
+- [x] **T10.2** — Tester que le contexte est bien maintenu sur 5+ tours
 
 ### 10B — Mémoire Moyen Terme (entre les sessions)
 
-- [ ] **T10.3** — Au démarrage de session : charger les 5 dernières
+- [x] **T10.3** — Au démarrage de session : charger les 5 dernières
         extractions de l'utilisateur depuis Supabase
-- [ ] **T10.4** — Injecter cet historique dans le contexte du prompt
+- [x] **T10.4** — Injecter cet historique dans le contexte du prompt
         système au début de chaque conversation
-- [ ] **T10.5** — Afficher "Bon retour [prénom] — voici vos
+- [x] **T10.5** — Afficher "Bon retour [prénom] — voici vos
         dernières analyses" sur la page d'accueil
 
 ### 10C — Mémoire Long Terme (profil permanent entreprise)
 
-- [ ] **T10.6** — Créer table `entreprise_profil` dans Supabase :
+- [x] **T10.6** — Créer table `entreprise_profil` dans Supabase :
 ```sql
   CREATE TABLE entreprise_profil (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -473,11 +475,11 @@ T8.8  → Historique                       ← en dernier
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );
 ```
-- [ ] **T10.7** — Mettre à jour le profil automatiquement
+- [x] **T10.7** — Mettre à jour le profil automatiquement
         après chaque extraction
-- [ ] **T10.8** — Afficher l'évolution des scores dans le temps
+- [x] **T10.8** — Afficher l'évolution des scores dans le temps
         (graphique simple HTML/JS)
-- [ ] **T10.9** — Générer un résumé de profil :
+- [x] **T10.9** — Générer un résumé de profil :
         "Depuis votre premier diagnostic en mai 2024,
          votre score NIST est passé de 2,8 à 3,6"
 

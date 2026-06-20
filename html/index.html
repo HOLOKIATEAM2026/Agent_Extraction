@@ -27,6 +27,20 @@
 <div class="home-container">
     <h1 class="home-title">Sélectionnez votre mode d'analyse</h1>
     <p class="home-desc">Choisissez l'outil le plus adapté à votre besoin. Notre Agent IA RAG multi-modèles vous assistera dans l'exploitation de vos documents.</p>
+
+    <div id="welcomeBox" style="display:none; margin-top: 22px; background: var(--paper); border: 1px solid var(--line); padding: 16px 18px; border-radius: 12px;">
+      <div id="welcomeTitle" style="font-family: var(--display); font-size: 20px; margin-bottom: 6px;"></div>
+      <div id="welcomeList" style="font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.6;"></div>
+      <div id="profileSummary" style="margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted);"></div>
+      <div id="profileBox" style="margin-top: 12px; display:none;">
+        <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+          <div id="profileStats" style="font-family: var(--mono); font-size: 11px; color: var(--ink);"></div>
+        </div>
+        <div style="background:#fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px;">
+          <canvas id="profileChart" height="140" style="width:100%; display:block;"></canvas>
+        </div>
+      </div>
+    </div>
     
     <div class="cards-grid">
       <a href="chat.html" class="mode-card">
@@ -65,6 +79,102 @@
         window.location.href = "register.html";
       } else {
         Auth.updateAuthUI();
+        try {
+          const user = session.user;
+          const userName = user.user_metadata?.nom || user.email.split('@')[0];
+          const welcomeBox = document.getElementById('welcomeBox');
+          const welcomeTitle = document.getElementById('welcomeTitle');
+          const welcomeList = document.getElementById('welcomeList');
+          const profileBox = document.getElementById('profileBox');
+          const profileStats = document.getElementById('profileStats');
+          const profileSummary = document.getElementById('profileSummary');
+          const chart = document.getElementById('profileChart');
+
+          welcomeTitle.textContent = `Bon retour ${userName} — voici vos dernières analyses`;
+          welcomeList.textContent = "Chargement...";
+          welcomeBox.style.display = "block";
+
+          const res = await Auth.apiFetch(`${API_URL}/extractions?limit=5`);
+          const data = await res.json();
+          if (data && data.ok) {
+            const rows = data.data || [];
+            if (!rows.length) {
+              welcomeList.textContent = "Aucune analyse enregistrée pour le moment.";
+            } else {
+              welcomeList.innerHTML = rows.map(r => {
+                const meta = (r.result && r.result.meta) ? r.result.meta : {};
+                const ent = meta.entreprise || "Entreprise";
+                const yr = meta.annee_rapport ? ` · ${meta.annee_rapport}` : "";
+                const dt = (r.created_at || "").toString().replace("T", " ").slice(0, 16);
+                const mdl = meta.modele_utilise || r.model || r.provider || "";
+                return `<div>• ${ent}${yr} — ${mdl} — ${dt}</div>`;
+              }).join("");
+            }
+          } else {
+            welcomeList.textContent = "Impossible de charger les analyses.";
+          }
+
+          const pRes = await Auth.apiFetch(`${API_URL}/profile`);
+          const pData = await pRes.json();
+          const profileRows = (pData && pData.ok) ? (pData.data || []) : [];
+          if (profileRows.length) {
+            const p = profileRows[0];
+            profileBox.style.display = "block";
+            profileStats.textContent = `Profil: ${p.nom || 'Entreprise'} · Score NIST moyen: ${(p.score_nist_moyen || 0).toFixed(1)} · Score Data moyen: ${(p.score_data_moyen || 0).toFixed(1)} · Rapports: ${p.nb_rapports_analyses || 0}`;
+
+            const sRes = await Auth.apiFetch(`${API_URL}/profile/summary`);
+            const sData = await sRes.json();
+            if (sData && sData.ok && sData.summary) {
+              profileSummary.textContent = sData.summary;
+            }
+
+            const eRes = await Auth.apiFetch(`${API_URL}/profile/evolution?limit=30`);
+            const eData = await eRes.json();
+            const pts = (eData && eData.ok) ? (eData.data || []) : [];
+            if (chart && pts.length) {
+              const ctx = chart.getContext('2d');
+              const w = chart.width = chart.clientWidth * (window.devicePixelRatio || 1);
+              const h = chart.height = 140 * (window.devicePixelRatio || 1);
+              ctx.clearRect(0, 0, w, h);
+              const pad = 18 * (window.devicePixelRatio || 1);
+              const xs = pts.map((_, i) => i);
+              const ys = pts.map(p => p.score_nist || 0);
+              const minY = Math.min(...ys, 0);
+              const maxY = Math.max(...ys, 5);
+              const xScale = (w - 2 * pad) / Math.max(1, xs.length - 1);
+              const yScale = (h - 2 * pad) / Math.max(1e-6, (maxY - minY));
+
+              ctx.strokeStyle = "rgba(0,71,255,0.22)";
+              ctx.lineWidth = 1 * (window.devicePixelRatio || 1);
+              ctx.beginPath();
+              ctx.moveTo(pad, pad);
+              ctx.lineTo(pad, h - pad);
+              ctx.lineTo(w - pad, h - pad);
+              ctx.stroke();
+
+              ctx.strokeStyle = "rgba(0,71,255,0.9)";
+              ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
+              ctx.beginPath();
+              pts.forEach((p, i) => {
+                const x = pad + i * xScale;
+                const y = h - pad - ((p.score_nist || 0) - minY) * yScale;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+              });
+              ctx.stroke();
+
+              ctx.fillStyle = "rgba(0,71,255,1)";
+              pts.forEach((p, i) => {
+                const x = pad + i * xScale;
+                const y = h - pad - ((p.score_nist || 0) - minY) * yScale;
+                ctx.beginPath();
+                ctx.arc(x, y, 2.6 * (window.devicePixelRatio || 1), 0, Math.PI * 2);
+                ctx.fill();
+              });
+            }
+          }
+        } catch (e) {
+        }
       }
     });
   </script>
