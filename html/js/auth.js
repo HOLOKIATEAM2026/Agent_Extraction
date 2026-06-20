@@ -138,6 +138,8 @@ const Auth = {
       const navStatus = document.querySelector('.nav-status') || document.querySelector('.nav-badge');
       if (navStatus) {
         navStatus.innerHTML = '<a href="login.html" style="color: var(--blue); text-decoration: none; font-weight: 500;">Se connecter</a>';
+        navStatus.style.cursor = "";
+        navStatus.onclick = null;
       }
     }
   },
@@ -148,7 +150,15 @@ const Auth = {
     if (navStatus) {
       // Récupérer le nom depuis les user_metadata, sinon utiliser l'email
       const userName = user.user_metadata?.nom || user.email.split('@')[0];
-      navStatus.innerHTML = `<span style="font-weight: 500; color: var(--blue);">👤 ${userName}</span>`;
+      const profileHref = "profil.html";
+      navStatus.innerHTML = `<a href="${profileHref}" style="font-weight: 500; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">👤 ${userName}</a>`;
+      navStatus.style.cursor = "pointer";
+      navStatus.onclick = (e) => {
+        if (e && (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)) {
+          return;
+        }
+        window.location.href = profileHref;
+      };
     }
   },
 

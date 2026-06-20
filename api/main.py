@@ -984,7 +984,7 @@ def _score_pair_from_payload(payload: dict) -> Tuple[float, float]:
         return 0.0, 0.0
 
 @app.get("/profile/evolution")
-def get_profile_evolution(limit: int = 30, user_auth: dict = Depends(get_current_user)):
+def get_profile_evolution(company: str = "", limit: int = 30, user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
 
@@ -998,6 +998,10 @@ def get_profile_evolution(limit: int = 30, user_auth: dict = Depends(get_current
             payload = r.get("result") if isinstance(r, dict) else None
             if not isinstance(payload, dict):
                 continue
+            if company:
+                meta = payload.get("meta")
+                if not isinstance(meta, dict) or (meta.get("entreprise") or "") != company:
+                    continue
             nist, data = _score_pair_from_payload(payload)
             points.append({
                 "created_at": r.get("created_at"),
@@ -1010,7 +1014,7 @@ def get_profile_evolution(limit: int = 30, user_auth: dict = Depends(get_current
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
 
 @app.get("/profile/summary")
-def get_profile_summary(user_auth: dict = Depends(get_current_user)):
+def get_profile_summary(company: str = "", user_auth: dict = Depends(get_current_user)):
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
 
@@ -1019,6 +1023,14 @@ def get_profile_summary(user_auth: dict = Depends(get_current_user)):
 
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         rows = store.get_recent_extractions(limit=100)
+        if company:
+            rows = [
+                r for r in rows
+                if isinstance(r, dict)
+                and isinstance(r.get("result"), dict)
+                and isinstance(r["result"].get("meta"), dict)
+                and (r["result"]["meta"].get("entreprise") or "") == company
+            ]
         if not rows:
             return {"ok": True, "summary": ""}
         oldest = rows[-1]
@@ -1033,6 +1045,36 @@ def get_profile_summary(user_auth: dict = Depends(get_current_user)):
         d1 = newest.get("created_at") or ""
         summary = f"Depuis votre premier diagnostic ({d0}), votre score NIST est passé de {old_nist:.1f} à {new_nist:.1f} ({d1})."
         return {"ok": True, "summary": summary}
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
+@app.patch("/profile/{profile_id}")
+def update_profile(profile_id: str, request: dict, user_auth: dict = Depends(get_current_user)):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+
+        if not supabase_enabled():
+            raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
+
+        store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
+        payload: Dict[str, Any] = {}
+        if isinstance(request.get("nom"), str) and request.get("nom").strip():
+            payload["nom"] = request["nom"].strip()
+        if "secteur" in request:
+            payload["secteur"] = request.get("secteur")
+        if not payload:
+            return {"ok": True, "data": None}
+        payload["updated_at"] = datetime.utcnow().isoformat()
+        data = store._patch(
+            "entreprise_profil",
+            params={"id": f"eq.{profile_id}"},
+            json=payload,
+            prefer="return=representation",
+        )
+        if isinstance(data, list) and data:
+            return {"ok": True, "data": data[0]}
+        return {"ok": True, "data": data}
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})

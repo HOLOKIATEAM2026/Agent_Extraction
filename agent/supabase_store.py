@@ -117,6 +117,25 @@ class SupabaseStore:
             raise e
         if not r.text:
             return None
+
+    def _patch(self, path: str, *, params: Optional[Dict[str, str]] = None, json: Any = None, prefer: str = ""):
+        headers = dict(self.base_headers)
+        if prefer:
+            headers["Prefer"] = prefer
+        url = self.rest_url.rstrip("/") + "/" + path.lstrip("/")
+        r = requests.patch(url, headers=headers, params=params, json=json, timeout=self.timeout_s)
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            print(f"[Supabase Error] PATCH {path} failed: {r.status_code}")
+            print(f"[Supabase Error Response] {r.text}")
+            raise e
+        if not r.text:
+            return None
+        try:
+            return r.json()
+        except Exception:
+            return None
         try:
             return r.json()
         except Exception:

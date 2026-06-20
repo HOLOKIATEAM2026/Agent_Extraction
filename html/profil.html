@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holokia — Profil</title>
+<link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  .profile-wrap{
+    min-height:100vh;
+    padding-top:120px;
+    padding-left:40px;
+    padding-right:40px;
+    padding-bottom:80px;
+    position:relative;
+    z-index:1;
+  }
+  .profile-max{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
+  }
+  .profile-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:22px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--line);
+  }
+  .profile-title{
+    font-family:var(--display);
+    font-size:64px;
+    line-height:0.9;
+  }
+  .profile-title em{font-style:normal;color:var(--blue)}
+  .profile-sub{
+    margin-top:12px;
+    font-family:var(--body);
+    color:var(--muted);
+    max-width:70ch;
+  }
+  .profile-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    padding-top:6px;
+  }
+  .btn-sm{padding:10px 14px;font-size:11px;letter-spacing:0.1em}
+  .profile-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    padding:18px 18px;
+  }
+  .panel-title{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:12px;
+  }
+  .row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .field{
+    flex:1 1 220px;
+  }
+  .field label{
+    display:block;
+    margin-bottom:6px;
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .input, .select{
+    width:100%;
+    padding:12px 12px;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:10px;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink);
+    outline:none;
+  }
+  .input:focus, .select:focus{
+    border-color:rgba(0,71,255,0.45);
+    box-shadow:0 0 0 4px rgba(0,71,255,0.10);
+  }
+  .kpis{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink);
+    line-height:1.7;
+    margin-top:10px;
+  }
+  .chart-box{
+    background:#fff;
+    border:1px solid var(--line);
+    padding:12px;
+  }
+  .hint{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  .msg{
+    display:none;
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid rgba(18, 180, 140, 0.25);
+    background:rgba(18, 180, 140, 0.06);
+    color:var(--teal);
+    font-family:var(--mono);
+    font-size:11px;
+  }
+  .err{
+    display:none;
+    margin-top:12px;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid rgba(255, 46, 46, 0.25);
+    background:rgba(255, 46, 46, 0.06);
+    color:var(--red);
+    font-family:var(--mono);
+    font-size:11px;
+  }
+  @media (max-width: 980px){
+    .profile-grid{grid-template-columns:1fr}
+    .profile-title{font-size:52px}
+  }
+  @media (max-width: 560px){
+    .profile-wrap{padding-left:16px;padding-right:16px}
+    .profile-title{font-size:44px}
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="nav-logo-dot"></span>
+    HOLOKIA
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Accueil</a></li>
+    <li><a href="diagnostic.html">Mode Diagnostic</a></li>
+    <li><a href="multi.html">Mode Comparaison</a></li>
+    <li><a href="chat.html">Mode Chat</a></li>
+  </ul>
+  <div class="nav-status">Copilot Strategy IA</div>
+</nav>
+
+<main class="profile-wrap">
+  <div class="profile-max">
+    <div class="profile-header">
+      <div>
+        <div class="profile-title">Profil <em>Client</em></div>
+        <div class="profile-sub">Gérez votre profil entreprise, suivez l’évolution de vos scores et retrouvez vos derniers diagnostics.</div>
+      </div>
+      <div class="profile-actions">
+        <a class="btn-outline btn-sm" href="historique.html">Historique</a>
+        <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <section class="panel">
+        <div class="panel-title">Sélection</div>
+        <div class="row">
+          <div class="field">
+            <label for="profileSelect">Entreprise</label>
+            <select id="profileSelect" class="select"></select>
+          </div>
+        </div>
+
+        <div class="panel-title">Édition</div>
+        <div class="row">
+          <div class="field">
+            <label for="nomInput">Nom</label>
+            <input id="nomInput" class="input" type="text" placeholder="Nom de l'entreprise">
+          </div>
+          <div class="field">
+            <label for="secteurInput">Secteur</label>
+            <input id="secteurInput" class="input" type="text" placeholder="Secteur d'activité (optionnel)">
+          </div>
+        </div>
+        <div class="row">
+          <button id="btnSave" class="btn-primary btn-sm" type="button">Enregistrer</button>
+          <div class="hint">Les changements s’appliquent uniquement à votre compte.</div>
+        </div>
+        <div id="okMsg" class="msg">Profil mis à jour.</div>
+        <div id="errMsg" class="err">Erreur lors de la mise à jour.</div>
+
+        <div class="panel-title">Indicateurs</div>
+        <div id="kpis" class="kpis">Chargement...</div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">Évolution (NIST / Data)</div>
+        <div class="chart-box">
+          <canvas id="chartCanvas" height="180" style="width:100%;display:block;"></canvas>
+        </div>
+        <div id="summary" class="hint" style="margin-top:12px;"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%;">
+  &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script src="js/auth.js?v=20260620_1"></script>
+<script>
+  Auth.protectRoute();
+</script>
+<script>
+  let allProfiles = [];
+  let current = null;
+  let chart = null;
+
+  function setErr(msg) {
+    const ok = document.getElementById('okMsg');
+    const err = document.getElementById('errMsg');
+    ok.style.display = 'none';
+    err.style.display = 'block';
+    err.textContent = msg || "Erreur lors de la mise à jour.";
+  }
+
+  function setOk(msg) {
+    const ok = document.getElementById('okMsg');
+    const err = document.getElementById('errMsg');
+    err.style.display = 'none';
+    ok.style.display = 'block';
+    ok.textContent = msg || "Profil mis à jour.";
+  }
+
+  function renderSelect() {
+    const select = document.getElementById('profileSelect');
+    select.innerHTML = '';
+    if (!allProfiles.length) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.textContent = 'Aucun profil (faites une extraction)';
+      select.appendChild(opt);
+      select.disabled = true;
+      return;
+    }
+    select.disabled = false;
+    allProfiles.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.nom || 'Entreprise';
+      select.appendChild(opt);
+    });
+  }
+
+  function setCurrentById(id) {
+    current = allProfiles.find(p => p.id === id) || allProfiles[0] || null;
+    const nom = document.getElementById('nomInput');
+    const secteur = document.getElementById('secteurInput');
+    const kpis = document.getElementById('kpis');
+    if (!current) {
+      nom.value = '';
+      secteur.value = '';
+      kpis.textContent = 'Aucun profil disponible.';
+      return;
+    }
+    nom.value = current.nom || '';
+    secteur.value = current.secteur || '';
+    kpis.textContent = `Score NIST moyen: ${(current.score_nist_moyen || 0).toFixed(1)} · Score Data moyen: ${(current.score_data_moyen || 0).toFixed(1)} · Rapports: ${current.nb_rapports_analyses || 0}`;
+  }
+
+  async function loadEvolution() {
+    const summary = document.getElementById('summary');
+    summary.textContent = '';
+    if (!current || !current.nom) {
+      return;
+    }
+    const evoRes = await Auth.apiFetch(`${API_URL}/profile/evolution?company=${encodeURIComponent(current.nom)}&limit=30`);
+    const evo = await evoRes.json();
+    const pts = (evo && evo.ok) ? (evo.data || []) : [];
+
+    const sRes = await Auth.apiFetch(`${API_URL}/profile/summary?company=${encodeURIComponent(current.nom)}`);
+    const s = await sRes.json();
+    if (s && s.ok && s.summary) summary.textContent = s.summary;
+
+    const canvas = document.getElementById('chartCanvas');
+    if (!canvas) return;
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+    const labels = pts.map(p => (p.created_at || '').toString().slice(0, 10));
+    const nist = pts.map(p => p.score_nist || 0);
+    const data = pts.map(p => p.score_data || 0);
+    chart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Score NIST', data: nist, borderColor: '#0047ff', backgroundColor: 'rgba(0,71,255,0.12)', tension: 0.35 },
+          { label: 'Score Data', data: data, borderColor: '#00c896', backgroundColor: 'rgba(0,200,150,0.12)', tension: 0.35 }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: true } },
+        scales: { y: { min: 0, max: 5 } }
+      }
+    });
+  }
+
+  async function refresh() {
+    const kpis = document.getElementById('kpis');
+    kpis.textContent = 'Chargement...';
+    const res = await Auth.apiFetch(`${API_URL}/profile`);
+    const data = await res.json();
+    allProfiles = (data && data.ok) ? (data.data || []) : [];
+    renderSelect();
+    const select = document.getElementById('profileSelect');
+    const chosen = select.value || (allProfiles[0] ? allProfiles[0].id : '');
+    select.value = chosen;
+    setCurrentById(chosen);
+    await loadEvolution();
+  }
+
+  document.getElementById('profileSelect').addEventListener('change', async (e) => {
+    setCurrentById(e.target.value);
+    document.getElementById('okMsg').style.display = 'none';
+    document.getElementById('errMsg').style.display = 'none';
+    await loadEvolution();
+  });
+
+  document.getElementById('btnSave').addEventListener('click', async () => {
+    if (!current) return;
+    const btn = document.getElementById('btnSave');
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement...';
+    try {
+      const payload = {
+        nom: document.getElementById('nomInput').value,
+        secteur: document.getElementById('secteurInput').value
+      };
+      const res = await Auth.apiFetch(`${API_URL}/profile/${encodeURIComponent(current.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!data || !data.ok) {
+        setErr(data && data.error ? data.error : 'Erreur lors de la mise à jour.');
+      } else {
+        setOk('Profil mis à jour.');
+        await refresh();
+      }
+    } catch (e) {
+      setErr('Erreur lors de la mise à jour.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer';
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await refresh();
+  });
+</script>
+</body>
+</html>
