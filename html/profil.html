@@ -272,14 +272,17 @@
     select.disabled = false;
     allProfiles.forEach(p => {
       const opt = document.createElement('option');
-      opt.value = p.id;
+      opt.value = String(p.id);
       opt.textContent = p.nom || 'Entreprise';
       select.appendChild(opt);
     });
   }
 
   function setCurrentById(id) {
-    current = allProfiles.find(p => p.id === id) || allProfiles[0] || null;
+    const idStr = id == null ? '' : String(id);
+    current = allProfiles.find(p => String(p.id) === idStr) || allProfiles[0] || null;
+    const select = document.getElementById('profileSelect');
+    if (select && current) select.value = String(current.id);
     const nom = document.getElementById('nomInput');
     const secteur = document.getElementById('secteurInput');
     const kpis = document.getElementById('kpis');
@@ -343,7 +346,7 @@
     allProfiles = (data && data.ok) ? (data.data || []) : [];
     renderSelect();
     const select = document.getElementById('profileSelect');
-    const chosen = select.value || (allProfiles[0] ? allProfiles[0].id : '');
+    const chosen = select.value || (allProfiles[0] ? String(allProfiles[0].id) : '');
     select.value = chosen;
     setCurrentById(chosen);
     await loadEvolution();
