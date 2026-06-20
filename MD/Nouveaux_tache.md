@@ -440,8 +440,6 @@ T8.8  → Historique                       ← en dernier
 
 ### 10A — Mémoire Court Terme (dans la session)
 
-- [ ] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
-        dans le mode Chat ← probablement déjà fait ✅
 - [x] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
         dans le mode Chat
 - [x] **T10.2** — Tester que le contexte est bien maintenu sur 5+ tours

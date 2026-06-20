@@ -28,19 +28,40 @@
     <h1 class="home-title">Sélectionnez votre mode d'analyse</h1>
     <p class="home-desc">Choisissez l'outil le plus adapté à votre besoin. Notre Agent IA RAG multi-modèles vous assistera dans l'exploitation de vos documents.</p>
 
-    <div id="welcomeBox" style="display:none; margin-top: 22px; background: var(--paper); border: 1px solid var(--line); padding: 16px 18px; border-radius: 12px;">
-      <div id="welcomeTitle" style="font-family: var(--display); font-size: 20px; margin-bottom: 6px;"></div>
-      <div id="welcomeList" style="font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.6;"></div>
-      <div id="profileSummary" style="margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--muted);"></div>
-      <div id="profileBox" style="margin-top: 12px; display:none;">
-        <div style="display:flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
-          <div id="profileStats" style="font-family: var(--mono); font-size: 11px; color: var(--ink);"></div>
+    <section id="welcomeBox" class="welcome-panel" style="display:none;">
+      <div class="welcome-head">
+        <div>
+          <div class="welcome-kicker">Espace client</div>
+          <div id="welcomeTitle" class="welcome-title"></div>
+          <div id="profileSummary" class="welcome-summary"></div>
         </div>
-        <div style="background:#fff; border: 1px solid var(--line); border-radius: 12px; padding: 12px;">
-          <canvas id="profileChart" height="140" style="width:100%; display:block;"></canvas>
+        <div class="welcome-actions">
+          <a class="btn-outline btn-sm" href="historique.html">Historique</a>
+          <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
         </div>
       </div>
-    </div>
+
+      <div class="welcome-grid">
+        <div class="welcome-card">
+          <div class="welcome-card-title">
+            <span>Dernières analyses</span>
+          </div>
+          <div id="welcomeList" class="welcome-list"></div>
+        </div>
+
+        <div class="welcome-card">
+          <div class="welcome-card-title">
+            <span>Profil</span>
+          </div>
+          <div id="profileStats" class="welcome-kpis"></div>
+          <div id="profileBox" style="display:none;">
+            <div class="welcome-chart">
+              <canvas id="profileChart" height="140" style="width:100%; display:block;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     
     <div class="cards-grid">
       <a href="chat.html" class="mode-card">
@@ -91,6 +112,7 @@
           const chart = document.getElementById('profileChart');
 
           welcomeTitle.textContent = `Bon retour ${userName} — voici vos dernières analyses`;
+          profileSummary.textContent = "";
           welcomeList.textContent = "Chargement...";
           welcomeBox.style.display = "block";
 
@@ -101,14 +123,21 @@
             if (!rows.length) {
               welcomeList.textContent = "Aucune analyse enregistrée pour le moment.";
             } else {
-              welcomeList.innerHTML = rows.map(r => {
+              const itemHtml = (r) => {
                 const meta = (r.result && r.result.meta) ? r.result.meta : {};
                 const ent = meta.entreprise || "Entreprise";
                 const yr = meta.annee_rapport ? ` · ${meta.annee_rapport}` : "";
                 const dt = (r.created_at || "").toString().replace("T", " ").slice(0, 16);
                 const mdl = meta.modele_utilise || r.model || r.provider || "";
-                return `<div>• ${ent}${yr} — ${mdl} — ${dt}</div>`;
-              }).join("");
+                return `<div class="welcome-item"><span class="welcome-item-dot"></span><div class="welcome-item-main">${ent}${yr}<span class="welcome-item-sub">${mdl} — ${dt}</span></div></div>`;
+              };
+              const first = rows.slice(0, 2).map(itemHtml).join("");
+              const rest = rows.slice(2).map(itemHtml).join("");
+              if (rest) {
+                welcomeList.innerHTML = `${first}<details class="welcome-details"><summary>Voir ${rows.length - 2} autres</summary>${rest}</details>`;
+              } else {
+                welcomeList.innerHTML = first;
+              }
             }
           } else {
             welcomeList.textContent = "Impossible de charger les analyses.";
