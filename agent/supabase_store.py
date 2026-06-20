@@ -222,7 +222,7 @@ class SupabaseStore:
             payload["user_id"] = self.user_id
         data = self._post(
             "documents",
-            params={"on_conflict": "file_path"},
+            params={"on_conflict": "user_id,file_path"},
             json=payload,
             prefer="resolution=merge-duplicates,return=representation",
         )
