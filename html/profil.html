@@ -341,14 +341,25 @@
   async function refresh() {
     const kpis = document.getElementById('kpis');
     kpis.textContent = 'Chargement...';
+    const session = await Auth.getSession();
+    const metaCompany = session && session.user && session.user.user_metadata ? session.user.user_metadata.nom : '';
     const res = await Auth.apiFetch(`${API_URL}/profile`);
     const data = await res.json();
     allProfiles = (data && data.ok) ? (data.data || []) : [];
     renderSelect();
     const select = document.getElementById('profileSelect');
-    const chosen = select.value || (allProfiles[0] ? String(allProfiles[0].id) : '');
+    let preferred = '';
+    if (metaCompany) {
+      const m = allProfiles.find(p => (p.nom || '').toLowerCase() === metaCompany.toLowerCase());
+      if (m) preferred = String(m.id);
+    }
+    const chosen = select.value || preferred || (allProfiles[0] ? String(allProfiles[0].id) : '');
     select.value = chosen;
     setCurrentById(chosen);
+    if (!current && metaCompany) {
+      const nom = document.getElementById('nomInput');
+      if (nom) nom.value = metaCompany;
+    }
     await loadEvolution();
   }
 
