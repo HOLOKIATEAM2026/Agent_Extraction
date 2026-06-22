@@ -117,6 +117,10 @@ class SupabaseStore:
             raise e
         if not r.text:
             return None
+        try:
+            return r.json()
+        except Exception:
+            return None
 
     def _patch(self, path: str, *, params: Optional[Dict[str, str]] = None, json: Any = None, prefer: str = ""):
         headers = dict(self.base_headers)
@@ -131,10 +135,6 @@ class SupabaseStore:
             print(f"[Supabase Error Response] {r.text}")
             raise e
         if not r.text:
-            return None
-        try:
-            return r.json()
-        except Exception:
             return None
         try:
             return r.json()

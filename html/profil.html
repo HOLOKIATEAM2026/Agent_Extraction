@@ -371,7 +371,6 @@
   });
 
   document.getElementById('btnSave').addEventListener('click', async () => {
-    if (!current) return;
     const btn = document.getElementById('btnSave');
     btn.disabled = true;
     btn.textContent = 'Enregistrement...';
@@ -380,8 +379,17 @@
         nom: document.getElementById('nomInput').value,
         secteur: document.getElementById('secteurInput').value
       };
-      const res = await Auth.apiFetch(`${API_URL}/profile/${encodeURIComponent(current.id)}`, {
-        method: 'PATCH',
+      if (!payload.nom || !payload.nom.trim()) {
+        setErr("Le nom de l'entreprise est requis.");
+        return;
+      }
+      const isCreate = !current || !current.id;
+      const url = isCreate
+        ? `${API_URL}/profile`
+        : `${API_URL}/profile/${encodeURIComponent(current.id)}`;
+      const method = isCreate ? 'POST' : 'PATCH';
+      const res = await Auth.apiFetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
@@ -389,7 +397,7 @@
       if (!data || !data.ok) {
         setErr(data && data.error ? data.error : 'Erreur lors de la mise à jour.');
       } else {
-        setOk('Profil mis à jour.');
+        setOk(isCreate ? 'Profil créé.' : 'Profil mis à jour.');
         await refresh();
       }
     } catch (e) {

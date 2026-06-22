@@ -960,6 +960,46 @@ def get_profile(user_auth: dict = Depends(get_current_user)):
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
 
+@app.post("/profile")
+def create_profile(request: dict, user_auth: dict = Depends(get_current_user)):
+    try:
+        from agent.supabase_store import SupabaseStore, supabase_enabled
+
+        if not supabase_enabled():
+            raise HTTPException(status_code=503, detail="Supabase n'est pas activé ou configuré dans .env")
+
+        user_id = user_auth["user"].get("id")
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Utilisateur non authentifié")
+
+        nom = request.get("nom")
+        if not isinstance(nom, str) or not nom.strip():
+            raise HTTPException(status_code=400, detail="Le champ 'nom' est requis")
+
+        payload: Dict[str, Any] = {
+            "user_id": user_id,
+            "nom": nom.strip(),
+            "updated_at": datetime.utcnow().isoformat(),
+        }
+        if "secteur" in request:
+            payload["secteur"] = request.get("secteur")
+
+        store = SupabaseStore(user_id=user_id, token=user_auth["token"])
+        data = store._post(
+            "entreprise_profil",
+            params={"on_conflict": "user_id,nom"},
+            json=payload,
+            prefer="resolution=merge-duplicates,return=representation",
+        )
+        if isinstance(data, list) and data:
+            return {"ok": True, "data": data[0]}
+        return {"ok": True, "data": data}
+    except HTTPException:
+        raise
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {str(e)}"})
+
 def _score_pair_from_payload(payload: dict) -> Tuple[float, float]:
     try:
         cyber = payload.get("diagnostic_cyber_gouvernance")
