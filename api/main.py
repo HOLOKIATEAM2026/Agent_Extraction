@@ -925,9 +925,42 @@ def get_all_extractions(limit: int = 0, user_auth: dict = Depends(get_current_us
             results = store.get_recent_extractions(limit=limit)
         else:
             results = store.get_all_extractions()
+
+        doc_ids = [
+            str(r.get("document_id"))
+            for r in results
+            if isinstance(r, dict) and r.get("document_id")
+        ]
+        doc_map: Dict[str, Dict[str, Any]] = {}
+        if doc_ids:
+            ids = ",".join(sorted(set(doc_ids)))
+            params: Dict[str, str] = {"id": f"in.({ids})", "select": "id,file_name,company,year"}
+            if store.user_id:
+                params["user_id"] = f"eq.{store.user_id}"
+            docs = store._get("documents", params=params)
+            if isinstance(docs, list):
+                for d in docs:
+                    if isinstance(d, dict) and d.get("id"):
+                        doc_map[str(d["id"])] = d
         
         # Normaliser chaque résultat pour le format UI (T8.27)
         for ext in results:
+            if isinstance(ext, dict):
+                doc = doc_map.get(str(ext.get("document_id") or ""), {})
+                if doc:
+                    ext["document_file"] = doc.get("file_name") or ext.get("document_file")
+                    ext["document_year"] = doc.get("year") or ext.get("document_year")
+                    ext["company"] = doc.get("company") or ext.get("company")
+                payload = ext.get("result") if isinstance(ext.get("result"), dict) else None
+                if payload:
+                    meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else None
+                    if meta:
+                        if not ext.get("company"):
+                            ext["company"] = meta.get("entreprise") or meta.get("company") or ext.get("company")
+                        if not ext.get("document_file"):
+                            src = meta.get("source_file")
+                            if isinstance(src, str) and src:
+                                ext["document_file"] = os.path.basename(src)
             if "result" in ext and ext["result"]:
                 try:
                     # On passe le payload raw stocké dans result
