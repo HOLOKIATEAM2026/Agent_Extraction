@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holokia — Dashboard</title>
+  <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .dash-wrap{
+      min-height:100vh;
+      padding-top:120px;
+      padding-left:40px;
+      padding-right:40px;
+      padding-bottom:80px;
+      position:relative;
+      z-index:1;
+    }
+    .dash-max{
+      width:100%;
+      max-width:1200px;
+      margin:0 auto;
+    }
+    .dash-header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:18px;
+      padding-bottom:18px;
+      border-bottom:1px solid var(--line);
+    }
+    .dash-title{
+      font-family:var(--display);
+      font-size:64px;
+      line-height:0.9;
+    }
+    .dash-title em{font-style:normal;color:var(--blue)}
+    .dash-sub{
+      margin-top:12px;
+      font-family:var(--body);
+      color:var(--muted);
+      max-width:80ch;
+    }
+    .dash-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      padding-top:6px;
+    }
+    .btn-sm{padding:10px 14px;font-size:11px;letter-spacing:0.1em}
+    .panel{
+      background:var(--paper);
+      border:1px solid var(--line);
+      padding:18px;
+    }
+    .panel-title{
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:0.14em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .dash-grid{
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap:18px;
+    }
+    .dash-grid-2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+      margin-top:18px;
+    }
+    .filters{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:end;
+      margin-top:18px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      min-width:220px;
+    }
+    .field label{
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .select, .input{
+      padding:10px 12px;
+      border:1px solid var(--line);
+      background:transparent;
+      font-family:var(--mono);
+      font-size:12px;
+      color:var(--ink);
+      border-radius:10px;
+    }
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+      margin-top:12px;
+    }
+    .kpi{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:14px;
+      background: rgba(10,10,10,0.02);
+    }
+    .kpi-label{
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+    .kpi-val{
+      font-family:var(--display);
+      font-size:28px;
+      line-height:1;
+    }
+    .chart-box{
+      height: 320px;
+    }
+    .chart-box-sm{
+      height: 260px;
+    }
+    .hint{
+      margin-top:10px;
+      font-family:var(--mono);
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .err{
+      margin-top:12px;
+      padding:10px 12px;
+      border:1px solid rgba(220, 53, 69, 0.25);
+      background: rgba(220, 53, 69, 0.06);
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 11px;
+      display:none;
+    }
+    @media(max-width: 960px){
+      .dash-wrap{padding-left:20px;padding-right:20px}
+      .dash-grid{grid-template-columns: 1fr}
+      .dash-grid-2{grid-template-columns: 1fr}
+      .dash-title{font-size:52px}
+      .kpis{grid-template-columns: 1fr}
+      .field{min-width: 160px; flex:1}
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <span class="nav-logo-dot"></span>
+      HOLOKIA
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="dashboard.html" style="color:var(--blue);font-weight:500;">Dashboard</a></li>
+      <li><a href="diagnostic.html">Mode Diagnostic</a></li>
+      <li><a href="multi.html">Mode Comparaison</a></li>
+      <li><a href="chat.html">Mode Chat</a></li>
+    </ul>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </nav>
+
+  <main class="dash-wrap">
+    <div class="dash-max">
+      <div class="dash-header">
+        <div>
+          <div class="dash-title">Dashboard <em>Analytics</em></div>
+          <div class="dash-sub">Visualisez vos analyses : volume, répartition par modèles, maturité par domaine (radar) et évolution temporelle. Tous les graphiques sont filtrables.</div>
+          <div class="filters">
+            <div class="field">
+              <label for="companyFilter">Entreprise</label>
+              <select id="companyFilter" class="select"></select>
+            </div>
+            <div class="field">
+              <label for="modelFilter">Modèle</label>
+              <select id="modelFilter" class="select"></select>
+            </div>
+            <div class="field">
+              <label for="fromDate">Depuis</label>
+              <input id="fromDate" class="input" type="date">
+            </div>
+            <div class="field">
+              <label for="toDate">Jusqu'à</label>
+              <input id="toDate" class="input" type="date">
+            </div>
+            <div class="field" style="min-width:160px;">
+              <button id="btnApply" class="btn-primary btn-sm" type="button">Appliquer</button>
+            </div>
+          </div>
+        </div>
+        <div class="dash-actions">
+          <a class="btn-outline btn-sm" href="profil.html">Profil</a>
+          <a class="btn-outline btn-sm" href="historique.html">Historique</a>
+          <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
+        </div>
+      </div>
+
+      <div id="errBox" class="err"></div>
+
+      <section class="panel">
+        <div class="panel-title">Indicateurs</div>
+        <div class="kpis">
+          <div class="kpi">
+            <div class="kpi-label">Analyses</div>
+            <div id="kpiCount" class="kpi-val">0</div>
+            <div id="kpiCountHint" class="hint"></div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Confiance moyenne</div>
+            <div id="kpiConfidence" class="kpi-val">—</div>
+            <div class="hint">Moyenne des champs diagnostic_* (0–100%).</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Entreprises suivies</div>
+            <div id="kpiCompanies" class="kpi-val">0</div>
+            <div class="hint">Nombre d’entreprises distinctes dans l’historique filtré.</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="dash-grid" style="margin-top:18px;">
+        <section class="panel">
+          <div class="panel-title">Évolution (confiance moyenne)</div>
+          <div class="chart-box">
+            <canvas id="lineChart"></canvas>
+          </div>
+          <div class="hint">Affiche l’évolution quotidienne de la confiance moyenne.</div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">Répartition par modèle</div>
+          <div class="chart-box-sm">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="hint">Part des analyses par modèle (groq, mistral, openai, …).</div>
+        </section>
+      </div>
+
+      <div class="dash-grid-2">
+        <section class="panel">
+          <div class="panel-title">Maturité par domaine (radar)</div>
+          <div class="chart-box-sm">
+            <canvas id="radarChart"></canvas>
+          </div>
+          <div class="hint">Moyenne par section : stratégique, financier, RH, data, cyber.</div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">Top entreprises (volume)</div>
+          <div class="chart-box-sm">
+            <canvas id="barChart"></canvas>
+          </div>
+          <div class="hint">Nombre d’analyses par entreprise (top 8).</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%;">
+    &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/auth.js?v=20260620_1"></script>
+  <script>
+    Auth.protectRoute();
+  </script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
