@@ -1,6 +1,6 @@
 # Holokia Copilot Strategy IA — Agent RAG 🚀
 
-![Holokia Logo](logo/cropped-logo_holokia_noir.jpg)
+![Holokia Logo](html/logo/cropped-logo_holokia_noir.jpg)
 
 **Holokia Copilot Strategy IA** est une application avancée d'extraction d'informations et d'analyse de rapports d'activité basée sur l'intelligence artificielle (RAG - Retrieval-Augmented Generation). Conçu pour automatiser le diagnostic stratégique des entreprises, ce copilote extrait, structure et source les données clés depuis des documents complexes (PDF, Word, TXT).
 
@@ -28,6 +28,14 @@ Analysez plusieurs rapports simultanément (ex: Rapports de 2022, 2023 et 2024 o
 Retrouvez toutes vos extractions précédentes, filtrez par entreprise ou modèle d'IA, et rouvrez instantanément vos diagnostics grâce à la base de données Supabase.
 ![Historique](capture%20écran/RAG_historique.png)
 
+### 6. Profil Client
+Consultez et éditez votre profil entreprise (nom, secteur), suivez l’évolution des scores et accédez rapidement à l’historique et aux nouvelles extractions.
+![Profil](capture%20écran/Profil.png)
+
+### 7. Dashboard Analytics
+Visualisez vos analyses sous forme de graphiques (évolution, répartition par modèle, maturité par domaine, top entreprises) avec filtres (entreprise, modèle, période).
+![Dashboard](capture%20écran/Dashboard.png)
+
 ---
 
 ## ✨ Fonctionnalités Clés
@@ -36,7 +44,9 @@ Retrouvez toutes vos extractions précédentes, filtrez par entreprise ou modèl
 - **Support Multi-Modèles** : Compatible avec les API Cloud (Groq, OpenAI) et les modèles locaux (Ollama : Mistral, Qwen).
 - **Citations et Sourçage** : Chaque information extraite est accompagnée de son extrait source et du numéro de page.
 - **Questions Dynamiques** : L'interface permet d'ajouter, modifier et gérer vos propres questions d'extraction.
-- **Base de données persistante** : Historique complet des diagnostics, des sessions de chat et des comparaisons via **Supabase**.
+- **Base de données persistante** : Historique complet des diagnostics, des sessions de chat et des comparaisons via **Supabase** (multi-tenant par utilisateur).
+- **Profil & Évolution** : Page profil dédiée (édition + courbe d’évolution NIST/Data).
+- **Dashboard Analytics** : Graphiques classiques (lignes, barres, radar, donut) filtrables.
 - **Traitement Asynchrone** : Support des documents volumineux grâce à un traitement en arrière-plan.
 
 ---

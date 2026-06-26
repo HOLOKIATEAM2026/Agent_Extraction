@@ -24,7 +24,7 @@
 | Phase 7 | Intégration dans le Copilot Holokia | ✅ Terminée |
 | Phase 8 | Interface Avancée : Multi-Documents & Historique | ✅ Terminée |
 | Phase 9 | Authentification & Multi-tenant | ✅ Terminée |
-| Phase 10 | Mémoire Court / Moyen / Long terme | ⏳ À venir |
+| Phase 10 | Mémoire Court / Moyen / Long terme | ✅ Terminée |
 | Phase 11 | Perspectives futures | 🔭 Vision |
 
 ---
@@ -495,7 +495,7 @@ T8.8  → Historique                       ← en dernier
 - [ ] **T11.2** — Génération automatique de recommandations IA
         ("Voici les 3 actions prioritaires pour améliorer
          votre score NIST de 2,8 à 4,0")
-- [ ] **T11.3** — Dashboard Analytics
+- [x] **T11.3** — Dashboard Analytics
         (graphiques d'évolution, benchmark sectoriel)
 - [ ] **T11.4** — Support multilingue
         (questions en français sur docs en anglais/arabe)
@@ -540,7 +540,7 @@ T8.8  → Historique                       ← en dernier
 | Phase 8D — Mode Chat libre       | ✅ Terminée | | 
 | Phase 8E — Mode Diagnostic édit. | ✅ Terminée | | 
 | Phase 9 — Authentification       | ✅ Terminée | |
-| Phase 10 — Mémoire agent         | ⏳ À venir | |
+| Phase 10 — Mémoire agent         | ✅ Terminée | |
 
 ---
 
