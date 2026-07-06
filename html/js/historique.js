@@ -143,7 +143,7 @@ function renderHistorique(extractions) {
       <td style="padding: 15px; font-family: var(--body); font-weight: 500;">${ext.company || '-'}</td>
       <td style="padding: 15px; font-family: var(--mono); font-size: 11px; color: var(--muted);">${ext.document_file || '-'}</td>
       <td style="padding: 15px; font-family: var(--mono); font-size: 12px;">
-        <span style="background: rgba(0,71,255,0.1); color: var(--blue); padding: 4px 8px; border-radius: 4px;">
+        <span style="background: rgba(60,87,243,0.18); color: var(--blue); padding: 4px 8px; border-radius: 4px;">
           ${ext.model || ext.provider || '-'}
         </span>
       </td>
@@ -155,7 +155,7 @@ function renderHistorique(extractions) {
       </td>
       <td style="padding: 15px; display: flex; gap: 8px;">
         <button class="btn-load" data-id="${ext.id}" style="background: var(--blue); color: #fff; border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">OUVRIR LE DIAGNOSTIC</button>
-        <button class="btn-view" data-id="${ext.id}" style="background: var(--ink); color: #fff; border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">VOIR JSON</button>
+        <button class="btn-view" data-id="${ext.id}" style="background: var(--paper-3); color: var(--ink); border: 1px solid var(--line); padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">VOIR JSON</button>
       </td>
     `;
     tbody.appendChild(tr);

@@ -3,6 +3,7 @@
 :root{
   --paper:#20293B;
   --paper-2:#292929;
+  --paper-3:#151A2A;
   --ink:#F1F5FF;
   --ink-2:#A7B3C8;
   --muted:#8FA0B8;
@@ -13,6 +14,10 @@
   --teal-2:#5E1ED0;
   --red:#FF3D8D;
   --focus:rgba(60,87,243,0.35);
+  --glass:rgba(241,245,255,0.06);
+  --glass-2:rgba(241,245,255,0.10);
+  --shadow:rgba(0,0,0,0.35);
+  --overlay:rgba(0,0,0,0.72);
   --mono:'DM Mono',monospace;
   --display:'Bebas Neue',sans-serif;
   --body:'DM Sans',sans-serif;
@@ -322,7 +327,7 @@ nav{
 .welcome-panel{
   width:100%;
   max-width:1200px;
-  background:var(--paper);
+  background:var(--paper-2);
   border:1px solid var(--line);
   padding:22px 22px;
   margin:0 0 34px;
@@ -382,7 +387,7 @@ nav{
   gap:14px;
 }
 .welcome-card{
-  background:rgba(255,255,255,0.55);
+  background:var(--glass);
   border:1px solid var(--line);
   padding:16px 16px;
   display:flex;
@@ -414,14 +419,14 @@ nav{
   gap:10px;
   align-items:flex-start;
   padding:8px 10px;
-  border:1px solid rgba(10,10,10,0.10);
-  background:rgba(245,242,235,0.55);
+  border:1px solid var(--line);
+  background:var(--glass);
 }
 .welcome-item + .welcome-item{margin-top:8px}
 .welcome-item-dot{
   width:8px;height:8px;
   border-radius:50%;
-  background:rgba(0,71,255,0.9);
+  background:var(--blue);
   margin-top:5px;
   flex:0 0 auto;
 }
@@ -450,7 +455,7 @@ nav{
   line-height:1.6;
 }
 .welcome-chart{
-  background:#fff;
+  background:var(--paper-3);
   border:1px solid var(--line);
   padding:12px;
 }
@@ -471,7 +476,7 @@ nav{
   max-width: 1200px;
 }
 .mode-card {
-  background: var(--paper);
+  background: var(--paper-2);
   border: 1px solid var(--line);
   padding: 50px 40px;
   text-decoration: none;
@@ -497,7 +502,7 @@ nav{
 .mode-card:hover {
   border-color: var(--blue);
   transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 40px var(--shadow);
 }
 .mode-card:hover::before {
   transform: scaleX(1);
@@ -836,11 +841,11 @@ section{
 
 /* ─── DOCUMENTS ─── */
 .docs{
-  background:var(--ink);
-  border-bottom:1px solid #333;
+  background:var(--paper-3);
+  border-bottom:1px solid var(--line);
 }
 .docs .section-header{
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid rgba(241,245,255,0.14);
 }
 .docs .section-num{color:rgba(255,255,255,0.3)}
 .docs .section-title{color:#fff}
@@ -908,7 +913,7 @@ section{
 .doc-card:hover .doc-card-action svg{transform:translateX(4px)}
 
 /* ─── TEAM ─── */
-.team{border-bottom:1px solid var(--ink)}
+.team{border-bottom:1px solid var(--line)}
 .team-inner{
   padding:60px 40px;
   display:grid;
@@ -932,7 +937,7 @@ section{
   align-self:start;
 }
 .team-member{
-  background:var(--paper);
+  background:var(--paper-2);
   padding:24px 20px;
 }
 .member-init{
@@ -959,7 +964,7 @@ section{
 footer{
   position:relative;
   z-index:1;
-  background:var(--ink);
+  background:var(--paper-3);
   padding:32px 40px;
   display:flex;
   align-items:center;

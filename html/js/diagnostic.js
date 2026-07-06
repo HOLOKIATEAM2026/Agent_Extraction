@@ -32,7 +32,7 @@ function buildCards(data) {
     });
 
     let html = `
-      <div style="background:#fff; border:1px solid var(--line); padding:24px;">
+      <div style="background:var(--paper-2); border:1px solid var(--line); padding:24px;">
         <h3 style="font-family:var(--display); font-size:24px; margin-bottom:16px; display:flex; justify-content:space-between;">
           ${sec.title}
           <span style="font-family:var(--mono); font-size:12px; color:${hasData ? 'var(--teal)' : 'var(--red)'};">
@@ -63,7 +63,7 @@ function buildCards(data) {
             let textVal = String(fieldData.valeur);
             if (textVal.length > 100) {
               // Affichage sous forme de paragraphe lisible pour les textes longs
-              value = `<div style="color:var(--ink); font-weight:400; line-height:1.6; font-size:13px; background:rgba(0,0,0,0.02); padding:12px; border-radius:6px; border:1px solid rgba(0,0,0,0.04); margin-top:6px; text-align:justify;">${textVal}</div>`;
+              value = `<div style="color:var(--ink); font-weight:400; line-height:1.6; font-size:13px; background:var(--glass); padding:12px; border-radius:6px; border:1px solid var(--line); margin-top:6px; text-align:justify;">${textVal}</div>`;
             } else {
               // Affichage classique pour les textes courts
               value = `<strong style="color:var(--ink); font-weight:500; font-size:14px;">${textVal}</strong>`;
@@ -73,7 +73,7 @@ function buildCards(data) {
 
         if (fieldData.source && fieldData.source.extrait) {
           sourceHtml = `
-            <div style="margin-top:10px; padding:10px 14px; background:rgba(0,71,255,0.03); border-left:3px solid var(--blue); border-radius:0 6px 6px 0; font-size:11px; color:var(--muted); line-height:1.5;">
+            <div style="margin-top:10px; padding:10px 14px; background:rgba(60,87,243,0.12); border-left:3px solid var(--blue); border-radius:0 6px 6px 0; font-size:11px; color:var(--muted); line-height:1.5;">
               <div style="font-family:var(--mono); color:var(--blue); font-weight:500; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 SOURCE • PAGE ${fieldData.source.page}
@@ -100,7 +100,7 @@ function buildCards(data) {
   // T8.26 : Afficher les questions utilisées si présentes
   if (data.meta && data.meta.questions_utilisees && data.meta.questions_utilisees.length > 0) {
     let qHtml = `
-      <div style="grid-column: 1 / -1; background:#f9fafb; border:1px solid var(--line); padding:24px; margin-top: 10px;">
+      <div style="grid-column: 1 / -1; background:var(--paper-3); border:1px solid var(--line); padding:24px; margin-top: 10px;">
         <h3 style="font-family:var(--display); font-size:20px; margin-bottom:16px;">Questions utilisées pour cette extraction</h3>
         <ul style="margin: 0; padding-left: 20px; font-size: 13px; color: var(--ink); line-height: 1.6;">
     `;
@@ -404,7 +404,7 @@ async function loadQuestions() {
         <div style="display:flex; flex-direction:column; gap:10px;">
       `;
       qs.forEach(q => {
-        const isDef = q.is_default ? '<span style="font-size:9px; background:var(--paper); padding:2px 4px; border-radius:3px;">Défaut</span>' : '<span style="font-size:9px; background:rgba(0,71,255,0.1); color:var(--blue); padding:2px 4px; border-radius:3px;">Personnalisée</span>';
+        const isDef = q.is_default ? '<span style="font-size:9px; background:var(--glass); border:1px solid var(--line); padding:2px 4px; border-radius:3px;">Défaut</span>' : '<span style="font-size:9px; background:rgba(60,87,243,0.20); color:var(--blue); padding:2px 4px; border-radius:3px;">Personnalisée</span>';
         html += `
           <div style="border:1px solid var(--line); padding:10px; border-radius:4px; font-size:12px; position:relative;">
             <div style="display:flex; justify-content:space-between; margin-bottom:5px;">

@@ -38,9 +38,9 @@
   .auth-side {
     padding: 44px 44px;
     background:
-      radial-gradient(700px 400px at 10% 20%, rgba(0, 71, 255, 0.14), transparent 60%),
-      radial-gradient(500px 300px at 70% 70%, rgba(0, 166, 255, 0.12), transparent 60%),
-      linear-gradient(180deg, rgba(10, 10, 10, 0.02), rgba(10, 10, 10, 0));
+      radial-gradient(700px 400px at 10% 20%, rgba(60, 87, 243, 0.30), transparent 60%),
+      radial-gradient(500px 300px at 70% 70%, rgba(117, 37, 224, 0.22), transparent 60%),
+      linear-gradient(180deg, rgba(241, 245, 255, 0.06), rgba(241, 245, 255, 0));
     border-right: 1px solid var(--line);
   }
 
@@ -49,8 +49,8 @@
     align-items: center;
     gap: 8px;
     padding: 6px 10px;
-    border: 1px solid rgba(0, 71, 255, 0.16);
-    background: rgba(0, 71, 255, 0.08);
+    border: 1px solid rgba(60, 87, 243, 0.35);
+    background: rgba(60, 87, 243, 0.12);
     border-radius: 999px;
     font-family: var(--mono);
     font-size: 11px;
@@ -63,7 +63,7 @@
     height: 8px;
     border-radius: 50%;
     background: var(--blue);
-    box-shadow: 0 0 0 4px rgba(0, 71, 255, 0.12);
+    box-shadow: 0 0 0 4px rgba(60, 87, 243, 0.20);
   }
 
   .auth-title {
@@ -95,7 +95,7 @@
     align-items: flex-start;
     padding: 12px 12px;
     border: 1px solid var(--line);
-    background: rgba(255, 255, 255, 0.55);
+    background: var(--glass);
     border-radius: 12px;
   }
 
@@ -103,7 +103,7 @@
     width: 30px;
     height: 30px;
     border-radius: 10px;
-    background: rgba(0, 71, 255, 0.10);
+    background: rgba(60, 87, 243, 0.16);
     color: var(--blue);
     display: grid;
     place-items: center;
@@ -164,23 +164,23 @@
     border-radius: 10px;
     font-family: var(--mono);
     font-size: 12px;
-    background: #fff;
+    background: var(--glass);
     color: var(--ink);
     transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
   }
 
   .auth-input:focus {
     outline: none;
-    border-color: rgba(0, 71, 255, 0.45);
-    box-shadow: 0 0 0 4px rgba(0, 71, 255, 0.10);
+    border-color: rgba(60, 87, 243, 0.65);
+    box-shadow: 0 0 0 4px var(--focus);
   }
 
   .auth-btn {
     margin-top: 8px;
     width: 100%;
-    background: var(--ink);
+    background: var(--blue);
     color: #fff;
-    border: 1px solid rgba(10, 10, 10, 0.12);
+    border: 1px solid rgba(60, 87, 243, 0.35);
     padding: 12px 14px;
     border-radius: 10px;
     font-family: var(--mono);
@@ -205,14 +205,14 @@
 
   .auth-error {
     color: var(--red);
-    border: 1px solid rgba(255, 46, 46, 0.25);
-    background: rgba(255, 46, 46, 0.06);
+    border: 1px solid rgba(255, 61, 141, 0.35);
+    background: rgba(255, 61, 141, 0.10);
   }
 
   .auth-success {
     color: var(--teal);
-    border: 1px solid rgba(18, 180, 140, 0.25);
-    background: rgba(18, 180, 140, 0.06);
+    border: 1px solid rgba(117, 37, 224, 0.35);
+    background: rgba(117, 37, 224, 0.10);
   }
 
   .auth-link {

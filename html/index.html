@@ -162,6 +162,9 @@
             const eData = await eRes.json();
             const pts = (eData && eData.ok) ? (eData.data || []) : [];
             if (chart && pts.length) {
+              const rootStyles = getComputedStyle(document.documentElement);
+              const cBlue = (rootStyles.getPropertyValue('--blue') || '').trim() || '#3C57F3';
+              const cLine = (rootStyles.getPropertyValue('--line') || '').trim() || 'rgba(241,245,255,0.14)';
               const ctx = chart.getContext('2d');
               const w = chart.width = chart.clientWidth * (window.devicePixelRatio || 1);
               const h = chart.height = 140 * (window.devicePixelRatio || 1);
@@ -174,7 +177,7 @@
               const xScale = (w - 2 * pad) / Math.max(1, xs.length - 1);
               const yScale = (h - 2 * pad) / Math.max(1e-6, (maxY - minY));
 
-              ctx.strokeStyle = "rgba(0,71,255,0.22)";
+              ctx.strokeStyle = cLine;
               ctx.lineWidth = 1 * (window.devicePixelRatio || 1);
               ctx.beginPath();
               ctx.moveTo(pad, pad);
@@ -182,7 +185,7 @@
               ctx.lineTo(w - pad, h - pad);
               ctx.stroke();
 
-              ctx.strokeStyle = "rgba(0,71,255,0.9)";
+              ctx.strokeStyle = cBlue;
               ctx.lineWidth = 2 * (window.devicePixelRatio || 1);
               ctx.beginPath();
               pts.forEach((p, i) => {
@@ -193,7 +196,7 @@
               });
               ctx.stroke();
 
-              ctx.fillStyle = "rgba(0,71,255,1)";
+              ctx.fillStyle = cBlue;
               pts.forEach((p, i) => {
                 const x = pad + i * xScale;
                 const y = h - pad - ((p.score_nist || 0) - minY) * yScale;

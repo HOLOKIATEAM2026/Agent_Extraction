@@ -33,7 +33,7 @@
     <span>AGENT RAG</span>
     <span>/ Extraction / Rapports d'Activité / IA /</span>
     <!-- Toggle Navigation Diagnostic / Historique -->
-    <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
+    <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper-2); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
       <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(0,71,255,0.08); color: var(--blue); font-weight: 500; border: 1px solid rgba(0,71,255,0.1);">Diagnostic</a>
       <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;">Historique</a>
     </div>
@@ -59,7 +59,7 @@
   </div>
 
   <div class="hero-right reveal" id="demo">
-    <div class="hero-metrics" style="display:flex; flex-direction:column; padding:20px; background:var(--paper); border:1px solid var(--line);">
+    <div class="hero-metrics" style="display:flex; flex-direction:column; padding:20px; background:var(--paper-2); border:1px solid var(--line);">
       <div style="margin-bottom:20px;">
         <div class="ekg-label">1. UPLOAD DOCUMENT</div>
         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="margin-top:10px; font-family:var(--mono); font-size:12px;" />
@@ -111,45 +111,45 @@
   </div>
   
   <!-- Conteneur pour les cartes visuelles -->
-  <div style="padding: 40px; background:var(--paper);">
+  <div style="padding: 40px; background:var(--paper-2);">
     <div id="cardsGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
       <!-- Les cartes seront générées ici par JS -->
     </div>
   </div>
 
   <!-- Le JSON reste accessible mais dans une section séparée style "débug/technique" -->
-  <div style="padding: 40px; background:var(--ink); color:#fff; overflow-x:auto;">
+  <div style="padding: 40px; background:var(--paper-3); color:var(--ink); overflow-x:auto;">
     <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
       <div>
         <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
-        <span style="font-family:var(--mono); font-size:10px; color:rgba(255,255,255,0.4); margin-left:15px;">(Vue développeur)</span>
+        <span style="font-family:var(--mono); font-size:10px; color:rgba(241,245,255,0.52); margin-left:15px;">(Vue développeur)</span>
       </div>
-      <button id="btnCopy" class="btn-outline" style="color:#fff; border-color:#fff; padding:6px 12px;">COPIER</button>
+      <button id="btnCopy" class="btn-outline" style="color:var(--ink); border-color:var(--ink); padding:6px 12px;">COPIER</button>
     </div>
-    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(255,255,255,0.8); max-height:400px; overflow-y:auto;"></pre>
+    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(241,245,255,0.78); max-height:400px; overflow-y:auto;"></pre>
   </div>
 </section>
 
 <!-- Panneau latéral : Mes Questions -->
-<div id="questionsPanel" style="position:fixed; top:0; right:-450px; width:400px; height:100vh; background:#fff; border-left:1px solid var(--line); z-index:9999; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
-  <div style="padding: 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background: var(--paper);">
+<div id="questionsPanel" style="position:fixed; top:0; right:-450px; width:400px; height:100vh; background:var(--paper-2); border-left:1px solid var(--line); z-index:9999; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0,0,0,0.35); display:flex; flex-direction:column;">
+  <div style="padding: 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background: var(--paper-2);">
     <h3 style="font-family:var(--display); font-size:20px; margin:0;">Mes Questions</h3>
     <button id="btnCloseQuestions" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted);">&times;</button>
   </div>
   
-  <div style="padding: 20px; border-bottom: 1px solid var(--line); background: var(--paper);">
+  <div style="padding: 20px; border-bottom: 1px solid var(--line); background: var(--paper-2);">
     <div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px;">AJOUTER UNE QUESTION</div>
     <form id="addQuestionForm" style="display:flex; flex-direction:column; gap:10px;">
-      <select id="qCategory" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+      <select id="qCategory" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
         <option value="strategique">Stratégique</option>
         <option value="financier">Financier</option>
         <option value="rh">RH</option>
         <option value="data">Maturité Data</option>
         <option value="cyber">Cyber & Gouvernance</option>
       </select>
-      <input type="text" id="qChamp" placeholder="Clé (ex: nom_champ)" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
-      <input type="text" id="qText" placeholder="La question à poser au LLM..." required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
-      <select id="qType" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line);">
+      <input type="text" id="qChamp" placeholder="Clé (ex: nom_champ)" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
+      <input type="text" id="qText" placeholder="La question à poser au LLM..." required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
+      <select id="qType" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
         <option value="field">Champ unique (Texte, Nombre)</option>
         <option value="list">Liste d'éléments</option>
       </select>

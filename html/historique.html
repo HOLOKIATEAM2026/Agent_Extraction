@@ -35,7 +35,7 @@
         <span>/ Historique des Extractions / IA /</span>
         <!-- Toggle Navigation Diagnostic / Historique -->
         <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
-          <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;" onmouseover="this.style.color='var(--ink)'; this.style.background='rgba(10,10,10,0.02)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">Diagnostic</a>
+          <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;" onmouseover="this.style.color='var(--ink)'; this.style.background='var(--glass)'" onmouseout="this.style.color='var(--muted)'; this.style.background='transparent'">Diagnostic</a>
           <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(0,71,255,0.08); color: var(--blue); font-weight: 500; border: 1px solid rgba(0,71,255,0.1);">Historique</a>
         </div>
       </div>
@@ -58,10 +58,10 @@
         <button id="btnExportCSV" class="btn-outline" style="margin-left: auto; padding: 10px 20px;">Exporter CSV</button>
       </div>
 
-      <div style="background: var(--paper); border: 1px solid var(--line); overflow-x: auto; margin-bottom: 80px;">
+      <div style="background: var(--paper-2); border: 1px solid var(--line); overflow-x: auto; margin-bottom: 80px;">
         <table style="width: 100%; border-collapse: collapse; text-align: left;">
           <thead>
-            <tr style="border-bottom: 1px solid var(--line); background: rgba(10,10,10,0.02);">
+            <tr style="border-bottom: 1px solid var(--line); background: var(--glass);">
               <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Date</th>
               <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Entreprise</th>
               <th style="padding: 15px; font-family: var(--mono); font-size: 10px; color: var(--muted); text-transform: uppercase;">Fichier</th>
@@ -80,8 +80,8 @@
   </section>
   
   <!-- Modal for JSON/Details -->
-  <div id="historiqueModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 200; padding: 40px; overflow-y: auto;">
-    <div style="background: var(--paper); max-width: 1000px; margin: 0 auto; border: 1px solid var(--line); position: relative;">
+  <div id="historiqueModal" style="display: none; position: fixed; inset: 0; background: var(--overlay); z-index: 200; padding: 40px; overflow-y: auto;">
+    <div style="background: var(--paper-2); max-width: 1000px; margin: 0 auto; border: 1px solid var(--line); position: relative;">
       <button id="btnCloseModal" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer; color: var(--ink);">&times;</button>
       
       
@@ -91,16 +91,16 @@
       </div>
       
       <!-- Container for single JSON view -->
-      <div id="modalJsonContainer" style="padding: 40px; background: var(--ink); color: #fff;">
+      <div id="modalJsonContainer" style="padding: 40px; background: var(--paper-3); color: var(--ink);">
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
           <span style="font-family: var(--mono); font-size: 12px; color: var(--teal);">RÉSULTAT JSON</span>
-          <button id="btnCopyModal" class="btn-outline" style="color: #fff; border-color: #fff; padding: 6px 12px;">COPIER</button>
+          <button id="btnCopyModal" class="btn-outline" style="color: var(--ink); border-color: var(--ink); padding: 6px 12px;">COPIER</button>
         </div>
-        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: rgba(255,255,255,0.8); max-height: 600px; overflow-y: auto;"></pre>
+        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: rgba(241,245,255,0.78); max-height: 600px; overflow-y: auto;"></pre>
       </div>
       
       <!-- Container for Compare view -->
-      <div id="modalCompareContainer" style="display: none; padding: 40px; background: var(--paper);">
+      <div id="modalCompareContainer" style="display: none; padding: 40px; background: var(--paper-2);">
         <div style="margin-bottom: 20px;">
           <label style="font-family: var(--mono); font-size: 12px;">Sélectionnez une autre extraction pour comparer :</label>
           <select id="compareSelect" style="margin-left: 10px; padding: 8px; font-family: var(--mono); font-size: 12px; border: 1px solid var(--line);">
@@ -109,11 +109,11 @@
         </div>
         
         <div id="compareDiffGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+          <div style="background: var(--paper-3); border: 1px solid var(--line); padding: 20px;">
             <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle1">Extraction A</h4>
             <div id="compareContent1" style="font-size: 14px;"></div>
           </div>
-          <div style="background: #fff; border: 1px solid var(--line); padding: 20px;">
+          <div style="background: var(--paper-3); border: 1px solid var(--line); padding: 20px;">
             <h4 style="font-family: var(--display); font-size: 24px; margin-bottom: 10px;" id="compareTitle2">Extraction B</h4>
             <div id="compareContent2" style="font-size: 14px;"></div>
           </div>
@@ -124,7 +124,7 @@
   </div>
 </section>
 
-<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%; background: #fff;">
+<footer style="padding: 24px; text-align: center; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: auto; width: 100%; background: transparent;">
   &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
 </footer>
 

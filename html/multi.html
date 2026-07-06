@@ -17,10 +17,10 @@
   top: calc(100% + 16px);
   left: 0;
   width: 380px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: var(--paper-2);
+  border: 1px solid var(--line);
   border-radius: 12px;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 16px 48px var(--shadow), 0 4px 12px rgba(0,0,0,0.18);
   padding: 24px;
   display: none;
   flex-direction: column;
@@ -36,9 +36,9 @@
   left: -340px;
   width: 340px;
   height: calc(100vh - 56px);
-  background: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.15);
-  box-shadow: 12px 0 32px rgba(0,0,0,0.1);
+  background: var(--paper-2);
+  border-right: 1px solid var(--line);
+  box-shadow: 12px 0 32px var(--shadow);
   z-index: 200;
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
@@ -185,7 +185,7 @@
     <div class="results-area">
       
       <!-- Top header for results -->
-      <div style="padding: 24px 40px; background: white; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
+      <div style="padding: 24px 40px; background: var(--paper-2); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h1 style="font-family: var(--display); font-size: 32px; margin-bottom: 4px; color: var(--ink);">Résultats Comparatifs</h1>
           <p style="font-family: var(--body); font-size: 13px; color: var(--muted);">Uploadez vos documents en haut pour voir la comparaison.</p>

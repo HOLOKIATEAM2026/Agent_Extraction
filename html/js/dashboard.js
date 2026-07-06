@@ -218,8 +218,8 @@ function renderCharts(extractions) {
         datasets: [{
           label: 'Confiance moyenne (%)',
           data: lineData,
-          borderColor: '#0047ff',
-          backgroundColor: 'rgba(0,71,255,0.12)',
+          borderColor: '#3C57F3',
+          backgroundColor: 'rgba(60,87,243,0.18)',
           tension: 0.35,
           fill: true,
           pointRadius: 2
@@ -249,8 +249,8 @@ function renderCharts(extractions) {
         datasets: [{
           data: donutData,
           backgroundColor: [
-            '#0047ff',
-            '#00c896',
+            '#3C57F3',
+            '#7525E0',
             '#f39c12',
             '#ff4d4d',
             '#7f8c8d',
@@ -284,9 +284,9 @@ function renderCharts(extractions) {
         datasets: [{
           label: 'Maturité (0–5)',
           data,
-          borderColor: '#00c896',
-          backgroundColor: 'rgba(0,200,150,0.12)',
-          pointBackgroundColor: '#00c896'
+          borderColor: '#7525E0',
+          backgroundColor: 'rgba(117,37,224,0.16)',
+          pointBackgroundColor: '#7525E0'
         }]
       },
       options: {
@@ -312,8 +312,8 @@ function renderCharts(extractions) {
         datasets: [{
           label: 'Analyses',
           data: barData,
-          backgroundColor: 'rgba(0,71,255,0.18)',
-          borderColor: '#0047ff',
+          backgroundColor: 'rgba(60,87,243,0.18)',
+          borderColor: '#3C57F3',
           borderWidth: 1
         }]
       },
