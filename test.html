@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent RAG — Holokia</title>
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -14,6 +22,33 @@
     --text:#F8F6F0;--text-body:#E8D5A0;--text-muted:#888899;
     --success:#2ECC71;--warning:#E67E22;--danger:#E74C3C;--info:#5B9BD5;
   }
+  :root[data-theme="light"]{
+    --void:#F6F8FF;--deep:#EEF2FF;--surface:#FFFFFF;--border:rgba(32,41,59,0.16);--border-h:rgba(32,41,59,0.28);
+    --gold:#D4AF37;--gold-bright:#F5CC50;--gold-pale:#C59B2E;
+    --gold-ghost:rgba(212,175,55,0.08);--gold-glow:rgba(212,175,55,0.22);
+    --text:#20293B;--text-body:#334155;--text-muted:#64748B;
+    --success:#2ECC71;--warning:#E67E22;--danger:#E74C3C;--info:#3C57F3;
+  }
+  .theme-toggle{
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    z-index: 10000;
+    transition: transform .12s, background .12s, border-color .12s;
+  }
+  .theme-toggle:hover{ border-color: var(--border-h); background: var(--deep); }
+  .theme-toggle:active{ transform: translateY(1px); }
+  .theme-toggle:focus-visible{ outline: none; box-shadow: 0 0 0 4px rgba(60,87,243,0.25); }
   body{background:var(--void);color:var(--text-body);font-family:'Crimson Pro',Georgia,serif;font-size:17px;line-height:1.75;min-height:100vh}
   body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.025;pointer-events:none;z-index:9999}
   header{text-align:center;padding:56px 32px 40px;position:relative}
@@ -102,6 +137,8 @@
 </head>
 <body>
 
+<button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+
 <header>
   <div class="logo-symbol">✦ HOLOKIA · COPILOT STRATEGY IA ✦</div>
   <h1>AGENT <span>RAG</span></h1>
@@ -183,6 +220,7 @@
 
 </main>
 
+<script src="html/js/theme.js"></script>
 <script>
 const fileInput=document.getElementById('fileInput'),uploadZone=document.getElementById('uploadZone'),fileInfo=document.getElementById('fileInfo'),fileName=document.getElementById('fileName'),fileSize=document.getElementById('fileSize'),btnExtract=document.getElementById('btnExtract'),btnText=document.getElementById('btnText'),progressWrap=document.getElementById('progressWrap'),progressBar=document.getElementById('progressBar'),resultsWrap=document.getElementById('resultsWrap'),cardsGrid=document.getElementById('cardsGrid'),jsonOutput=document.getElementById('jsonOutput'),jsonMeta=document.getElementById('jsonMeta'),btnCopy=document.getElementById('btnCopy');
 let selectedModel='mistral',selectedFile=null;

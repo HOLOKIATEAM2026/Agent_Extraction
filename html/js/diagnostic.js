@@ -35,7 +35,7 @@ function buildCards(data) {
       <div style="background:var(--paper-2); border:1px solid var(--line); padding:24px;">
         <h3 style="font-family:var(--display); font-size:24px; margin-bottom:16px; display:flex; justify-content:space-between;">
           ${sec.title}
-          <span style="font-family:var(--mono); font-size:12px; color:${hasData ? 'var(--teal)' : 'var(--red)'};">
+          <span style="font-family:var(--mono); font-size:12px; color:${hasData ? 'var(--green)' : 'var(--red)'};">
             ${hasData ? 'DONNÉES TROUVÉES' : 'NON TROUVÉ'}
           </span>
         </h3>

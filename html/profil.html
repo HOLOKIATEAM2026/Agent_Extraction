@@ -9,6 +9,14 @@
 <link rel="stylesheet" href="css/style.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 <style>
   .profile-wrap{
     min-height:100vh;
@@ -169,7 +177,10 @@
     <li><a href="multi.html">Mode Comparaison</a></li>
     <li><a href="chat.html">Mode Chat</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <main class="profile-wrap">
@@ -232,6 +243,7 @@
   &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
 </footer>
 
+<script src="js/theme.js"></script>
 <script src="js/common.js"></script>
 <script src="js/config.js"></script>
 <script src="js/auth.js?v=20260620_1"></script>

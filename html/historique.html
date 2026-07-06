@@ -9,6 +9,14 @@
 <link rel="stylesheet" href="css/style.css">
 <!-- Inclure Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 </head>
 <body>
 <div class="grid-bg"></div>
@@ -24,7 +32,10 @@
     <li><a href="multi.html">Mode Comparaison</a></li>
     <li><a href="chat.html">Mode Chat</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <section class="hero" style="min-height: 100vh; padding-top:120px; display: block;">
@@ -96,7 +107,7 @@
           <span style="font-family: var(--mono); font-size: 12px; color: var(--teal);">RÉSULTAT JSON</span>
           <button id="btnCopyModal" class="btn-outline" style="color: var(--ink); border-color: var(--ink); padding: 6px 12px;">COPIER</button>
         </div>
-        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: rgba(241,245,255,0.78); max-height: 600px; overflow-y: auto;"></pre>
+        <pre id="modalJson" style="font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--ink-2); max-height: 600px; overflow-y: auto;"></pre>
       </div>
       
       <!-- Container for Compare view -->
@@ -128,6 +139,7 @@
   &copy; 2026 Holokia. Copilot Strategy IA — Agent RAG
 </footer>
 
+<script src="js/theme.js"></script>
 <script src="js/common.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>

@@ -7,6 +7,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 <style>
 
 /* ── TOKENS ── */
@@ -18,24 +26,56 @@
   --border2:   rgba(241,245,255,0.22);
 
   --blue:      #3C57F3;
+  --blue-2:    #2F45D6;
   --blue-dim:  rgba(60, 87, 243, 0.14);
   --blue-glow: rgba(60, 87, 243, 0.28);
 
   --teal:      #7525E0;
   --amber:     #F59E0B;
   --red:       #FF3D8D;
-  --green:     #3C57F3;
+  --green:     #4CB77F;
+  --on-accent: #fff;
 
   --text:      #F1F5FF;
   --muted:     #8FA0B8;
 
   --ghost:     rgba(241,245,255,0.06);
+  --nav-bg:    rgba(32, 41, 59, 0.92);
+  --pane-bg:   rgba(32, 41, 59, 0.82);
+  --input-bg:  rgba(32, 41, 59, 0.92);
 
   --mono:      'DM Mono', monospace;
   --serif:     'Instrument Serif', Georgia, serif;
   --display:   'Syne', sans-serif;
 
   --radius:    6px;
+}
+
+:root[data-theme="light"] {
+  --void:      #F6F8FF;
+  --surface:   #FFFFFF;
+  --card:      #EEF2FF;
+  --border:    rgba(32,41,59,0.16);
+  --border2:   rgba(32,41,59,0.22);
+
+  --blue:      #3C57F3;
+  --blue-2:    #2F45D6;
+  --blue-dim:  rgba(60, 87, 243, 0.10);
+  --blue-glow: rgba(60, 87, 243, 0.18);
+
+  --teal:      #7525E0;
+  --amber:     #EA9F0E;
+  --red:       #FF3D8D;
+  --green:     #4CB77F;
+  --on-accent: #fff;
+
+  --text:      #20293B;
+  --muted:     #64748B;
+
+  --ghost:     rgba(32,41,59,0.04);
+  --nav-bg:    rgba(246, 248, 255, 0.92);
+  --pane-bg:   rgba(246, 248, 255, 0.85);
+  --input-bg:  rgba(246, 248, 255, 0.92);
 }
 
 /* ── RESET ── */
@@ -65,7 +105,7 @@ nav {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: 52px;
-  background: rgba(32, 41, 59, 0.92);
+  background: var(--nav-bg);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -510,7 +550,7 @@ nav {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  background: rgba(32, 41, 59, 0.82);
+  background: var(--pane-bg);
   backdrop-filter: blur(10px);
 }
 
@@ -859,10 +899,33 @@ nav {
 .input-area {
   padding: 20px 28px;
   border-top: 1px solid var(--border);
-  background: rgba(32, 41, 59, 0.92);
+  background: var(--input-bg);
   backdrop-filter: blur(10px);
   flex-shrink: 0;
 }
+
+.nav-actions{
+  margin-left:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.theme-toggle{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--ghost);
+  color:var(--text);
+  cursor:pointer;
+  transition:transform 0.12s, background 0.12s, border-color 0.12s;
+}
+.theme-toggle:hover{background:var(--blue-dim)}
+.theme-toggle:active{transform:translateY(1px)}
+.theme-toggle:focus-visible{outline:none;box-shadow:0 0 0 3px var(--blue-glow)}
 
 /* Input options */
 .input-options {
@@ -991,7 +1054,7 @@ nav {
   top: 4px;
   right: 4px;
   background: var(--blue);
-  color: white;
+  color: var(--on-accent);
   font-family: var(--mono);
   font-size: 8px;
   font-weight: bold;
@@ -1039,7 +1102,7 @@ nav {
   background: var(--blue);
   border: none;
   border-radius: var(--radius);
-  color: white;
+  color: var(--on-accent);
   font-size: 16px;
   cursor: pointer;
   transition: all 0.2s;
@@ -1050,7 +1113,7 @@ nav {
 }
 
 .btn-send:hover:not(:disabled) {
-  background: #5F73FF;
+  background: var(--blue-2);
   transform: translateY(-1px);
   box-shadow: 0 4px 16px var(--blue-glow);
 }
@@ -1150,7 +1213,10 @@ nav {
     <li><a href="multi.html">Comparaison</a></li>
     <li><a href="chat.html" class="active">Chat</a></li>
   </ul>
-  <div class="nav-badge">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle></button>
+    <div class="nav-badge">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <!-- APP -->
@@ -1280,6 +1346,7 @@ nav {
   </main>
 </div>
 
+<script src="js/theme.js"></script>
 <script src="js/common.js" onerror="void 0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>

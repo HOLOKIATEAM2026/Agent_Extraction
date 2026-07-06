@@ -1,27 +1,4 @@
-/* ── VARIABLES (garde les couleurs originales) ── */
-:root {
-  --paper:  #20293B;
-  --paper-2:#292929;
-  --paper-3:#151A2A;
-  --ink:    #F1F5FF;
-  --ink-2:  #A7B3C8;
-  --muted:  #8FA0B8;
-  --line:   rgba(241,245,255,0.14);
-  --blue:   #3C57F3;
-  --blue-2: #2F45D6;
-  --teal:   #7525E0;
-  --teal-2: #5E1ED0;
-  --red:    #FF3D8D;
-  --focus:  rgba(60,87,243,0.35);
-  --glass:  rgba(241,245,255,0.06);
-  --glass-2:rgba(241,245,255,0.10);
-  --shadow: rgba(0,0,0,0.35);
-  --overlay:rgba(0,0,0,0.72);
-  --mono:   'DM Mono', monospace;
-  --display:'Bebas Neue', sans-serif;
-  --body:   'DM Sans', sans-serif;
-  --radius: 4px;
-}
+:root { --radius: 4px; }
 
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -457,7 +434,7 @@ nav {
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.btn-add:hover { background: var(--blue); border-color: var(--blue); color: #fff; }
+.btn-add:hover { background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
 
 /* Question tags */
 .question-list {
@@ -565,7 +542,7 @@ nav {
   width: 100%;
   padding: 13px;
   background: var(--blue);
-  color: white;
+  color: var(--on-accent);
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.16em;
@@ -579,7 +556,7 @@ nav {
   transition: background 0.15s, transform 0.1s;
   border-radius: var(--radius);
 }
-.btn-launch:hover:not(:disabled) { background: #0039d8; }
+.btn-launch:hover:not(:disabled) { background: var(--blue-2); }
 .btn-launch:active:not(:disabled) { transform: scale(0.99); }
 .btn-launch:disabled { opacity: 0.4; cursor: not-allowed; }
 

@@ -132,9 +132,9 @@ function renderHistorique(extractions) {
     });
     
     const conf = calculateAverageConfidence(ext);
-    const confColor = conf > 0.8 ? 'var(--teal)' : (conf > 0.5 ? '#f39c12' : 'var(--red)');
+    const confColor = conf > 0.8 ? 'var(--teal)' : (conf > 0.5 ? 'var(--amber)' : 'var(--red)');
     const comp = calculateCompleteness(ext);
-    const compColor = comp > 0.8 ? 'var(--teal)' : (comp > 0.5 ? '#f39c12' : 'var(--red)');
+    const compColor = comp > 0.8 ? 'var(--teal)' : (comp > 0.5 ? 'var(--amber)' : 'var(--red)');
     
     const tr = document.createElement('tr');
     tr.style.borderBottom = '1px solid var(--line)';
@@ -154,7 +154,7 @@ function renderHistorique(extractions) {
         ${(comp * 100).toFixed(1)}%
       </td>
       <td style="padding: 15px; display: flex; gap: 8px;">
-        <button class="btn-load" data-id="${ext.id}" style="background: var(--blue); color: #fff; border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">OUVRIR LE DIAGNOSTIC</button>
+        <button class="btn-load" data-id="${ext.id}" style="background: var(--blue); color: var(--on-accent); border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">OUVRIR LE DIAGNOSTIC</button>
         <button class="btn-view" data-id="${ext.id}" style="background: var(--paper-3); color: var(--ink); border: 1px solid var(--line); padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">VOIR JSON</button>
       </td>
     `;

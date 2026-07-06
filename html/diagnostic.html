@@ -9,6 +9,14 @@
 <link rel="stylesheet" href="css/style.css">
 <!-- Inclure Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 </head>
 <body>
 <div class="grid-bg"></div>
@@ -24,7 +32,10 @@
     <li><a href="multi.html">Mode Comparaison</a></li>
     <li><a href="chat.html">Mode Chat</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -34,7 +45,7 @@
     <span>/ Extraction / Rapports d'Activité / IA /</span>
     <!-- Toggle Navigation Diagnostic / Historique -->
     <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper-2); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
-      <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(0,71,255,0.08); color: var(--blue); font-weight: 500; border: 1px solid rgba(0,71,255,0.1);">Diagnostic</a>
+      <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(60,87,243,0.18); color: var(--blue); font-weight: 500; border: 1px solid rgba(60,87,243,0.30);">Diagnostic</a>
       <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;">Historique</a>
     </div>
   </div>
@@ -122,11 +133,11 @@
     <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
       <div>
         <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
-        <span style="font-family:var(--mono); font-size:10px; color:rgba(241,245,255,0.52); margin-left:15px;">(Vue développeur)</span>
+        <span style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:15px;">(Vue développeur)</span>
       </div>
       <button id="btnCopy" class="btn-outline" style="color:var(--ink); border-color:var(--ink); padding:6px 12px;">COPIER</button>
     </div>
-    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(241,245,255,0.78); max-height:400px; overflow-y:auto;"></pre>
+    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:var(--ink-2); max-height:400px; overflow-y:auto;"></pre>
   </div>
 </section>
 
@@ -162,13 +173,14 @@
     <div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>
   </div>
   
-  <div style="padding: 20px; border-top: 1px solid var(--line); background: var(--paper);">
+  <div style="padding: 20px; border-top: 1px solid var(--line); background: var(--paper-2);">
     <button id="btnResetQuestions" class="btn-outline" style="width:100%; justify-content:center; padding:10px; font-size:11px; border-color:var(--red); color:var(--red);">RÉINITIALISER AUX DÉFAUTS</button>
   </div>
 </div>
 <!-- Overlay -->
 <div id="questionsOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:9998; display:none; opacity:0; transition: opacity 0.3s ease;"></div>
 
+<script src="js/theme.js"></script>
 <script src="js/common.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>

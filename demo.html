@@ -6,20 +6,60 @@
 <title>Holokia — Agent RAG</title>
 <link rel="icon" href="logo/cropped-logo_holokia_noir.jpg" type="image/avif">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --ink:#0a0a0a;
-  --paper:#f5f2eb;
-  --blue:#0047ff;
-  --teal:#00c896;
-  --red:#e8002a;
-  --muted:#9a9585;
-  --line:rgba(10,10,10,0.15);
+  --paper:#20293B;
+  --paper-2:#292929;
+  --paper-3:#151A2A;
+  --ink:#F1F5FF;
+  --ink-2:#A7B3C8;
+  --muted:#8FA0B8;
+  --line:rgba(241,245,255,0.14);
+  --blue:#3C57F3;
+  --blue-2:#2F45D6;
+  --teal:#7525E0;
+  --red:#FF3D8D;
+  --green:#4CB77F;
+  --amber:#EA9F0E;
+  --on-accent:#fff;
+  --watermark:rgba(241,245,255,0.10);
+  --glass:rgba(241,245,255,0.06);
+  --glass-2:rgba(241,245,255,0.10);
+  --focus:rgba(60,87,243,0.35);
   --mono:'DM Mono',monospace;
   --display:'Bebas Neue',sans-serif;
   --body:'DM Sans',sans-serif;
+}
+
+:root[data-theme="light"]{
+  --paper:#F6F8FF;
+  --paper-2:#FFFFFF;
+  --paper-3:#EEF2FF;
+  --ink:#20293B;
+  --ink-2:#334155;
+  --muted:#64748B;
+  --line:rgba(32,41,59,0.16);
+  --blue:#3C57F3;
+  --blue-2:#2F45D6;
+  --teal:#7525E0;
+  --red:#FF3D8D;
+  --green:#4CB77F;
+  --amber:#EA9F0E;
+  --on-accent:#fff;
+  --watermark:rgba(32,41,59,0.08);
+  --glass:rgba(32,41,59,0.04);
+  --glass-2:rgba(32,41,59,0.08);
+  --focus:rgba(60,87,243,0.25);
 }
 
 html{scroll-behavior:smooth}
@@ -55,10 +95,31 @@ nav{
   justify-content:space-between;
   padding:0 40px;
   height:56px;
-  border-bottom:1px solid var(--ink);
+  border-bottom:1px solid var(--line);
   background:var(--paper);
   mix-blend-mode:normal;
 }
+.nav-actions{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.theme-toggle{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--glass);
+  color:var(--ink);
+  cursor:pointer;
+  transition:transform 0.12s, background 0.12s, border-color 0.12s;
+}
+.theme-toggle:hover{background:var(--glass-2)}
+.theme-toggle:active{transform:translateY(1px)}
+.theme-toggle:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus)}
 .nav-logo{
   font-family:var(--display);
   font-size:24px;
@@ -170,7 +231,7 @@ nav{
   gap:10px;
   padding:14px 28px;
   background:var(--blue);
-  color:#fff;
+  color:var(--on-accent);
   font-family:var(--mono);
   font-size:12px;
   letter-spacing:0.12em;
@@ -607,14 +668,14 @@ section{
 
 /* ─── DOCUMENTS ─── */
 .docs{
-  background:var(--ink);
-  border-bottom:1px solid #333;
+  background:var(--paper-3);
+  border-bottom:1px solid var(--line);
 }
 .docs .section-header{
-  border-bottom:1px solid rgba(255,255,255,0.1);
+  border-bottom:1px solid var(--line);
 }
-.docs .section-num{color:rgba(255,255,255,0.3)}
-.docs .section-title{color:#fff}
+.docs .section-num{color:var(--muted)}
+.docs .section-title{color:var(--ink)}
 .docs .section-title em{color:var(--teal)}
 .docs-grid{
   display:grid;
@@ -622,7 +683,7 @@ section{
 }
 .doc-card{
   padding:60px 40px;
-  border-right:1px solid rgba(255,255,255,0.08);
+  border-right:1px solid var(--line);
   text-decoration:none;
   display:block;
   position:relative;
@@ -630,34 +691,34 @@ section{
   transition:background 0.3s;
 }
 .doc-card:last-child{border-right:none}
-.doc-card:hover{background:rgba(255,255,255,0.03)}
+.doc-card:hover{background:var(--glass)}
 .doc-card-type{
   font-family:var(--mono);
   font-size:10px;
   letter-spacing:0.15em;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.3);
+  color:var(--muted);
   margin-bottom:40px;
 }
 .doc-card-num{
   font-family:var(--display);
   font-size:120px;
   line-height:1;
-  color:rgba(255,255,255,0.06);
+  color:var(--watermark);
   position:absolute;
   top:20px;right:20px;
 }
 .doc-card-title{
   font-family:var(--display);
   font-size:44px;
-  color:#fff;
+  color:var(--ink);
   line-height:0.95;
   letter-spacing:0.01em;
   margin-bottom:16px;
 }
 .doc-card-desc{
   font-size:14px;
-  color:rgba(255,255,255,0.4);
+  color:var(--muted);
   line-height:1.6;
   margin-bottom:48px;
 }
@@ -679,7 +740,7 @@ section{
 .doc-card:hover .doc-card-action svg{transform:translateX(4px)}
 
 /* ─── TEAM ─── */
-.team{border-bottom:1px solid var(--ink)}
+.team{border-bottom:1px solid var(--line)}
 .team-inner{
   padding:60px 40px;
   display:grid;
@@ -730,7 +791,7 @@ section{
 footer{
   position:relative;
   z-index:1;
-  background:var(--ink);
+  background:var(--paper-3);
   padding:32px 40px;
   display:flex;
   align-items:center;
@@ -740,13 +801,13 @@ footer{
   font-family:var(--display);
   font-size:20px;
   letter-spacing:0.05em;
-  color:#fff;
+  color:var(--ink);
 }
 .footer-copy{
   font-family:var(--mono);
   font-size:10px;
   letter-spacing:0.1em;
-  color:rgba(255,255,255,0.3);
+  color:var(--muted);
   text-transform:uppercase;
 }
 .footer-links{
@@ -759,10 +820,10 @@ footer{
   font-size:10px;
   letter-spacing:0.1em;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.3);
+  color:var(--muted);
   text-decoration:none;
 }
-.footer-links a:hover{color:#fff}
+.footer-links a:hover{color:var(--ink)}
 
 /* reveal animation */
 .reveal{
@@ -967,7 +1028,10 @@ footer{
     <li><a href="#demo">Démo Agent</a></li>
     <li><a href="#results">Résultats</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -1054,18 +1118,19 @@ footer{
   </div>
 
   <!-- Le JSON reste accessible mais dans une section séparée style "débug/technique" -->
-  <div style="padding: 40px; background:var(--ink); color:#fff; overflow-x:auto;">
+  <div style="padding: 40px; background:var(--paper-3); color:var(--ink); overflow-x:auto; border-top:1px solid var(--line);">
     <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
       <div>
         <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
-        <span style="font-family:var(--mono); font-size:10px; color:rgba(255,255,255,0.4); margin-left:15px;">(Vue développeur)</span>
+        <span style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:15px;">(Vue développeur)</span>
       </div>
-      <button id="btnCopy" class="btn-outline" style="color:#fff; border-color:#fff; padding:6px 12px;">COPIER</button>
+      <button id="btnCopy" class="btn-outline" style="padding:6px 12px;">COPIER</button>
     </div>
-    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:rgba(255,255,255,0.8); max-height:400px; overflow-y:auto;"></pre>
+    <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:var(--ink-2); max-height:400px; overflow-y:auto;"></pre>
   </div>
 </section>
 
+<script src="html/js/theme.js"></script>
 <script>
 const fileInput = document.getElementById('fileInput');
 const modelSelect = document.getElementById('modelSelect');
@@ -1100,7 +1165,7 @@ function buildCards(data) {
     });
 
     let html = `
-      <div style="background:#fff; border:1px solid var(--line); padding:24px;">
+      <div style="background:var(--paper-2); border:1px solid var(--line); padding:24px;">
         <h3 style="font-family:var(--display); font-size:24px; margin-bottom:16px; display:flex; justify-content:space-between;">
           ${sec.title}
           <span style="font-family:var(--mono); font-size:12px; color:${hasData ? 'var(--teal)' : 'var(--red)'};">
@@ -1128,7 +1193,7 @@ function buildCards(data) {
 
         if (fieldData.source && fieldData.source.extrait) {
           sourceHtml = `
-            <div style="margin-top:4px; padding:8px 12px; background:rgba(0,71,255,0.05); border-left:2px solid var(--blue); font-size:11px; color:var(--muted);">
+            <div style="margin-top:4px; padding:8px 12px; background:rgba(60,87,243,0.12); border-left:2px solid var(--blue); font-size:11px; color:var(--muted);">
               <span style="font-family:var(--mono); color:var(--blue);">PAGE ${fieldData.source.page} :</span> "${fieldData.source.extrait}"
             </div>
           `;
@@ -1136,7 +1201,7 @@ function buildCards(data) {
       }
 
       html += `
-        <div style="border-bottom:1px solid rgba(10,10,10,0.05); padding-bottom:8px;">
+        <div style="border-bottom:1px solid var(--line); padding-bottom:8px;">
           <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom:4px;">${label}</div>
           <div style="font-size:14px; line-height:1.4;">${value}</div>
           ${sourceHtml}

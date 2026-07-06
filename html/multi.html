@@ -10,6 +10,14 @@
 <link rel="stylesheet" href="css/multi.css">
 <!-- Inclure Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (() => {
+    try {
+      const t = localStorage.getItem('holokia_theme');
+      if (t) document.documentElement.setAttribute('data-theme', t);
+    } catch (_) {}
+  })();
+</script>
 <style>
 /* Dropdown Panels */
 .tb-panel {
@@ -62,7 +70,10 @@
     <li><a href="multi.html" style="color:var(--blue);font-weight:500;">Mode Comparaison</a></li>
     <li><a href="chat.html">Mode Chat</a></li>
   </ul>
-  <div class="nav-status">Copilot Strategy IA</div>
+  <div class="nav-actions">
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status">Copilot Strategy IA</div>
+  </div>
 </nav>
 
 <!-- PAGE -->
@@ -217,6 +228,7 @@
   </div>
 </div>
 
+<script src="js/theme.js"></script>
 <script src="js/common.js" onerror="void 0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>

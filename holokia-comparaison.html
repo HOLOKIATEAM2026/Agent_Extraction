@@ -5,23 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Holokia — Comparaison de documents</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script>
+    (() => {
+      try {
+        const t = localStorage.getItem('holokia_theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (_) {}
+    })();
+  </script>
   <style>
     /* ── DESIGN TOKENS (remplace les variables Claude.ai) ── */
     :root {
-      --blue:    #0047FF;
-      --teal:    #1D9E75;
-      --red:     #E24B4A;
+      --blue:    #3C57F3;
+      --blue-2:  #2F45D6;
+      --teal:    #7525E0;
+      --amber:   #EA9F0E;
+      --red:     #FF3D8D;
 
       /* Texte */
-      --color-text-primary:   #0d0d0d;
-      --color-text-secondary: #6b7280;
+      --color-text-primary:   #F1F5FF;
+      --color-text-secondary: #8FA0B8;
 
       /* Bordures */
-      --color-border-tertiary: #e4e4e7;
+      --color-border-tertiary: rgba(241,245,255,0.14);
 
       /* Fonds */
-      --color-background-primary:   #ffffff;
-      --color-background-tertiary:  #f4f4f5;
+      --color-background-primary:   #292929;
+      --color-background-tertiary:  #20293B;
 
       /* Typo */
       --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -40,6 +50,30 @@
       --page:    var(--color-background-tertiary);
       --mono:    var(--font-mono);
       --sans:    var(--font-sans);
+      --on-accent: #fff;
+      --glass:   rgba(241,245,255,0.06);
+      --glass-2: rgba(241,245,255,0.10);
+      --focus:   rgba(60,87,243,0.35);
+    }
+
+    :root[data-theme="light"] {
+      --blue:    #3C57F3;
+      --blue-2:  #2F45D6;
+      --teal:    #7525E0;
+      --amber:   #EA9F0E;
+      --red:     #FF3D8D;
+
+      --color-text-primary:   #0d0d0d;
+      --color-text-secondary: #6b7280;
+
+      --color-border-tertiary: #e4e4e7;
+      --color-background-primary:   #ffffff;
+      --color-background-tertiary:  #f4f4f5;
+
+      --on-accent: #fff;
+      --glass:   rgba(32,41,59,0.04);
+      --glass-2: rgba(32,41,59,0.08);
+      --focus:   rgba(60,87,243,0.25);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -100,6 +134,22 @@
     .breadcrumb-sep { opacity: 0.35; }
     .breadcrumb-active { color: var(--blue); }
     .topbar-badges { display: flex; gap: 8px; }
+    .theme-toggle{
+      width: 32px;
+      height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--border-radius-md);
+      border: 0.5px solid var(--line);
+      background: var(--page);
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 0.12s, transform 0.12s, border-color 0.12s;
+    }
+    .theme-toggle:hover{ background: var(--glass-2); }
+    .theme-toggle:active{ transform: translateY(1px); }
+    .theme-toggle:focus-visible{ outline: none; box-shadow: 0 0 0 4px var(--focus); }
     .badge {
       display: flex;
       align-items: center;
@@ -382,7 +432,7 @@
       width: 100%;
       padding: 13px;
       background: var(--blue);
-      color: white;
+      color: var(--on-accent);
       font-family: var(--mono);
       font-size: 11px;
       letter-spacing: 0.16em;
@@ -396,7 +446,7 @@
       transition: background 0.15s, transform 0.1s;
       border-radius: var(--border-radius-md);
     }
-    .btn-launch:hover:not(:disabled) { background: #0039d8; }
+    .btn-launch:hover:not(:disabled) { background: var(--blue-2); }
     .btn-launch:active:not(:disabled) { transform: scale(0.99); }
     .btn-launch:disabled { opacity: 0.4; cursor: not-allowed; }
     .launch-icon { transition: transform 0.2s; }
@@ -675,7 +725,8 @@
     <div class="topbar-badges">
       <div class="badge"><span class="badge-dot" style="background:var(--blue)"></span> RAG actif</div>
       <div class="badge" id="hdDocs"><span class="badge-dot" style="background:var(--teal)"></span> 0 doc</div>
-      <div class="badge" id="hdQuestions"><span class="badge-dot" style="background:#F59E0B"></span> 0 question</div>
+      <div class="badge" id="hdQuestions"><span class="badge-dot" style="background:var(--amber)"></span> 0 question</div>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
     </div>
   </div>
 
@@ -797,6 +848,7 @@
   </div>
 </div>
 
+<script src="html/js/theme.js"></script>
 <script>
 let files = [];
 let questions = [];
@@ -814,7 +866,7 @@ function updateBadges() {
   document.getElementById('hdDocs').innerHTML =
     `<span class="badge-dot" style="background:var(--teal)"></span> ${files.length} doc${files.length!==1?'s':''}`;
   document.getElementById('hdQuestions').innerHTML =
-    `<span class="badge-dot" style="background:#F59E0B"></span> ${questions.length} question${questions.length!==1?'s':''}`;
+    `<span class="badge-dot" style="background:var(--amber)"></span> ${questions.length} question${questions.length!==1?'s':''}`;
 }
 
 function handleFiles(fList) {
