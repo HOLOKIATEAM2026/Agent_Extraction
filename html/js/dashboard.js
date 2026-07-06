@@ -77,6 +77,52 @@ function avgConfidenceInSection(sectionObj) {
   return total / count;
 }
 
+function isValueFilled(val) {
+  if (Array.isArray(val)) return val.length > 0;
+  if (val === null || val === undefined) return false;
+  return String(val).trim() !== '';
+}
+
+function completenessInSection(sectionObj, minConfidence = 0.6) {
+  if (!sectionObj || typeof sectionObj !== 'object') return null;
+  let total = 0;
+  let filled = 0;
+  for (const v of Object.values(sectionObj)) {
+    if (v && typeof v === 'object') {
+      total += 1;
+      const okValue = isValueFilled(v.valeur);
+      const conf = v.confiance;
+      const okConf = typeof conf === 'number' && Number.isFinite(conf) ? conf >= minConfidence : true;
+      if (okValue && okConf) filled += 1;
+    }
+  }
+  if (!total) return null;
+  return filled / total;
+}
+
+function computeCompletenessMetrics(extractions, minConfidence = 0.6) {
+  const perExt = [];
+  for (const ext of extractions) {
+    const sec = extractSections(ext);
+    if (!sec) continue;
+    const parts = [];
+    const vals = [
+      completenessInSection(sec.strategic, minConfidence),
+      completenessInSection(sec.financier, minConfidence),
+      completenessInSection(sec.rh, minConfidence),
+      completenessInSection(sec.data, minConfidence),
+      completenessInSection(sec.cyber, minConfidence)
+    ];
+    for (const v of vals) {
+      if (v != null) parts.push(v);
+    }
+    if (parts.length) perExt.push(parts.reduce((a, b) => a + b, 0) / parts.length);
+  }
+  if (!perExt.length) return { overall: null };
+  const overall = perExt.reduce((a, b) => a + b, 0) / perExt.length;
+  return { overall };
+}
+
 function computeConfidenceMetrics(extractions) {
   const perSec = { strategic: [], financier: [], rh: [], data: [], cyber: [] };
   const perExt = [];
@@ -284,24 +330,37 @@ function renderCharts(extractions) {
 function setKpis(extractions) {
   const kpiCount = document.getElementById('kpiCount');
   const kpiCountHint = document.getElementById('kpiCountHint');
-  const kpiCompanies = document.getElementById('kpiCompanies');
   const kpiConfidence = document.getElementById('kpiConfidence');
+  const kpiCompleteness = document.getElementById('kpiCompleteness');
+  const kpiQuality = document.getElementById('kpiQuality');
 
   const count = extractions.length;
   if (kpiCount) kpiCount.textContent = String(count);
 
   if (kpiCountHint) {
     const docs = new Set(extractions.map(getDocName).filter(Boolean));
-    kpiCountHint.textContent = docs.size ? `${docs.size} document(s) distinct(s)` : '';
+    const companies = new Set(extractions.map(getCompany).filter(c => c && c !== '—'));
+    const parts = [];
+    if (docs.size) parts.push(`${docs.size} document(s) distinct(s)`);
+    if (companies.size) parts.push(`${companies.size} entreprise(s)`);
+    kpiCountHint.textContent = parts.join(' · ');
   }
-
-  const companies = new Set(extractions.map(getCompany).filter(c => c && c !== '—'));
-  if (kpiCompanies) kpiCompanies.textContent = String(companies.size);
 
   const metrics = computeConfidenceMetrics(extractions);
   if (kpiConfidence) {
     if (metrics.overall == null) kpiConfidence.textContent = '—';
     else kpiConfidence.textContent = `${(metrics.overall * 100).toFixed(1)}%`;
+  }
+
+  const comp = computeCompletenessMetrics(extractions, 0.6);
+  if (kpiCompleteness) {
+    if (comp.overall == null) kpiCompleteness.textContent = '—';
+    else kpiCompleteness.textContent = `${(comp.overall * 100).toFixed(1)}%`;
+  }
+
+  if (kpiQuality) {
+    if (metrics.overall == null || comp.overall == null) kpiQuality.textContent = '—';
+    else kpiQuality.textContent = `${(metrics.overall * comp.overall * 100).toFixed(1)}%`;
   }
 }
 

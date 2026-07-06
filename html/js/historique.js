@@ -1,5 +1,6 @@
 let allExtractions = [];
 let currentExtractionId = null;
+const COMPLETENESS_MIN_CONFIDENCE = 0.6;
 
 async function loadHistorique() {
   const tbody = document.getElementById('historiqueTableBody');
@@ -11,10 +12,10 @@ async function loadHistorique() {
       renderHistorique(allExtractions);
       populateCompareSelect(allExtractions);
     } else {
-      tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; color: var(--red);">${data.error || 'Erreur de chargement'}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; color: var(--red);">${data.error || 'Erreur de chargement'}</td></tr>`;
     }
   } catch (e) {
-    tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; color: var(--red);">Erreur réseau</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; color: var(--red);">Erreur réseau</td></tr>`;
   }
 }
 
@@ -80,12 +81,47 @@ function calculateAverageConfidence(ext) {
   return count > 0 ? (total / count) : 0;
 }
 
+function isFieldFilled(field) {
+  if (!field || typeof field !== 'object') return false;
+  const val = field.valeur;
+  const hasValue = Array.isArray(val)
+    ? val.length > 0
+    : (val !== null && val !== undefined && String(val).trim() !== '');
+  if (!hasValue) return false;
+  const conf = field.confiance;
+  if (typeof conf === 'number' && Number.isFinite(conf)) {
+    return conf >= COMPLETENESS_MIN_CONFIDENCE;
+  }
+  return true;
+}
+
+function calculateCompleteness(ext) {
+  if (!ext) return 0;
+  const result = ext.ui_result || ext.result;
+  if (!result || typeof result !== 'object') return 0;
+  const dataToAnalyze = result.result && typeof result.result === 'object' ? result.result : result;
+  const sections = ['diagnostic_strategique', 'diagnostic_financier', 'diagnostic_rh', 'diagnostic_data', 'diagnostic_cyber_gouvernance'];
+  let total = 0;
+  let filled = 0;
+  sections.forEach(sec => {
+    const secObj = dataToAnalyze[sec];
+    if (!secObj || typeof secObj !== 'object') return;
+    Object.values(secObj).forEach(field => {
+      if (field && typeof field === 'object') {
+        total += 1;
+        if (isFieldFilled(field)) filled += 1;
+      }
+    });
+  });
+  return total > 0 ? (filled / total) : 0;
+}
+
 function renderHistorique(extractions) {
   const tbody = document.getElementById('historiqueTableBody');
   tbody.innerHTML = '';
   
   if (extractions.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--muted);">Aucune extraction trouvée.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--muted);">Aucune extraction trouvée.</td></tr>`;
     return;
   }
   
@@ -97,6 +133,8 @@ function renderHistorique(extractions) {
     
     const conf = calculateAverageConfidence(ext);
     const confColor = conf > 0.8 ? 'var(--teal)' : (conf > 0.5 ? '#f39c12' : 'var(--red)');
+    const comp = calculateCompleteness(ext);
+    const compColor = comp > 0.8 ? 'var(--teal)' : (comp > 0.5 ? '#f39c12' : 'var(--red)');
     
     const tr = document.createElement('tr');
     tr.style.borderBottom = '1px solid var(--line)';
@@ -111,6 +149,9 @@ function renderHistorique(extractions) {
       </td>
       <td style="padding: 15px; font-family: var(--mono); font-size: 12px; color: ${confColor}; font-weight: 500;">
         ${(conf * 100).toFixed(1)}%
+      </td>
+      <td style="padding: 15px; font-family: var(--mono); font-size: 12px; color: ${compColor}; font-weight: 500;">
+        ${(comp * 100).toFixed(1)}%
       </td>
       <td style="padding: 15px; display: flex; gap: 8px;">
         <button class="btn-load" data-id="${ext.id}" style="background: var(--blue); color: #fff; border: none; padding: 6px 12px; font-family: var(--mono); font-size: 10px; cursor: pointer; border-radius: 4px;">OUVRIR LE DIAGNOSTIC</button>

@@ -1,12 +1,12 @@
 /* ── VARIABLES (garde les couleurs originales) ── */
 :root {
-  --blue:   #0047FF;
-  --teal:   #00C896;
-  --red:    #E8002A;
-  --ink:    #0A0A0A;
-  --paper:  #F5F4F0;
-  --line:   rgba(10,10,10,0.1);
-  --muted:  #888;
+  --blue:   #2563EB;
+  --teal:   #06B6D4;
+  --red:    #E11D48;
+  --ink:    #1E293B;
+  --paper:  #F1F5F9;
+  --line:   rgba(30,41,59,0.18);
+  --muted:  #94A3B8;
   --mono:   'DM Mono', monospace;
   --display:'Bebas Neue', sans-serif;
   --body:   'DM Sans', sans-serif;

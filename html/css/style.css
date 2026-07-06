@@ -1,13 +1,13 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --ink:#0a0a0a;
-  --paper:#f5f2eb;
-  --blue:#0047ff;
-  --teal:#00c896;
-  --red:#e8002a;
-  --muted:#9a9585;
-  --line:rgba(10,10,10,0.15);
+  --ink:#1E293B;
+  --paper:#F1F5F9;
+  --blue:#2563EB;
+  --teal:#06B6D4;
+  --red:#E11D48;
+  --muted:#94A3B8;
+  --line:rgba(30,41,59,0.18);
   --mono:'DM Mono',monospace;
   --display:'Bebas Neue',sans-serif;
   --body:'DM Sans',sans-serif;
@@ -46,7 +46,7 @@ nav{
   justify-content:space-between;
   padding:0 40px;
   height:56px;
-  border-bottom:1px solid var(--ink);
+  border-bottom:1px solid var(--line);
   background:var(--paper);
   mix-blend-mode:normal;
 }
@@ -107,7 +107,7 @@ nav{
   display:grid;
   grid-template-columns:1fr 1fr;
   grid-template-rows:auto 1fr;
-  border-bottom:1px solid var(--ink);
+  border-bottom:1px solid var(--line);
 }
 .hero-tag{
   grid-column:1/-1;

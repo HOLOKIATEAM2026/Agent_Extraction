@@ -108,7 +108,7 @@
     }
     .kpis{
       display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap:12px;
       margin-top:12px;
     }
@@ -232,9 +232,14 @@
             <div class="hint">Moyenne des champs diagnostic_* (0–100%).</div>
           </div>
           <div class="kpi">
-            <div class="kpi-label">Entreprises suivies</div>
-            <div id="kpiCompanies" class="kpi-val">0</div>
-            <div class="hint">Nombre d’entreprises distinctes dans l’historique filtré.</div>
+            <div class="kpi-label">Complétude</div>
+            <div id="kpiCompleteness" class="kpi-val">—</div>
+            <div class="hint">Champs remplis / champs attendus (avec confiance ≥ 0.6).</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Score qualité</div>
+            <div id="kpiQuality" class="kpi-val">—</div>
+            <div class="hint">Confiance × Complétude (score combiné).</div>
           </div>
         </div>
       </section>
