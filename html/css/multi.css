@@ -1,12 +1,17 @@
 /* ── VARIABLES (garde les couleurs originales) ── */
 :root {
-  --blue:   #2563EB;
-  --teal:   #06B6D4;
-  --red:    #E11D48;
-  --ink:    #1E293B;
-  --paper:  #F1F5F9;
-  --line:   rgba(30,41,59,0.18);
-  --muted:  #94A3B8;
+  --paper:  #20293B;
+  --paper-2:#292929;
+  --ink:    #F1F5FF;
+  --ink-2:  #A7B3C8;
+  --muted:  #8FA0B8;
+  --line:   rgba(241,245,255,0.14);
+  --blue:   #3C57F3;
+  --blue-2: #2F45D6;
+  --teal:   #7525E0;
+  --teal-2: #5E1ED0;
+  --red:    #FF3D8D;
+  --focus:  rgba(60,87,243,0.35);
   --mono:   'DM Mono', monospace;
   --display:'Bebas Neue', sans-serif;
   --body:   'DM Sans', sans-serif;
