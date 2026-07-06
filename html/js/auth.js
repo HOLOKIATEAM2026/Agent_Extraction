@@ -2,6 +2,9 @@
 // Supabase Client Initialization
 let supabaseClient = null;
 let supabaseClientPromise = null;
+let logoutDialogInitialized = false;
+let logoutDialogResolve = null;
+let logoutDialogLastFocus = null;
 
 async function getSupabaseClient() {
   if (supabaseClient) return supabaseClient;
@@ -47,6 +50,71 @@ async function getSupabaseClient() {
   });
 
   return supabaseClientPromise;
+}
+
+function ensureLogoutDialog() {
+  if (logoutDialogInitialized) return;
+  logoutDialogInitialized = true;
+
+  const style = document.createElement('style');
+  style.id = 'holokia-logout-dialog-style';
+  style.textContent = `
+.holokia-modal-overlay{position:fixed;inset:0;background:var(--overlay,rgba(0,0,0,0.55));display:flex;align-items:center;justify-content:center;z-index:10000;padding:16px}
+.holokia-modal-overlay[hidden]{display:none}
+.holokia-modal{width:min(440px,100%);background:var(--paper-2,var(--surface,#292929));border:1px solid var(--line,var(--border,rgba(255,255,255,0.14)));border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,0.35);padding:18px 18px 16px;color:var(--ink,var(--text,#F1F5FF))}
+.holokia-modal-title{margin:0 0 6px;font-family:var(--display,system-ui);font-size:22px;letter-spacing:0.02em}
+.holokia-modal-desc{margin:0 0 14px;font-family:var(--body,system-ui);font-size:13px;line-height:1.6;color:var(--muted,var(--ink-2,#A7B3C8))}
+.holokia-modal-actions{display:flex;justify-content:flex-end;gap:10px}
+.holokia-btn{appearance:none;border-radius:12px;padding:10px 12px;font-family:var(--mono,system-ui);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:transform .12s,opacity .12s,background .12s,border-color .12s}
+.holokia-btn:active{transform:translateY(1px)}
+.holokia-btn:focus-visible{outline:none;box-shadow:0 0 0 4px var(--focus,rgba(60,87,243,0.25))}
+.holokia-btn-secondary{background:transparent;border:1px solid var(--line,var(--border,rgba(255,255,255,0.14)));color:var(--ink,var(--text,#F1F5FF))}
+.holokia-btn-secondary:hover{background:var(--glass,var(--ghost,rgba(241,245,255,0.06)))}
+.holokia-btn-danger{background:var(--red,#FF3D8D);border:1px solid rgba(255,61,141,0.35);color:var(--on-accent,#fff)}
+.holokia-btn-danger:hover{opacity:.92}
+  `.trim();
+  document.head.appendChild(style);
+
+  const overlay = document.createElement('div');
+  overlay.id = 'holokiaLogoutOverlay';
+  overlay.className = 'holokia-modal-overlay';
+  overlay.hidden = true;
+  overlay.innerHTML = `
+    <div class="holokia-modal" role="dialog" aria-modal="true" aria-labelledby="holokiaLogoutTitle" aria-describedby="holokiaLogoutDesc">
+      <h2 class="holokia-modal-title" id="holokiaLogoutTitle">Confirmer la déconnexion</h2>
+      <p class="holokia-modal-desc" id="holokiaLogoutDesc">Voulez-vous vraiment vous déconnecter ?</p>
+      <div class="holokia-modal-actions">
+        <button type="button" class="holokia-btn holokia-btn-secondary" id="holokiaLogoutCancel">Annuler</button>
+        <button type="button" class="holokia-btn holokia-btn-danger" id="holokiaLogoutConfirm">Déconnexion</button>
+      </div>
+    </div>
+  `.trim();
+  document.body.appendChild(overlay);
+
+  const close = (ok) => {
+    const el = document.getElementById('holokiaLogoutOverlay');
+    if (el) el.hidden = true;
+    const resolve = logoutDialogResolve;
+    logoutDialogResolve = null;
+    if (logoutDialogLastFocus && typeof logoutDialogLastFocus.focus === 'function') logoutDialogLastFocus.focus();
+    logoutDialogLastFocus = null;
+    if (resolve) resolve(ok);
+  };
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close(false);
+  });
+
+  const btnCancel = overlay.querySelector('#holokiaLogoutCancel');
+  const btnConfirm = overlay.querySelector('#holokiaLogoutConfirm');
+  if (btnCancel) btnCancel.addEventListener('click', () => close(false));
+  if (btnConfirm) btnConfirm.addEventListener('click', () => close(true));
+
+  window.addEventListener('keydown', (e) => {
+    const el = document.getElementById('holokiaLogoutOverlay');
+    if (!el || el.hidden) return;
+    if (e.key === 'Escape') close(false);
+  });
 }
 
 const Auth = {
@@ -128,6 +196,22 @@ const Auth = {
     return session.user;
   },
 
+  async confirmLogout() {
+    ensureLogoutDialog();
+    const overlay = document.getElementById('holokiaLogoutOverlay');
+    if (!overlay) return window.confirm('Voulez-vous vraiment vous déconnecter ?');
+    if (logoutDialogResolve) return false;
+
+    logoutDialogLastFocus = document.activeElement;
+    overlay.hidden = false;
+    const btnCancel = overlay.querySelector('#holokiaLogoutCancel');
+    if (btnCancel && typeof btnCancel.focus === 'function') btnCancel.focus();
+
+    return new Promise((resolve) => {
+      logoutDialogResolve = resolve;
+    });
+  },
+
   // Affiche le nom de l'utilisateur ou le bouton de connexion pour les pages non protégées
   async updateAuthUI() {
     const session = await this.getSession();
@@ -171,9 +255,10 @@ const Auth = {
       a.id = "logoutBtn";
       a.textContent = "Déconnexion";
       a.style.color = "var(--red)";
-      a.onclick = (e) => {
+      a.onclick = async (e) => {
         e.preventDefault();
-        this.logout();
+        const ok = await this.confirmLogout();
+        if (ok) this.logout();
       };
       li.appendChild(a);
       navLinks.appendChild(li);

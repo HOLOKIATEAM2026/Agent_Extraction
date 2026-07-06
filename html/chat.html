@@ -144,7 +144,10 @@ nav {
   display: flex;
   list-style: none;
   gap: 4px;
-  margin-left: auto;
+  flex: 1;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links a {
@@ -166,7 +169,6 @@ nav {
 }
 
 .nav-badge {
-  margin-left: auto;
   font-family: var(--mono);
   font-size: 9px;
   letter-spacing: 0.1em;
@@ -905,10 +907,11 @@ nav {
 }
 
 .nav-actions{
-  margin-left:12px;
+  margin-left:0;
   display:flex;
   align-items:center;
   gap:10px;
+  flex:0 0 auto;
 }
 .theme-toggle{
   width:34px;
@@ -1214,7 +1217,7 @@ nav {
     <li><a href="chat.html" class="active">Chat</a></li>
   </ul>
   <div class="nav-actions">
-    <button type="button" class="theme-toggle" data-theme-toggle></button>
+    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
     <div class="nav-badge">Copilot Strategy IA</div>
   </div>
 </nav>
