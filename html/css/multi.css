@@ -431,6 +431,14 @@ nav {
   border-radius: var(--radius);
   transition: border-color 0.15s;
 }
+.q-select option {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.q-select optgroup {
+  background: var(--paper-2);
+  color: var(--muted);
+}
 .q-select:focus, .q-input:focus { border-color: var(--blue); }
 .q-input::placeholder { color: var(--muted); }
 
