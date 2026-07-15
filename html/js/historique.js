@@ -1,6 +1,7 @@
 let allExtractions = [];
 let currentExtractionId = null;
 const COMPLETENESS_MIN_CONFIDENCE = 0.6;
+let compareMode = false;
 
 async function loadHistorique() {
   const tbody = document.getElementById('historiqueTableBody');
@@ -227,18 +228,65 @@ const modal = document.getElementById('historiqueModal');
 const modalJsonContainer = document.getElementById('modalJsonContainer');
 const modalCompareContainer = document.getElementById('modalCompareContainer');
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function getExtractionPayload(ext) {
+  if (!ext) return null;
+  if (ext.ui_result && typeof ext.ui_result === 'object') return ext.ui_result;
+  if (ext.result && typeof ext.result === 'object') {
+    if (ext.result.result && typeof ext.result.result === 'object') return ext.result.result;
+    return ext.result;
+  }
+  return null;
+}
+
+function setCompareMode(isCompare) {
+  compareMode = isCompare;
+  modalJsonContainer.style.display = isCompare ? 'none' : 'block';
+  modalCompareContainer.style.display = isCompare ? 'block' : 'none';
+  const btn = document.getElementById('btnCompare');
+  if (btn) btn.textContent = isCompare ? 'Retour' : 'Comparer';
+}
+
+function renderCompare(extA, extB) {
+  const title1 = document.getElementById('compareTitle1');
+  const title2 = document.getElementById('compareTitle2');
+  const c1 = document.getElementById('compareContent1');
+  const c2 = document.getElementById('compareContent2');
+
+  const aData = getExtractionPayload(extA);
+  const bData = getExtractionPayload(extB);
+
+  const aLabel = extA
+    ? `${extA.company || 'Inconnu'} · ${new Date(extA.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+    : 'Extraction A';
+  const bLabel = extB
+    ? `${extB.company || 'Inconnu'} · ${new Date(extB.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`
+    : 'Extraction B';
+
+  if (title1) title1.textContent = aLabel;
+  if (title2) title2.textContent = bLabel;
+
+  if (c1) c1.innerHTML = `<pre style="margin:0; font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--ink-2); white-space: pre-wrap; word-break: break-word;">${escapeHtml(JSON.stringify(aData, null, 2) || '')}</pre>`;
+  if (c2) c2.innerHTML = `<pre style="margin:0; font-family: var(--mono); font-size: 12px; line-height: 1.5; color: var(--ink-2); white-space: pre-wrap; word-break: break-word;">${escapeHtml(JSON.stringify(bData, null, 2) || '')}</pre>`;
+}
+
 async function openModal(id) {
   currentExtractionId = id;
   const ext = allExtractions.find(e => e.id == id);
   if (!ext) return;
   
   document.getElementById('modalTitle').textContent = `Détails : ${ext.company || 'Inconnu'}`;
-  document.getElementById('modalJson').textContent = JSON.stringify(ext.result, null, 2);
-  
-  modalJsonContainer.style.display = 'block';
-  modalCompareContainer.style.display = 'none';
+  document.getElementById('modalJson').textContent = JSON.stringify(getExtractionPayload(ext), null, 2);
   document.getElementById('btnCompare').style.display = 'block';
-  document.getElementById('btnCompare').textContent = 'Comparer';
+  setCompareMode(false);
   
   // Set current selected in compare select
   const compareSelect = document.getElementById('compareSelect');
@@ -249,4 +297,37 @@ async function openModal(id) {
 
 document.getElementById('btnCloseModal').addEventListener('click', () => {
   modal.style.display = 'none';
+});
+
+document.getElementById('btnCompare').addEventListener('click', () => {
+  if (!currentExtractionId) return;
+  setCompareMode(!compareMode);
+  if (compareMode) {
+    const extA = allExtractions.find(e => e.id == currentExtractionId);
+    renderCompare(extA, null);
+  }
+});
+
+document.getElementById('compareSelect').addEventListener('change', (e) => {
+  if (!currentExtractionId) return;
+  const otherId = e.target.value;
+  const extA = allExtractions.find(x => x.id == currentExtractionId);
+  const extB = allExtractions.find(x => x.id == otherId);
+  if (!compareMode) setCompareMode(true);
+  renderCompare(extA, extB);
+});
+
+document.getElementById('btnCopyModal').addEventListener('click', async () => {
+  const txt = document.getElementById('modalJson')?.textContent || '';
+  try {
+    await navigator.clipboard.writeText(txt);
+    const btn = document.getElementById('btnCopyModal');
+    if (btn) {
+      const prev = btn.textContent;
+      btn.textContent = 'COPIÉ';
+      window.setTimeout(() => {
+        btn.textContent = prev;
+      }, 900);
+    }
+  } catch (_) {}
 });

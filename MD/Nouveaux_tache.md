@@ -302,6 +302,9 @@ Tu es un assistant spécialisé dans l'analyse automatique de rapports d'activit
 - [x] **T8.10** — Ajouter un onglet **Historique** dans l'interface :
   - Liste des rapports analysés (entreprise, date, modèle, score confiance moyen)
   - Cliquer sur une ligne → afficher le JSON complet
+- [x] **T8.10bis** — Ajouter les métriques **Complétude** + **Score qualité** :
+  - Complétude = champs remplis / total champs attendus (seuil confiance min = 0.6)
+  - Score qualité = Confiance moy. × Complétude
 - [x] **T8.11** — Filtres : par date, par entreprise, par modèle LLM utilisé
 - [x] **T8.12** — Comparaison côte à côte de deux extractions (champ par champ)
 - [x] **T8.13** — Export JSON ou CSV depuis l'historique
@@ -408,6 +411,19 @@ T8.8  → Historique                       ← en dernier
 
 ---
 
+### 8F — Thème UI (Dark / Light) + Accessibilité
+
+> **Objectif :** Permettre un basculement immédiat entre thème sombre et thème clair, cohérent sur toutes les pages, avec préférence persistée et respect des standards d'accessibilité.
+
+- [x] **T8.27** — Centraliser les tokens CSS (palette Holokia) et ajouter un override `data-theme="light"`
+- [x] **T8.28** — Ajouter un bouton de bascule de thème dans les navbars (icône visible + `aria-label`/`aria-pressed`)
+- [x] **T8.29** — Persister la préférence utilisateur (localStorage `holokia_theme`) + appliquer le thème avant rendu (script "early theme")
+- [x] **T8.30** — Harmoniser les styles pour le thème light (suppression des couleurs hardcodées `#fff/white`, hover, bordures)
+
+**Livrable :** `html/js/theme.js` + mise à jour `html/css/style.css` et intégration sur l'ensemble des pages (y compris `chat.html`, `demo.html`, `test.html`, `holokia-comparaison.html`)
+
+---
+
 ## Phase 9 — Authentification & Multi-tenant ✅ TERMINÉE
 
 > **Objectif :** Chaque entreprise cliente a son propre espace 
@@ -415,7 +431,7 @@ T8.8  → Historique                       ← en dernier
 
 **Livrable :** Pages login/register + protection des routes + RLS Supabase
 
-- [x] **T9.1** — Activer Supabase Auth (Email + Google OAuth)
+- [x] **T9.1** — Activer Supabase Auth (Email / Mot de passe)
 - [x] **T9.2** — Créer `html/login.html` et `html/register.html`
 - [x] **T9.3** — Protéger les 4 pages (diagnostic, chat, multi, historique)
         → rediriger vers login si non connecté
@@ -426,6 +442,7 @@ T8.8  → Historique                       ← en dernier
 - [x] **T9.7** — Activer Row Level Security (RLS) sur Supabase
         → chaque client voit uniquement ses données
 - [x] **T9.8** — Ajouter `html/js/auth.js` — fonctions login/logout/session
+- [x] **T9.9** — Ajouter une confirmation de déconnexion (popup accessible) avant `logout()`
 
 **Livrable :** `login.html` + `register.html` + `auth.js` + RLS Supabase
 
@@ -440,8 +457,7 @@ T8.8  → Historique                       ← en dernier
 
 ### 10A — Mémoire Court Terme (dans la session)
 
-- [x] **T10.1** — Vérifier que `ConversationBufferMemory` est actif
-        dans le mode Chat
+- [x] **T10.1** — Mémoire court terme : réinjecter l'historique récent (N derniers tours) dans le prompt du mode Chat
 - [x] **T10.2** — Tester que le contexte est bien maintenu sur 5+ tours
 
 ### 10B — Mémoire Moyen Terme (entre les sessions)
@@ -496,7 +512,7 @@ T8.8  → Historique                       ← en dernier
         ("Voici les 3 actions prioritaires pour améliorer
          votre score NIST de 2,8 à 4,0")
 - [x] **T11.3** — Dashboard Analytics
-        (graphiques d'évolution, benchmark sectoriel)
+        (KPIs Confiance / Complétude / Score qualité + graphiques d'évolution, benchmark sectoriel)
 - [ ] **T11.4** — Support multilingue
         (questions en français sur docs en anglais/arabe)
 - [ ] **T11.5** — Traitement automatique par email
