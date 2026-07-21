@@ -35,6 +35,7 @@ app.add_middleware(
         "https://holokia-rag-api.netlify.app",
         "https://holokia-rag.vercel.app",
         "https://holokia-jfl1za1y8-boubkers-projects.vercel.app",
+        "https://rag-nine-self.vercel.app"
         "*"
     ],
     allow_credentials=True,
