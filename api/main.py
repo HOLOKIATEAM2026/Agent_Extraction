@@ -34,6 +34,7 @@ app.add_middleware(
         "http://127.0.0.1:5500",
         "https://holokia-rag-api.netlify.app",
         "https://holokia-rag.vercel.app",
+        "https://holokia-jfl1za1y8-boubkers-projects.vercel.app",
         "*"
     ],
     allow_credentials=True,
