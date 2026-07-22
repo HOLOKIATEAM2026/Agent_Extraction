@@ -33,6 +33,7 @@ app.add_middleware(
         "http://localhost:5500",
         "http://127.0.0.1:5500",
         "https://holokia-rag-api.netlify.app",
+        "https://agentextraction.netlify.app",
         "https://holokia-rag.vercel.app",
         "https://holokia-jfl1za1y8-boubkers-projects.vercel.app",
         "https://rag-nine-self.vercel.app",
