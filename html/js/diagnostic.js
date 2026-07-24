@@ -230,9 +230,17 @@ btnExtract.addEventListener('click', async () => {
 
 async function pollJobStatus(jobId) {
   let delay = 1500;
+  let failures = 0;
   const tick = async () => {
     try {
       const res = await Auth.apiFetch(`${API_URL}/status/${jobId}`);
+      if (!res.ok) {
+        let text = "";
+        try {
+          text = await res.text();
+        } catch (_) {}
+        throw { status: res.status, text };
+      }
       const data = await res.json();
       
       if (data.status === "completed") {
@@ -248,12 +256,25 @@ async function pollJobStatus(jobId) {
         setStored("holokia_job_id", null);
         setStored("holokia_status", statusText.textContent);
       } else {
+        failures = 0;
         statusText.textContent = `Statut: ${data.status.toUpperCase()}...`;
         setStored("holokia_status", statusText.textContent);
         delay = Math.min(5000, Math.round(delay * 1.2));
         pollInterval = window.setTimeout(tick, delay);
       }
     } catch(e) {
+      failures += 1;
+      const status = e && typeof e === "object" ? e.status : undefined;
+      const retriable = status === 502 || status === 503 || status === 504;
+      if (retriable && failures <= 12) {
+        delay = Math.min(15000, Math.round(delay * 1.6) + 500);
+        const seconds = Math.max(1, Math.round(delay / 1000));
+        statusText.textContent = `Statut: Serveur temporairement indisponible (${status}). Nouvelle tentative dans ${seconds}s...`;
+        setStored("holokia_status", statusText.textContent);
+        pollInterval = window.setTimeout(tick, delay);
+        return;
+      }
+
       pollInterval = undefined;
       statusText.textContent = "Erreur: Impossible de récupérer le statut du job.";
       btnExtract.disabled = false;
