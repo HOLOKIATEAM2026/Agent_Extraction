@@ -1,0 +1,3 @@
+TechCorp est une entreprise.
+Chiffre d'affaires: 10M EUR.
+Résultat net: 1M EUR.

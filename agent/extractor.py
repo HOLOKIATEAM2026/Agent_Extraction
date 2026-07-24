@@ -1,5 +1,6 @@
 import asyncio
 import os
+import time
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
@@ -17,6 +18,25 @@ from agent.vectorstore import get_chroma_vectorstore, load_config, get_embedding
 from agent.analyzer import analyze_document_type
 from agent.prompts import build_dynamic_queries, get_empty_category_result
 from schema.v1.models import CopilotExtraction, MetaInfo
+
+#region debug-point extract-slow-performance
+import requests
+
+def _dbg(event: str, **data: Any) -> None:
+    url = os.getenv("DEBUG_SERVER_URL")
+    if not url:
+        return
+    payload = {
+        "sessionId": os.getenv("DEBUG_SESSION_ID"),
+        "event": event,
+        "ts": time.time(),
+        **data,
+    }
+    try:
+        requests.post(url, json=payload, timeout=0.8)
+    except Exception:
+        return
+#endregion debug-point extract-slow-performance
 
 # Helper to safely extract page numbers from document metadata
 def get_page(doc):
@@ -165,9 +185,15 @@ async def _extract_category_data(
     """
     category_results = {}
     
-    # ✅ SÉQUENTIEL : Traiter tous les champs de la catégorie un par un
-    for q_info in questions:
-        champ, value = await _process_single_field(q_info, vectorstore, llm, top_k, semaphore)
+    tasks = [
+        asyncio.create_task(_process_single_field(q_info, vectorstore, llm, top_k, semaphore))
+        for q_info in (questions or [])
+    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for res in results:
+        if isinstance(res, Exception):
+            continue
+        champ, value = res
         category_results[champ] = value
                 
     return category_results
@@ -186,27 +212,39 @@ async def run_agent_extraction(
     3. RAG ciblé (PARALLÉLE)
     4. Validation Pydantic (Phase 5)
     """
+    t0 = time.perf_counter()
+    _dbg("agent.start", file_path=file_path, provider=provider, model=model)
     print(f"\n[Agent] Début de l'extraction pour {file_path}")
     
     # ÉTAPE 1 : Analyse préliminaire du document
     print("[Agent] Étape 1: Analyse préliminaire (Routing)...")
+    t_route0 = time.perf_counter()
     categories_detectees = analyze_document_type(file_path, provider, model, config_path)
     active_cats = categories_detectees.get_active_categories()
+    _dbg("agent.routing.done", file_path=file_path, ms=(time.perf_counter() - t_route0) * 1000.0, active_cats=active_cats)
     print(f"[Agent] Catégories détectées : {active_cats}")
     
     # ÉTAPE 2 : Génération des questions dynamiques
     print("[Agent] Étape 2: Génération des requêtes dynamiques...")
+    t_q0 = time.perf_counter()
     dynamic_queries = build_dynamic_queries(categories_detectees)
+    _dbg("agent.dynamic_queries.done", file_path=file_path, ms=(time.perf_counter() - t_q0) * 1000.0)
     
     # Préparation des outils RAG
+    t_llm0 = time.perf_counter()
     llm = get_llm(provider=provider, model=model, config_path=config_path, temperature=0.0)
+    _dbg("agent.llm.done", ms=(time.perf_counter() - t_llm0) * 1000.0)
     config = load_config(config_path)
+    t_emb0 = time.perf_counter()
     embeddings = get_embeddings(config)
+    _dbg("agent.embeddings.done", ms=(time.perf_counter() - t_emb0) * 1000.0)
     
     # Charger le vectorstore FAISS créé par _index_single_file
     from agent.vectorstore import get_or_create_faiss_vectorstore
     doc_name = os.path.basename(file_path).split('.')[0]
+    t_vs0 = time.perf_counter()
     vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings, config=config)
+    _dbg("agent.vectorstore.done", doc_name=doc_name, ms=(time.perf_counter() - t_vs0) * 1000.0)
     
     # Dictionnaire brut qui contiendra toutes les réponses
     raw_results = {}
@@ -245,7 +283,12 @@ async def run_agent_extraction(
     
     # Création d'un sémaphore pour limiter le nombre de requêtes LLM simultanées
     # et éviter de saturer le Rate Limit de l'API (ex: Groq 6000 TPM)
-    concurrency_limit = 1
+    default_limit = 2 if (provider or "").lower() in {"groq", "openai"} else 1
+    try:
+        env_limit = int(os.getenv("AGENT_CONCURRENCY_LIMIT", "").strip() or default_limit)
+    except Exception:
+        env_limit = default_limit
+    concurrency_limit = max(1, min(4, env_limit))
     semaphore = asyncio.Semaphore(concurrency_limit)
     
     # Collecter toutes les tâches async pour les catégories actives
@@ -263,6 +306,8 @@ async def run_agent_extraction(
     
     # ✅ Exécuter toutes les catégories SÉQUENTIELLEMENT
     for cat_key, schema_key in zip(active_cats_keys, category_keys):
+        t_cat0 = time.perf_counter()
+        _dbg("agent.category.start", category=cat_key, questions=len(dynamic_queries.get(cat_key) or []))
         cat_data = await _extract_category_data(
             category_name=cat_key,
             questions=dynamic_queries[cat_key],
@@ -271,15 +316,21 @@ async def run_agent_extraction(
             semaphore=semaphore
         )
         raw_results[schema_key] = cat_data
+        _dbg("agent.category.done", category=cat_key, ms=(time.perf_counter() - t_cat0) * 1000.0)
             
     # ÉTAPE 4 : Validation Pydantic
     print("[Agent] Étape 4: Validation Pydantic...")
     try:
+        t_val0 = time.perf_counter()
         validated_data = CopilotExtraction(**raw_results)
+        _dbg("agent.validation.done", ms=(time.perf_counter() - t_val0) * 1000.0)
         # Utiliser model_dump(mode='json') pour s'assurer que les dates sont des strings
+        _dbg("agent.done", file_path=file_path, ms=(time.perf_counter() - t0) * 1000.0)
         return validated_data.model_dump(mode='json')
     except ValidationError as e:
         print(f"[Agent] ERREUR DE VALIDATION PYDANTIC: {e}")
+        _dbg("agent.validation.error", error=str(e))
         # En cas d'erreur de validation (ça ne devrait pas arriver avec notre gestion des fallback),
         # on renvoie le brut pour déboguer.
+        _dbg("agent.done", file_path=file_path, ms=(time.perf_counter() - t0) * 1000.0)
         return raw_results

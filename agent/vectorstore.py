@@ -1,9 +1,28 @@
 import os
+import time
 from typing import Any, Dict, Optional
 
 import yaml
+import requests
 
 _EMBEDDINGS_CACHE: Dict[Any, Any] = {}
+
+#region debug-point extract-slow-performance
+def _dbg(event: str, **data: Any) -> None:
+    url = os.getenv("DEBUG_SERVER_URL")
+    if not url:
+        return
+    payload = {
+        "sessionId": os.getenv("DEBUG_SESSION_ID"),
+        "event": event,
+        "ts": time.time(),
+        **data,
+    }
+    try:
+        requests.post(url, json=payload, timeout=0.8)
+    except Exception:
+        return
+#endregion debug-point extract-slow-performance
 
 
 def load_config(config_path: str = "config.yaml") -> Dict[str, Any]:
@@ -31,13 +50,16 @@ def get_embeddings(config: Dict[str, Any]):
             tuple(sorted((sync_client_kwargs or {}).items())),
         )
         if cache_key in _EMBEDDINGS_CACHE:
+            _dbg("embeddings.cache_hit", provider="ollama", model=model)
             return _EMBEDDINGS_CACHE[cache_key]
+        t0 = time.perf_counter()
         embeddings = OllamaEmbeddings(
             model=model,
             base_url=base_url,
             client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
         )
         _EMBEDDINGS_CACHE[cache_key] = embeddings
+        _dbg("embeddings.init", provider="ollama", model=model, ms=(time.perf_counter() - t0) * 1000.0)
         return embeddings
 
     if provider == "huggingface":
@@ -45,9 +67,12 @@ def get_embeddings(config: Dict[str, Any]):
         model = emb_cfg.get("model", "all-MiniLM-L6-v2")
         cache_key = ("huggingface", model)
         if cache_key in _EMBEDDINGS_CACHE:
+            _dbg("embeddings.cache_hit", provider="huggingface", model=model)
             return _EMBEDDINGS_CACHE[cache_key]
+        t0 = time.perf_counter()
         embeddings = HuggingFaceEmbeddings(model_name=model)
         _EMBEDDINGS_CACHE[cache_key] = embeddings
+        _dbg("embeddings.init", provider="huggingface", model=model, ms=(time.perf_counter() - t0) * 1000.0)
         return embeddings
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
@@ -117,21 +142,28 @@ def get_or_create_faiss_vectorstore(
     # Si déjà indexé -> charger depuis le disque (instantané)
     if os.path.exists(os.path.join(cache_dir, "index.faiss")):
         print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
-        return FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
+        t0 = time.perf_counter()
+        vs = FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
+        _dbg("faiss.load_local", doc_name=doc_name, cache_dir=cache_dir, ms=(time.perf_counter() - t0) * 1000.0)
+        return vs
     
     if not chunks:
         print("[WARNING] Aucun document fourni et aucun cache trouvé.")
         # Create an empty vectorstore with a dummy document to prevent errors
         from langchain_core.documents import Document
         dummy_doc = Document(page_content="empty", metadata={"source": "empty"})
+        t0 = time.perf_counter()
         vectorstore = FAISS.from_documents([dummy_doc], embeddings)
+        _dbg("faiss.empty_created", doc_name=doc_name, ms=(time.perf_counter() - t0) * 1000.0)
         return vectorstore
         
     # Sinon -> créer et sauvegarder en batchs pour éviter le timeout Ollama
     print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
+    _dbg("faiss.build_start", doc_name=doc_name, docs=len(chunks))
     
     # On initialise le vectorstore avec le premier batch
     batch_size = 10
+    t0 = time.perf_counter()
     vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
     
     # On ajoute le reste par batchs
@@ -142,5 +174,6 @@ def get_or_create_faiss_vectorstore(
         
     vectorstore.save_local(cache_dir)
     print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
+    _dbg("faiss.build_done", doc_name=doc_name, docs=len(chunks), ms=(time.perf_counter() - t0) * 1000.0, cache_dir=cache_dir)
     
     return vectorstore

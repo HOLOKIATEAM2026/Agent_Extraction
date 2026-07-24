@@ -2,6 +2,7 @@ import os
 import uuid
 import traceback
 import asyncio
+import time
 from typing import Any, Dict, Optional, List, Tuple
 from datetime import datetime
 
@@ -19,6 +20,23 @@ from benchmark.approach_a import run_approach_a
 from benchmark.approach_b import run_approach_b
 from benchmark.approach_c_agent import run_approach_c
 from benchmark.approach_d_combo import run_approach_d
+
+#region debug-point extract-slow-performance
+def _dbg(event: str, **data: Any) -> None:
+    url = os.getenv("DEBUG_SERVER_URL")
+    if not url:
+        return
+    payload = {
+        "sessionId": os.getenv("DEBUG_SESSION_ID"),
+        "event": event,
+        "ts": time.time(),
+        **data,
+    }
+    try:
+        requests.post(url, json=payload, timeout=0.8)
+    except Exception:
+        return
+#endregion debug-point extract-slow-performance
 
 app = FastAPI(
     title="Copilot Holokia - RAG API",
@@ -248,17 +266,33 @@ def _index_single_file(*, file_path: str, config_path: str) -> Dict[str, Any]:
     from agent.indexing import chunks_to_langchain_docs
     from agent.vectorstore import get_or_create_faiss_vectorstore, load_config, get_embeddings
     import os
+    t0 = time.perf_counter()
+    _dbg("index.start", file_path=file_path)
 
+    t_chunks0 = time.perf_counter()
     chunks = chunk_document(file_path)
+    _dbg("index.chunk.done", file_path=file_path, ms=(time.perf_counter() - t_chunks0) * 1000.0, chunks=len(chunks or []))
     if not chunks:
+        _dbg("index.done", file_path=file_path, ms=(time.perf_counter() - t0) * 1000.0, chunks=0)
         return {"chunks": 0}
 
+    t_docs0 = time.perf_counter()
     lc_docs, _ = chunks_to_langchain_docs(chunks)
+    _dbg("index.docs.done", file_path=file_path, ms=(time.perf_counter() - t_docs0) * 1000.0, docs=len(lc_docs or []))
     doc_name = os.path.basename(file_path).split('.')[0]
+    t_cfg0 = time.perf_counter()
     config = load_config(config_path)
-    embeddings = get_embeddings(config)
-    vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings, config=config)
+    _dbg("index.config.done", ms=(time.perf_counter() - t_cfg0) * 1000.0)
 
+    t_emb0 = time.perf_counter()
+    embeddings = get_embeddings(config)
+    _dbg("index.embeddings.done", ms=(time.perf_counter() - t_emb0) * 1000.0)
+
+    t_vs0 = time.perf_counter()
+    vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name, embeddings=embeddings, config=config)
+    _dbg("index.faiss.done", doc_name=doc_name, ms=(time.perf_counter() - t_vs0) * 1000.0)
+
+    _dbg("index.done", file_path=file_path, doc_name=doc_name, ms=(time.perf_counter() - t0) * 1000.0, docs=len(lc_docs or []))
     return {"chunks": len(lc_docs)}
 
 
@@ -405,6 +439,17 @@ async def extract_document(
     user_auth: dict = Depends(get_current_user),
 ):
     try:
+        run_id = uuid.uuid4().hex
+        t0 = time.perf_counter()
+        _dbg(
+            "extract.start",
+            runId=run_id,
+            filename=(file.filename or ""),
+            provider=provider,
+            model=model,
+            approach=approach,
+            async_mode=bool(async_mode),
+        )
         uploads_dir = "uploads"
         _ensure_dir(uploads_dir)
         fn = file.filename or ""
@@ -413,8 +458,10 @@ async def extract_document(
         stored = os.path.join(uploads_dir, orig_name)
         
         with open(stored, "wb") as f:
+            t_read0 = time.perf_counter()
             content = await file.read()
             f.write(content)
+        _dbg("extract.file_saved", runId=run_id, stored=stored, bytes=len(content or b""), ms=(time.perf_counter() - t_read0) * 1000.0)
             
         # Étape 2 - Conversion en Markdown pour optimiser le token usage
         try:
@@ -427,6 +474,7 @@ async def extract_document(
             
             # Convertir en Markdown si c'est un PDF
             if orig_name.lower().endswith('.pdf'):
+                t_md0 = time.perf_counter()
                 if not os.path.exists(md_path):
                     print(f"[INFO] Conversion de {orig_name} en Markdown...")
                     md_content = pdf_to_markdown_with_tables(stored)
@@ -436,9 +484,11 @@ async def extract_document(
                     print(f"[INFO] Fichier Markdown trouvé en cache pour {orig_name}")
                 # On utilise le Markdown pour la suite du pipeline
                 stored = md_path
+                _dbg("extract.pdf_to_md", runId=run_id, md_path=md_path, ms=(time.perf_counter() - t_md0) * 1000.0, cached=bool(os.path.exists(md_path)))
         except Exception as e:
             # Si la conversion échoue, on continue avec le fichier original
             print(f"Warning: Markdown conversion failed: {e}")
+            _dbg("extract.pdf_to_md_error", runId=run_id, error=f"{type(e).__name__}: {e}")
 
         # Si async_mode=true, on crée un job et on répond tout de suite
         if async_mode:
@@ -455,6 +505,7 @@ async def extract_document(
                 _process_extraction_job, 
                 job_id, stored, provider, model, approach, config, user_auth["user"].get("id"), user_auth["token"]
             )
+            _dbg("extract.queued", runId=run_id, job_id=job_id, stored=stored, ms=(time.perf_counter() - t0) * 1000.0)
             return JSONResponse(content={"ok": True, "job_id": job_id, "status": "queued"})
 
         # Sinon (mode synchrone classique, pour la compatibilité avec l'UI actuelle)
@@ -463,11 +514,15 @@ async def extract_document(
         need_index = str(approach).lower().strip() not in {"a", "approach_a"}
         if need_index:
             try:
+                t_idx0 = time.perf_counter()
                 pipeline["indexing"] = _index_single_file(file_path=stored, config_path=config)
+                _dbg("extract.indexing_done", runId=run_id, ms=(time.perf_counter() - t_idx0) * 1000.0)
             except Exception as e:
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
+                _dbg("extract.indexing_error", runId=run_id, error=f"{type(e).__name__}: {e}")
 
+        t_run0 = time.perf_counter()
         raw_payload = await _run_approach(
             approach=approach,
             file_path=stored,
@@ -475,6 +530,7 @@ async def extract_document(
             model=model,
             config_path=config,
         )
+        _dbg("extract.approach_done", runId=run_id, ms=(time.perf_counter() - t_run0) * 1000.0, approach=approach)
 
         storage: Dict[str, Any] = {"supabase_enabled": False, "document_id": None, "extraction_id": None}
         try:
@@ -482,20 +538,25 @@ async def extract_document(
 
             storage["supabase_enabled"] = bool(supabase_enabled())
             if storage["supabase_enabled"]:
+                t_store0 = time.perf_counter()
                 doc_id, extr_id = persist_extraction_payload(raw_payload, user_id=user_auth["user"].get("id"), token=user_auth["token"])
                 storage["document_id"] = doc_id
                 storage["extraction_id"] = extr_id
+                _dbg("extract.persist_done", runId=run_id, ms=(time.perf_counter() - t_store0) * 1000.0)
         except Exception as e:
             storage["error"] = f"{type(e).__name__}: {e}"
+            _dbg("extract.persist_error", runId=run_id, error=f"{type(e).__name__}: {e}")
 
         ui = _to_ui_schema(raw_payload)
         ui["pipeline"] = pipeline
         ui["storage"] = storage
         
+        _dbg("extract.done", runId=run_id, ms=(time.perf_counter() - t0) * 1000.0)
         return JSONResponse(content=ui)
         
     except Exception as e:
         traceback.print_exc()
+        _dbg("extract.fatal_error", error=f"{type(e).__name__}: {e}")
         return JSONResponse(status_code=500, content={"ok": False, "error": f"{type(e).__name__}: {e}"})
 
 

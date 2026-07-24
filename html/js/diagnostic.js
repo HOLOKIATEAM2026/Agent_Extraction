@@ -164,7 +164,7 @@ btnExtract.addEventListener('click', async () => {
   }
 
   if (pollInterval) {
-    clearInterval(pollInterval);
+    clearTimeout(pollInterval);
     pollInterval = undefined;
   }
 
@@ -229,17 +229,16 @@ btnExtract.addEventListener('click', async () => {
 });
 
 async function pollJobStatus(jobId) {
-  pollInterval = setInterval(async () => {
+  let delay = 1500;
+  const tick = async () => {
     try {
       const res = await Auth.apiFetch(`${API_URL}/status/${jobId}`);
       const data = await res.json();
       
       if (data.status === "completed") {
-        clearInterval(pollInterval);
         pollInterval = undefined;
         showResults(data.result);
       } else if (data.status === "failed") {
-        clearInterval(pollInterval);
         pollInterval = undefined;
         statusText.textContent = `Erreur: ${data.error}`;
         btnExtract.disabled = false;
@@ -251,12 +250,11 @@ async function pollJobStatus(jobId) {
       } else {
         statusText.textContent = `Statut: ${data.status.toUpperCase()}...`;
         setStored("holokia_status", statusText.textContent);
+        delay = Math.min(5000, Math.round(delay * 1.2));
+        pollInterval = window.setTimeout(tick, delay);
       }
     } catch(e) {
-      if (pollInterval) {
-        clearInterval(pollInterval);
-        pollInterval = undefined;
-      }
+      pollInterval = undefined;
       statusText.textContent = "Erreur: Impossible de récupérer le statut du job.";
       btnExtract.disabled = false;
       setFormLocked(false);
@@ -265,7 +263,12 @@ async function pollJobStatus(jobId) {
       setStored("holokia_job_id", null);
       setStored("holokia_status", statusText.textContent);
     }
-  }, 2000);
+  };
+
+  if (pollInterval) {
+    clearTimeout(pollInterval);
+  }
+  pollInterval = window.setTimeout(tick, delay);
 }
 
 function showResults(data, options) {

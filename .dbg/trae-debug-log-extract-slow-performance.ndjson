@@ -1,0 +1,29 @@
+{"sessionId": "extract-slow-performance", "event": "extract.start", "ts": 1784898586.780244, "runId": "511d13ee3daf41278078bab74d17bb0e", "filename": "small.txt", "provider": "groq", "model": "llama-3.1-8b-instant", "approach": "agent", "async_mode": false}
+{"sessionId": "extract-slow-performance", "event": "extract.file_saved", "ts": 1784898586.7977772, "runId": "511d13ee3daf41278078bab74d17bb0e", "stored": "uploads\\small.txt", "bytes": 81, "ms": 0.27490000047691865}
+{"sessionId": "extract-slow-performance", "event": "index.start", "ts": 1784898586.8033075, "file_path": "uploads\\small.txt"}
+{"sessionId": "extract-slow-performance", "event": "index.chunk.done", "ts": 1784898586.8296115, "file_path": "uploads\\small.txt", "ms": 2.8839000005973503, "chunks": 1}
+{"sessionId": "extract-slow-performance", "event": "index.docs.done", "ts": 1784898586.8591611, "file_path": "uploads\\small.txt", "ms": 0.18340000042371685, "docs": 1}
+{"sessionId": "extract-slow-performance", "event": "index.config.done", "ts": 1784898586.8977168, "ms": 3.866700000799028}
+{"sessionId": "extract-slow-performance", "event": "embeddings.cache_hit", "ts": 1784898586.9022605, "provider": "huggingface", "model": "all-MiniLM-L6-v2"}
+{"sessionId": "extract-slow-performance", "event": "index.embeddings.done", "ts": 1784898586.9241364, "ms": 21.13889999964158}
+{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784898586.9312015, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 0.821900000119058}
+{"sessionId": "extract-slow-performance", "event": "index.faiss.done", "ts": 1784898586.9361, "doc_name": "small", "ms": 6.436899999243906}
+{"sessionId": "extract-slow-performance", "event": "index.done", "ts": 1784898586.9413075, "file_path": "uploads\\small.txt", "doc_name": "small", "ms": 137.54659999995056, "docs": 1}
+{"sessionId": "extract-slow-performance", "event": "extract.indexing_done", "ts": 1784898586.9686458, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 165.48299999976734}
+{"sessionId": "extract-slow-performance", "event": "agent.start", "ts": 1784898586.9751892, "file_path": "uploads\\small.txt", "provider": "groq", "model": "llama-3.1-8b-instant"}
+{"sessionId": "extract-slow-performance", "event": "agent.routing.done", "ts": 1784898588.0078642, "file_path": "uploads\\small.txt", "ms": 1004.2143999999098, "active_cats": ["strategique", "financier"]}
+{"sessionId": "extract-slow-performance", "event": "agent.dynamic_queries.done", "ts": 1784898588.5755394, "file_path": "uploads\\small.txt", "ms": 561.1054000000877}
+{"sessionId": "extract-slow-performance", "event": "agent.llm.done", "ts": 1784898589.2932866, "ms": 713.903200000459}
+{"sessionId": "extract-slow-performance", "event": "embeddings.cache_hit", "ts": 1784898589.325427, "provider": "huggingface", "model": "all-MiniLM-L6-v2"}
+{"sessionId": "extract-slow-performance", "event": "agent.embeddings.done", "ts": 1784898589.3511949, "ms": 25.99220000047353}
+{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784898589.358936, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 0.8653000004414935}
+{"sessionId": "extract-slow-performance", "event": "agent.vectorstore.done", "ts": 1784898589.363696, "doc_name": "small", "ms": 6.472899999607762}
+{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784898591.145247, "category": "strategique", "questions": 5}
+{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784898591.896886, "category": "strategique", "ms": 751.6258000005109}
+{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784898591.921393, "category": "financier", "questions": 3}
+{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784898592.311507, "category": "financier", "ms": 390.1895999997578}
+{"sessionId": "extract-slow-performance", "event": "agent.validation.done", "ts": 1784898592.3181314, "ms": 0.25769999956537504}
+{"sessionId": "extract-slow-performance", "event": "agent.done", "ts": 1784898592.3241985, "file_path": "uploads\\small.txt", "ms": 5349.563000000671}
+{"sessionId": "extract-slow-performance", "event": "extract.approach_done", "ts": 1784898592.3539295, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 5378.98370000039, "approach": "agent"}
+{"sessionId": "extract-slow-performance", "event": "extract.persist_done", "ts": 1784898594.6271973, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 2243.717199999992}
+{"sessionId": "extract-slow-performance", "event": "extract.done", "ts": 1784898594.6543214, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 7874.641500000507}
