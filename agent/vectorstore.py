@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 from typing import Any, Dict, Optional
 
@@ -6,6 +7,9 @@ import yaml
 import requests
 
 _EMBEDDINGS_CACHE: Dict[Any, Any] = {}
+_EMBEDDINGS_LOCK = threading.Lock()
+_FAISS_LOCKS: Dict[str, threading.Lock] = {}
+_FAISS_LOCKS_LOCK = threading.Lock()
 
 #region debug-point extract-slow-performance
 def _dbg(event: str, **data: Any) -> None:
@@ -49,31 +53,51 @@ def get_embeddings(config: Dict[str, Any]):
             base_url,
             tuple(sorted((sync_client_kwargs or {}).items())),
         )
-        if cache_key in _EMBEDDINGS_CACHE:
+        cached = _EMBEDDINGS_CACHE.get(cache_key)
+        if cached is not None:
             _dbg("embeddings.cache_hit", provider="ollama", model=model)
-            return _EMBEDDINGS_CACHE[cache_key]
-        t0 = time.perf_counter()
-        embeddings = OllamaEmbeddings(
-            model=model,
-            base_url=base_url,
-            client_kwargs=sync_client_kwargs, # Nouvelle API Langchain-Ollama
-        )
-        _EMBEDDINGS_CACHE[cache_key] = embeddings
-        _dbg("embeddings.init", provider="ollama", model=model, ms=(time.perf_counter() - t0) * 1000.0)
-        return embeddings
+            return cached
+        with _EMBEDDINGS_LOCK:
+            cached = _EMBEDDINGS_CACHE.get(cache_key)
+            if cached is not None:
+                _dbg("embeddings.cache_hit", provider="ollama", model=model)
+                return cached
+            t0 = time.perf_counter()
+            embeddings = OllamaEmbeddings(
+                model=model,
+                base_url=base_url,
+                client_kwargs=sync_client_kwargs,
+            )
+            _EMBEDDINGS_CACHE[cache_key] = embeddings
+            _dbg("embeddings.init", provider="ollama", model=model, ms=(time.perf_counter() - t0) * 1000.0)
+            return embeddings
 
     if provider == "huggingface":
         from langchain_huggingface import HuggingFaceEmbeddings
         model = emb_cfg.get("model", "all-MiniLM-L6-v2")
         cache_key = ("huggingface", model)
-        if cache_key in _EMBEDDINGS_CACHE:
+        cached = _EMBEDDINGS_CACHE.get(cache_key)
+        if cached is not None:
             _dbg("embeddings.cache_hit", provider="huggingface", model=model)
-            return _EMBEDDINGS_CACHE[cache_key]
-        t0 = time.perf_counter()
-        embeddings = HuggingFaceEmbeddings(model_name=model)
-        _EMBEDDINGS_CACHE[cache_key] = embeddings
-        _dbg("embeddings.init", provider="huggingface", model=model, ms=(time.perf_counter() - t0) * 1000.0)
-        return embeddings
+            return cached
+        with _EMBEDDINGS_LOCK:
+            cached = _EMBEDDINGS_CACHE.get(cache_key)
+            if cached is not None:
+                _dbg("embeddings.cache_hit", provider="huggingface", model=model)
+                return cached
+            cache_folder = emb_cfg.get("cache_folder") or os.getenv("HF_HOME") or os.path.join("data", "hf_cache")
+            try:
+                os.makedirs(cache_folder, exist_ok=True)
+            except Exception:
+                cache_folder = None
+            t0 = time.perf_counter()
+            if cache_folder:
+                embeddings = HuggingFaceEmbeddings(model_name=model, cache_folder=cache_folder)
+            else:
+                embeddings = HuggingFaceEmbeddings(model_name=model)
+            _EMBEDDINGS_CACHE[cache_key] = embeddings
+            _dbg("embeddings.init", provider="huggingface", model=model, ms=(time.perf_counter() - t0) * 1000.0)
+            return embeddings
 
     raise ValueError(f"Embeddings provider non supporté: {provider}")
 
@@ -138,42 +162,44 @@ def get_or_create_faiss_vectorstore(
         
     cache_dir = os.path.join("data", "faiss_cache", safe_doc_name)
     os.makedirs(cache_dir, exist_ok=True)
-    
-    # Si déjà indexé -> charger depuis le disque (instantané)
-    if os.path.exists(os.path.join(cache_dir, "index.faiss")):
-        print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
+
+    with _FAISS_LOCKS_LOCK:
+        lock = _FAISS_LOCKS.get(safe_doc_name)
+        if lock is None:
+            lock = threading.Lock()
+            _FAISS_LOCKS[safe_doc_name] = lock
+
+    with lock:
+        if os.path.exists(os.path.join(cache_dir, "index.faiss")):
+            print(f"[CACHE] Vectorstore FAISS trouvé pour {doc_name}")
+            t0 = time.perf_counter()
+            vs = FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
+            _dbg("faiss.load_local", doc_name=doc_name, cache_dir=cache_dir, ms=(time.perf_counter() - t0) * 1000.0)
+            return vs
+
+        if not chunks:
+            print("[WARNING] Aucun document fourni et aucun cache trouvé.")
+            from langchain_core.documents import Document
+            dummy_doc = Document(page_content="empty", metadata={"source": "empty"})
+            t0 = time.perf_counter()
+            vectorstore = FAISS.from_documents([dummy_doc], embeddings)
+            _dbg("faiss.empty_created", doc_name=doc_name, ms=(time.perf_counter() - t0) * 1000.0)
+            return vectorstore
+
+        print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
+        _dbg("faiss.build_start", doc_name=doc_name, docs=len(chunks))
+
+        batch_size = 10
         t0 = time.perf_counter()
-        vs = FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
-        _dbg("faiss.load_local", doc_name=doc_name, cache_dir=cache_dir, ms=(time.perf_counter() - t0) * 1000.0)
-        return vs
-    
-    if not chunks:
-        print("[WARNING] Aucun document fourni et aucun cache trouvé.")
-        # Create an empty vectorstore with a dummy document to prevent errors
-        from langchain_core.documents import Document
-        dummy_doc = Document(page_content="empty", metadata={"source": "empty"})
-        t0 = time.perf_counter()
-        vectorstore = FAISS.from_documents([dummy_doc], embeddings)
-        _dbg("faiss.empty_created", doc_name=doc_name, ms=(time.perf_counter() - t0) * 1000.0)
+        vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
+
+        for start in range(batch_size, len(chunks), batch_size):
+            end = start + batch_size
+            print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
+            vectorstore.add_documents(chunks[start:end])
+
+        vectorstore.save_local(cache_dir)
+        print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
+        _dbg("faiss.build_done", doc_name=doc_name, docs=len(chunks), ms=(time.perf_counter() - t0) * 1000.0, cache_dir=cache_dir)
+
         return vectorstore
-        
-    # Sinon -> créer et sauvegarder en batchs pour éviter le timeout Ollama
-    print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
-    _dbg("faiss.build_start", doc_name=doc_name, docs=len(chunks))
-    
-    # On initialise le vectorstore avec le premier batch
-    batch_size = 10
-    t0 = time.perf_counter()
-    vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
-    
-    # On ajoute le reste par batchs
-    for start in range(batch_size, len(chunks), batch_size):
-        end = start + batch_size
-        print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
-        vectorstore.add_documents(chunks[start:end])
-        
-    vectorstore.save_local(cache_dir)
-    print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
-    _dbg("faiss.build_done", doc_name=doc_name, docs=len(chunks), ms=(time.perf_counter() - t0) * 1000.0, cache_dir=cache_dir)
-    
-    return vectorstore

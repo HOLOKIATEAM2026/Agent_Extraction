@@ -62,6 +62,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.on_event("startup")
+async def _warmup_embeddings() -> None:
+    enabled = str(os.getenv("RAG_WARMUP_EMBEDDINGS", "1")).strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled:
+        return
+    try:
+        from agent.vectorstore import load_config, get_embeddings
+
+        config_path = os.getenv("RAG_CONFIG_PATH") or "config.yaml"
+        cfg = load_config(config_path)
+        await asyncio.to_thread(get_embeddings, cfg)
+    except Exception:
+        return
+
 def get_current_user(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Token manquant ou invalide")
@@ -353,14 +367,14 @@ async def _process_extraction_job(
         
         orig_name = JOBS_STORE[job_id].get("filename", "")
         # Convertir en MD pour l'asynchrone aussi
-        stored_path = _process_document_to_md(stored_path, orig_name)
+        stored_path = await asyncio.to_thread(_process_document_to_md, stored_path, orig_name)
         
         pipeline: Dict[str, Any] = {"saved_file": stored_path}
         need_index = str(approach).lower().strip() not in {"a", "approach_a"}
         
         if need_index:
             try:
-                pipeline["indexing"] = _index_single_file(file_path=stored_path, config_path=config)
+                pipeline["indexing"] = await asyncio.to_thread(_index_single_file, file_path=stored_path, config_path=config)
             except Exception as e:
                 pipeline["indexing_error"] = str(e)
                 approach = "a"
@@ -475,16 +489,17 @@ async def extract_document(
             # Convertir en Markdown si c'est un PDF
             if orig_name.lower().endswith('.pdf'):
                 t_md0 = time.perf_counter()
-                if not os.path.exists(md_path):
+                cached_md = os.path.exists(md_path)
+                if not cached_md:
                     print(f"[INFO] Conversion de {orig_name} en Markdown...")
-                    md_content = pdf_to_markdown_with_tables(stored)
+                    md_content = await asyncio.to_thread(pdf_to_markdown_with_tables, stored)
                     with open(md_path, 'w', encoding='utf-8') as f:
                         f.write(md_content)
                 else:
                     print(f"[INFO] Fichier Markdown trouvé en cache pour {orig_name}")
                 # On utilise le Markdown pour la suite du pipeline
                 stored = md_path
-                _dbg("extract.pdf_to_md", runId=run_id, md_path=md_path, ms=(time.perf_counter() - t_md0) * 1000.0, cached=bool(os.path.exists(md_path)))
+                _dbg("extract.pdf_to_md", runId=run_id, md_path=md_path, ms=(time.perf_counter() - t_md0) * 1000.0, cached=bool(cached_md))
         except Exception as e:
             # Si la conversion échoue, on continue avec le fichier original
             print(f"Warning: Markdown conversion failed: {e}")
@@ -515,7 +530,7 @@ async def extract_document(
         if need_index:
             try:
                 t_idx0 = time.perf_counter()
-                pipeline["indexing"] = _index_single_file(file_path=stored, config_path=config)
+                pipeline["indexing"] = await asyncio.to_thread(_index_single_file, file_path=stored, config_path=config)
                 _dbg("extract.indexing_done", runId=run_id, ms=(time.perf_counter() - t_idx0) * 1000.0)
             except Exception as e:
                 pipeline["indexing_error"] = str(e)

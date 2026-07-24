@@ -32,7 +32,7 @@ async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 5):
 async def _process_single_question(question: str, vectorstore, llm, semaphore: asyncio.Semaphore = None):
     results = {}
     
-    retrieved_docs = vectorstore.similarity_search(question, k=50)
+    retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, question, k=50)
     
     docs_by_file = {}
     for doc in retrieved_docs:
@@ -145,7 +145,7 @@ async def run_multi_extraction(
     if not all_files:
         try:
             # Récupérer tous les fichiers depuis le vectorstore (via une recherche générique)
-            all_docs = vectorstore.similarity_search(" ", k=100)
+            all_docs = await asyncio.to_thread(vectorstore.similarity_search, " ", k=100)
             for doc in all_docs:
                 fname = doc.metadata.get("file_name")
                 if fname and fname != "dummy":

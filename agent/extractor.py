@@ -74,7 +74,7 @@ async def _process_single_field(q_info: Dict[str, str], vectorstore, llm, top_k:
     is_list = q_info["type"] == "list"
     
     # 1. Retrieval (Recherche vectorielle)
-    retrieved_docs = vectorstore.similarity_search(question, k=top_k)
+    retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, question, k=top_k)
         
     context_text = "\n\n".join(
         [f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc.page_content}" 
@@ -243,7 +243,13 @@ async def run_agent_extraction(
     from agent.vectorstore import get_or_create_faiss_vectorstore
     doc_name = os.path.basename(file_path).split('.')[0]
     t_vs0 = time.perf_counter()
-    vectorstore = get_or_create_faiss_vectorstore([], doc_name, embeddings=embeddings, config=config)
+    vectorstore = await asyncio.to_thread(
+        get_or_create_faiss_vectorstore,
+        [],
+        doc_name,
+        embeddings,
+        config,
+    )
     _dbg("agent.vectorstore.done", doc_name=doc_name, ms=(time.perf_counter() - t_vs0) * 1000.0)
     
     # Dictionnaire brut qui contiendra toutes les réponses
@@ -283,12 +289,12 @@ async def run_agent_extraction(
     
     # Création d'un sémaphore pour limiter le nombre de requêtes LLM simultanées
     # et éviter de saturer le Rate Limit de l'API (ex: Groq 6000 TPM)
-    default_limit = 2 if (provider or "").lower() in {"groq", "openai"} else 1
+    default_limit = 3 if (provider or "").lower() in {"groq", "openai"} else 1
     try:
         env_limit = int(os.getenv("AGENT_CONCURRENCY_LIMIT", "").strip() or default_limit)
     except Exception:
         env_limit = default_limit
-    concurrency_limit = max(1, min(4, env_limit))
+    concurrency_limit = max(1, min(6, env_limit))
     semaphore = asyncio.Semaphore(concurrency_limit)
     
     # Collecter toutes les tâches async pour les catégories actives
@@ -304,8 +310,7 @@ async def run_agent_extraction(
             print(f"  -> Catégorie ignorée : {cat_key} (génération de valeurs nulles)")
             raw_results[schema_key] = get_empty_category_result(cat_key)
     
-    # ✅ Exécuter toutes les catégories SÉQUENTIELLEMENT
-    for cat_key, schema_key in zip(active_cats_keys, category_keys):
+    async def _run_cat(cat_key: str, schema_key: str):
         t_cat0 = time.perf_counter()
         _dbg("agent.category.start", category=cat_key, questions=len(dynamic_queries.get(cat_key) or []))
         cat_data = await _extract_category_data(
@@ -315,8 +320,19 @@ async def run_agent_extraction(
             llm=llm,
             semaphore=semaphore
         )
-        raw_results[schema_key] = cat_data
         _dbg("agent.category.done", category=cat_key, ms=(time.perf_counter() - t_cat0) * 1000.0)
+        return schema_key, cat_data
+
+    tasks = [
+        asyncio.create_task(_run_cat(cat_key, schema_key))
+        for cat_key, schema_key in zip(active_cats_keys, category_keys)
+    ]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+    for res in results:
+        if isinstance(res, Exception):
+            continue
+        schema_key, cat_data = res
+        raw_results[schema_key] = cat_data
             
     # ÉTAPE 4 : Validation Pydantic
     print("[Agent] Étape 4: Validation Pydantic...")

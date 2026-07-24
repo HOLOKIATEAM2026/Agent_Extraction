@@ -1,5 +1,8 @@
 import os
+import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from agent.chunking import chunk_document
 from agent.indexing import chunks_to_langchain_docs
@@ -35,4 +38,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

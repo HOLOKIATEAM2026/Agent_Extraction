@@ -1,29 +1,29 @@
-{"sessionId": "extract-slow-performance", "event": "extract.start", "ts": 1784898586.780244, "runId": "511d13ee3daf41278078bab74d17bb0e", "filename": "small.txt", "provider": "groq", "model": "llama-3.1-8b-instant", "approach": "agent", "async_mode": false}
-{"sessionId": "extract-slow-performance", "event": "extract.file_saved", "ts": 1784898586.7977772, "runId": "511d13ee3daf41278078bab74d17bb0e", "stored": "uploads\\small.txt", "bytes": 81, "ms": 0.27490000047691865}
-{"sessionId": "extract-slow-performance", "event": "index.start", "ts": 1784898586.8033075, "file_path": "uploads\\small.txt"}
-{"sessionId": "extract-slow-performance", "event": "index.chunk.done", "ts": 1784898586.8296115, "file_path": "uploads\\small.txt", "ms": 2.8839000005973503, "chunks": 1}
-{"sessionId": "extract-slow-performance", "event": "index.docs.done", "ts": 1784898586.8591611, "file_path": "uploads\\small.txt", "ms": 0.18340000042371685, "docs": 1}
-{"sessionId": "extract-slow-performance", "event": "index.config.done", "ts": 1784898586.8977168, "ms": 3.866700000799028}
-{"sessionId": "extract-slow-performance", "event": "embeddings.cache_hit", "ts": 1784898586.9022605, "provider": "huggingface", "model": "all-MiniLM-L6-v2"}
-{"sessionId": "extract-slow-performance", "event": "index.embeddings.done", "ts": 1784898586.9241364, "ms": 21.13889999964158}
-{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784898586.9312015, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 0.821900000119058}
-{"sessionId": "extract-slow-performance", "event": "index.faiss.done", "ts": 1784898586.9361, "doc_name": "small", "ms": 6.436899999243906}
-{"sessionId": "extract-slow-performance", "event": "index.done", "ts": 1784898586.9413075, "file_path": "uploads\\small.txt", "doc_name": "small", "ms": 137.54659999995056, "docs": 1}
-{"sessionId": "extract-slow-performance", "event": "extract.indexing_done", "ts": 1784898586.9686458, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 165.48299999976734}
-{"sessionId": "extract-slow-performance", "event": "agent.start", "ts": 1784898586.9751892, "file_path": "uploads\\small.txt", "provider": "groq", "model": "llama-3.1-8b-instant"}
-{"sessionId": "extract-slow-performance", "event": "agent.routing.done", "ts": 1784898588.0078642, "file_path": "uploads\\small.txt", "ms": 1004.2143999999098, "active_cats": ["strategique", "financier"]}
-{"sessionId": "extract-slow-performance", "event": "agent.dynamic_queries.done", "ts": 1784898588.5755394, "file_path": "uploads\\small.txt", "ms": 561.1054000000877}
-{"sessionId": "extract-slow-performance", "event": "agent.llm.done", "ts": 1784898589.2932866, "ms": 713.903200000459}
-{"sessionId": "extract-slow-performance", "event": "embeddings.cache_hit", "ts": 1784898589.325427, "provider": "huggingface", "model": "all-MiniLM-L6-v2"}
-{"sessionId": "extract-slow-performance", "event": "agent.embeddings.done", "ts": 1784898589.3511949, "ms": 25.99220000047353}
-{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784898589.358936, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 0.8653000004414935}
-{"sessionId": "extract-slow-performance", "event": "agent.vectorstore.done", "ts": 1784898589.363696, "doc_name": "small", "ms": 6.472899999607762}
-{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784898591.145247, "category": "strategique", "questions": 5}
-{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784898591.896886, "category": "strategique", "ms": 751.6258000005109}
-{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784898591.921393, "category": "financier", "questions": 3}
-{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784898592.311507, "category": "financier", "ms": 390.1895999997578}
-{"sessionId": "extract-slow-performance", "event": "agent.validation.done", "ts": 1784898592.3181314, "ms": 0.25769999956537504}
-{"sessionId": "extract-slow-performance", "event": "agent.done", "ts": 1784898592.3241985, "file_path": "uploads\\small.txt", "ms": 5349.563000000671}
-{"sessionId": "extract-slow-performance", "event": "extract.approach_done", "ts": 1784898592.3539295, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 5378.98370000039, "approach": "agent"}
-{"sessionId": "extract-slow-performance", "event": "extract.persist_done", "ts": 1784898594.6271973, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 2243.717199999992}
-{"sessionId": "extract-slow-performance", "event": "extract.done", "ts": 1784898594.6543214, "runId": "511d13ee3daf41278078bab74d17bb0e", "ms": 7874.641500000507}
+{"sessionId": "extract-slow-performance", "event": "extract.start", "ts": 1784899785.324762, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "filename": "small.txt", "provider": "groq", "model": "llama-3.1-8b-instant", "approach": "agent", "async_mode": false}
+{"sessionId": "extract-slow-performance", "event": "extract.file_saved", "ts": 1784899785.3531697, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "stored": "uploads\\small.txt", "bytes": 81, "ms": 0.7034999998722924}
+{"sessionId": "extract-slow-performance", "event": "index.start", "ts": 1784899785.6385882, "file_path": "uploads\\small.txt"}
+{"sessionId": "extract-slow-performance", "event": "index.chunk.done", "ts": 1784899785.6637695, "file_path": "uploads\\small.txt", "ms": 3.6718999999720836, "chunks": 1}
+{"sessionId": "extract-slow-performance", "event": "index.docs.done", "ts": 1784899785.6683004, "file_path": "uploads\\small.txt", "ms": 0.16570000025240006, "docs": 1}
+{"sessionId": "extract-slow-performance", "event": "index.config.done", "ts": 1784899785.678414, "ms": 3.7933000003249617}
+{"sessionId": "extract-slow-performance", "event": "embeddings.init", "ts": 1784899809.2386372, "provider": "huggingface", "model": "all-MiniLM-L6-v2", "ms": 23315.293999999994}
+{"sessionId": "extract-slow-performance", "event": "index.embeddings.done", "ts": 1784899809.2599666, "ms": 23574.646900000516}
+{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784899809.457528, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 110.33550000047398}
+{"sessionId": "extract-slow-performance", "event": "index.faiss.done", "ts": 1784899809.477333, "doc_name": "small", "ms": 186.71579999954702}
+{"sessionId": "extract-slow-performance", "event": "index.done", "ts": 1784899809.5083709, "file_path": "uploads\\small.txt", "doc_name": "small", "ms": 23870.18270000044, "docs": 1}
+{"sessionId": "extract-slow-performance", "event": "extract.indexing_done", "ts": 1784899809.5402143, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "ms": 23900.878599999487}
+{"sessionId": "extract-slow-performance", "event": "agent.start", "ts": 1784899809.5560246, "file_path": "uploads\\small.txt", "provider": "groq", "model": "llama-3.1-8b-instant"}
+{"sessionId": "extract-slow-performance", "event": "agent.routing.done", "ts": 1784899812.0522861, "file_path": "uploads\\small.txt", "ms": 2464.4056999995883, "active_cats": ["strategique", "financier"]}
+{"sessionId": "extract-slow-performance", "event": "agent.dynamic_queries.done", "ts": 1784899813.0872097, "file_path": "uploads\\small.txt", "ms": 1005.3541999996014}
+{"sessionId": "extract-slow-performance", "event": "agent.llm.done", "ts": 1784899814.563229, "ms": 1450.2066999993986}
+{"sessionId": "extract-slow-performance", "event": "embeddings.cache_hit", "ts": 1784899814.5747614, "provider": "huggingface", "model": "all-MiniLM-L6-v2"}
+{"sessionId": "extract-slow-performance", "event": "agent.embeddings.done", "ts": 1784899814.5852504, "ms": 9.568599999511207}
+{"sessionId": "extract-slow-performance", "event": "faiss.load_local", "ts": 1784899814.5986018, "doc_name": "small", "cache_dir": "data\\faiss_cache\\small", "ms": 1.6562000000703847}
+{"sessionId": "extract-slow-performance", "event": "agent.vectorstore.done", "ts": 1784899814.607224, "doc_name": "small", "ms": 11.395300000003772}
+{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784899817.3507442, "category": "strategique", "questions": 5}
+{"sessionId": "extract-slow-performance", "event": "agent.category.start", "ts": 1784899817.3744566, "category": "financier", "questions": 3}
+{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784899818.2462926, "category": "strategique", "ms": 895.1466999997137}
+{"sessionId": "extract-slow-performance", "event": "agent.category.done", "ts": 1784899818.3851995, "category": "financier", "ms": 1011.3426000007166}
+{"sessionId": "extract-slow-performance", "event": "agent.validation.done", "ts": 1784899818.4126472, "ms": 0.2953000002889894}
+{"sessionId": "extract-slow-performance", "event": "agent.done", "ts": 1784899818.4423356, "file_path": "uploads\\small.txt", "ms": 8886.114300000372}
+{"sessionId": "extract-slow-performance", "event": "extract.approach_done", "ts": 1784899818.4478672, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "ms": 8892.828400000326, "approach": "agent"}
+{"sessionId": "extract-slow-performance", "event": "extract.persist_done", "ts": 1784899822.4222505, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "ms": 3949.8981000006097}
+{"sessionId": "extract-slow-performance", "event": "extract.done", "ts": 1784899822.4376948, "runId": "ab3dd549e066499c8483d6aca9e90fc3", "ms": 37113.09799999981}
