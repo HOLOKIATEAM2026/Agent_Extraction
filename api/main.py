@@ -352,7 +352,7 @@ async def _run_approach(
     }
 
 
-async def _process_extraction_job(
+async def _process_extraction_job_async(
     job_id: str,
     stored_path: str,
     provider: Optional[str],
@@ -412,6 +412,38 @@ async def _process_extraction_job(
         JOBS_STORE[job_id]["status"] = "failed"
         JOBS_STORE[job_id]["error"] = f"{type(e).__name__}: {str(e)}"
         JOBS_STORE[job_id]["completed_at"] = datetime.now().isoformat()
+
+def _process_extraction_job(
+    job_id: str,
+    stored_path: str,
+    provider: Optional[str],
+    model: Optional[str],
+    approach: str,
+    config: str,
+    user_id: Optional[str] = None,
+    token: Optional[str] = None,
+) -> None:
+    try:
+        asyncio.run(
+            _process_extraction_job_async(
+                job_id,
+                stored_path,
+                provider,
+                model,
+                approach,
+                config,
+                user_id,
+                token,
+            )
+        )
+    except Exception as e:
+        try:
+            traceback.print_exc()
+            JOBS_STORE[job_id]["status"] = "failed"
+            JOBS_STORE[job_id]["error"] = f"{type(e).__name__}: {str(e)}"
+            JOBS_STORE[job_id]["completed_at"] = datetime.now().isoformat()
+        except Exception:
+            return
 
 def _process_document_to_md(file_path: str, orig_name: str) -> str:
     """Convertit le document en Markdown et retourne le nouveau chemin."""
