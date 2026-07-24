@@ -849,7 +849,7 @@ async def chat_endpoint(
                         md_path = os.path.join(md_dir, safe_name.replace(".pdf", ".md"))
                         
                         if not os.path.exists(md_path):
-                            md_content = pdf_to_markdown_with_tables(file_path)
+                            md_content = await asyncio.to_thread(pdf_to_markdown_with_tables, file_path)
                             with open(md_path, 'w', encoding='utf-8') as f:
                                 f.write(md_content)
                         file_path_to_chunk = md_path
@@ -861,7 +861,7 @@ async def chat_endpoint(
                 file_names.append(file.filename)
                 
                 # Chunking
-                chunks = chunk_document(file_path_to_chunk, max_chars=2500, overlap_chars=250)
+                chunks = await asyncio.to_thread(chunk_document, file_path_to_chunk, max_chars=2500, overlap_chars=250)
                 for c in chunks:
                     c["file_name"] = file.filename
                 all_chunks.extend(chunks)
@@ -884,9 +884,9 @@ async def chat_endpoint(
             
         lc_docs = []
         if files:
-            lc_docs, _ = chunks_to_langchain_docs(all_chunks)
+            lc_docs, _ = await asyncio.to_thread(chunks_to_langchain_docs, all_chunks)
             
-        from agent.vectorstore import get_or_create_faiss_vectorstore
+        from agent.vectorstore import get_or_create_faiss_vectorstore, load_config, get_embeddings
         
         # Pour le chat multi-fichiers, on utilise une clé de cache combinée
         doc_name = "chat_" + "_".join(sorted([os.path.splitext(n)[0] for n in file_names]))
@@ -901,17 +901,26 @@ async def chat_endpoint(
                     "error": "Les fichiers de cette session ne sont plus sur le serveur (cache expiré). Veuillez créer un nouveau chat et ré-uploader les documents."
                 })
 
-        vectorstore = get_or_create_faiss_vectorstore(lc_docs, doc_name)
+        config_obj = load_config()
+        embeddings = get_embeddings(config_obj)
+        vectorstore = await asyncio.to_thread(
+            get_or_create_faiss_vectorstore,
+            lc_docs,
+            doc_name,
+            embeddings,
+            config_obj,
+        )
         
         # 3. Réponse du LLM (Chat)
         from agent.chat_extractor import run_chat_rag
         
-        result = run_chat_rag(
-            vectorstore=vectorstore,
-            message=message,
-            history=history_list,
-            provider=provider,
-            model=model
+        result = await asyncio.to_thread(
+            run_chat_rag,
+            vectorstore,
+            message,
+            history_list,
+            provider,
+            model,
         )
         
         return {

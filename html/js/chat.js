@@ -300,10 +300,17 @@ async function sendMessage() {
         formData.append('cached_files', JSON.stringify(fileNames));
     }
 
-    const res = await Auth.apiFetch(`${API_URL}/chat`, {
+    let res = await Auth.apiFetch(`${API_URL}/chat`, {
       method: 'POST',
       body: formData
     });
+    if (!res.ok && (res.status === 502 || res.status === 503 || res.status === 504)) {
+      await new Promise(r => setTimeout(r, 1800));
+      res = await Auth.apiFetch(`${API_URL}/chat`, {
+        method: 'POST',
+        body: formData
+      });
+    }
 
     typing.remove();
 
@@ -322,11 +329,11 @@ async function sendMessage() {
 
   } catch (err) {
     typing.remove();
-    const demo = state.files.length > 0
-      ? `J'ai analysé vos ${state.files.length} document(s) via le pipeline RAG. Voici ce que j'ai trouvé concernant votre question : "${text}"\n\nRéponse simulée — connectez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`
+    const details = (err && err.message) ? String(err.message) : String(err || "");
+    const msg = state.files.length > 0
+      ? `Je n’arrive pas à obtenir une réponse du backend.\n\nDétails: ${details}\n\nVérifiez que l’API est en ligne et réessayez.`
       : `Aucun document chargé. Uploadez un rapport d'activité dans la sidebar pour que je puisse analyser son contenu et répondre à : "${text}"`;
-
-    addMessage('assistant', demo, state.files.length > 0 ? [{ fichier: state.files[0]?.name, page: 1 }] : [], state.files.length > 0 ? 0.78 : null);
+    addMessage('assistant', msg, [], null);
   }
 
   state.isLoading = false;

@@ -24,9 +24,58 @@ def run_chat_rag(
     # 1. Reformuler la question avec l'historique (optionnel mais recommandé)
     # Pour simplifier et économiser les tokens, on va injecter l'historique dans le prompt final.
     
-    # 2. Recherche des documents pertinents
+    def _expand_query(q: str) -> List[str]:
+        base = (q or "").strip()
+        if not base:
+            return []
+        low = base.lower()
+        expanded: List[str] = [base]
+
+        if "chiffre" in low and ("affaire" in low or "affaires" in low or "ca" in low):
+            expanded.append(base + " (chiffre d'affaires CA revenu revenus ventes)")
+        if "effectif" in low or "employ" in low or "salari" in low:
+            expanded.append(base + " (effectif employés salariés headcount)")
+        if "résultat" in low or "resultat" in low or "bénéfice" in low or "benefice" in low:
+            expanded.append(base + " (résultat net bénéfice profit)")
+
+        uniq: List[str] = []
+        seen = set()
+        for x in expanded:
+            if x not in seen:
+                uniq.append(x)
+                seen.add(x)
+        return uniq[:3]
+
+    def _doc_key(d) -> str:
+        try:
+            return (
+                str(d.metadata.get("file_name") or "")
+                + "|"
+                + str(d.metadata.get("page") or d.metadata.get("pages") or "")
+                + "|"
+                + str(hash(d.page_content or ""))
+            )
+        except Exception:
+            return str(id(d))
+
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
-    docs = retriever.invoke(message)
+    docs: List[Any] = []
+    seen_docs = set()
+    for q in _expand_query(message):
+        try:
+            cur = retriever.invoke(q)
+        except Exception:
+            continue
+        for d in cur or []:
+            k = _doc_key(d)
+            if k in seen_docs:
+                continue
+            docs.append(d)
+            seen_docs.add(k)
+            if len(docs) >= 8:
+                break
+        if len(docs) >= 8:
+            break
     
     # Extraire les citations
     citations = []
