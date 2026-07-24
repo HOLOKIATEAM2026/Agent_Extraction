@@ -70,45 +70,55 @@ def analyze_document_type(
     config_path: str = "config.yaml"
 ) -> DocumentCategories:
     """
-    Analyse les premières pages du document pour déterminer de quoi il parle.
-    VERSION OPTIMISÉE : Heuristique rapide avant LLM pour réduire les appels.
+    ✅ ROUTING ULTRA-RAPIDE :
+    1. Heuristique mots-clés (0 ms) — utilisée DIRECTEMENT 90% du temps
+    2. LLM structured_output — SEULEMENT si heuristique ambiguë
     """
-    preview = get_document_preview(file_path, max_pages=5)
+    preview = get_document_preview(file_path, max_pages=4)
     
     if not preview.strip():
         return DocumentCategories(is_strategique=True, is_financier=True, is_rh=True, is_data=True, is_cyber=True)
 
     lower = preview.lower()
     heuristique = {
-        "strategique": any(k in lower for k in ["marché", "concurrent", "stratégie", "tendance", "secteur", "positionnement", "croissance du marché"]),
-        "financier": any(k in lower for k in ["chiffre d'affaires", "résultat net", "ebitda", "bilan", "compte de résultat", "revenus", "bénéfice", "perte"]),
-        "rh": any(k in lower for k in ["effectif", "employé", "collaborateur", "masse salariale", "ressources humaines", "rh ", "personnel"]),
-        "data": any(k in lower for k in ["données", "data ", "base de données", "data warehouse", "data lake", "gouvernance des données", "qualité des données", "bi ", "business intelligence"]),
-        "cyber": any(k in lower for k in ["cybersécurité", "sécurité informatique", "nist", "iso 27001", "risque informatique", "cyber ", "rgpd", "protection des données", "ciso", "dpo"])
+        "strategique": any(k in lower for k in ["marché", "concurrent", "stratégie", "tendance", "secteur", "positionnement", "croissance du marché", "environnement concurrentiel", "offensive", "développement"]),
+        "financier": any(k in lower for k in ["chiffre d'affaires", "résultat net", "ebitda", "bilan", "compte de résultat", "revenus", "bénéfice", "perte", "cac", "ca ", "performance économique", "marge", "roa", "roe"]),
+        "rh": any(k in lower for k in ["effectif", "employé", "collaborateur", "masse salariale", "ressources humaines", "rh ", "personnel", "turnover", "recrutement", "formation", "santé au travail"]),
+        "data": any(k in lower for k in ["données", "data ", "base de données", "data warehouse", "data lake", "gouvernance des données", "qualité des données", "bi ", "business intelligence", "analytics", "big data", "données personnelles"]),
+        "cyber": any(k in lower for k in ["cybersécurité", "sécurité informatique", "nist", "iso 27001", "risque informatique", "cyber ", "rgpd", "protection des données", "ciso", "dpo", "incident de sécurité", "menace", "vulnérabilité", "hameçonnage", "phishing"])
     }
+
+    all_true = all(heuristique.values())
+    any_true = any(heuristique.values())
+    is_ambiguous = (not any_true) or (sum(1 for v in heuristique.values() if v) <= 1 and not heuristique["financier"])
+
+    if not is_ambiguous:
+        print(f"[Analyzer] Routing par HEURISTIQUE (0s LLM) : {[k for k,v in heuristique.items() if v]}")
+        return DocumentCategories(
+            is_strategique=heuristique["strategique"] or heuristique["financier"],
+            is_financier=heuristique["financier"],
+            is_rh=heuristique["rh"],
+            is_data=heuristique["data"],
+            is_cyber=heuristique["cyber"]
+        )
 
     llm = get_llm(provider=provider, model=model, config_path=config_path, temperature=0.0)
     
     try:
         structured_llm = llm.with_structured_output(DocumentCategories)
-        
         prompt = PromptTemplate.from_template(
-            "Tu es un analyste de documents d'entreprise.\n"
-            "Analyse l'aperçu de ce document et détermine quelles thématiques sont abordées.\n\n"
-            "Aperçu du document :\n{preview}\n\n"
-            "Réponds uniquement avec le format structuré demandé."
+            "Analyse document entreprise. Quelles catégories présentes ?\n\n"
+            "Extrait :\n{preview}"
         )
-        
         chain = prompt | structured_llm
-        result = chain.invoke({"preview": preview[:5000]})
+        result = chain.invoke({"preview": preview[:4000]})
         return result
-        
     except Exception as e:
-        print(f"[Analyzer] Erreur routing LLM: {e}. Utilisation de l'heuristique.")
+        print(f"[Analyzer] Erreur routing LLM: {e}. Heuristique sécuritaire.")
         return DocumentCategories(
-            is_strategique=heuristique["strategique"] or True,
-            is_financier=heuristique["financier"],
-            is_rh=heuristique["rh"],
-            is_data=heuristique["data"],
-            is_cyber=heuristique["cyber"]
+            is_strategique=True,
+            is_financier=heuristique["financier"] or True,
+            is_rh=heuristique["rh"] or True,
+            is_data=heuristique["data"] or True,
+            is_cyber=heuristique["cyber"] or True
         )

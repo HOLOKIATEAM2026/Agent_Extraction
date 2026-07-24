@@ -175,10 +175,10 @@ async def _extract_category_data_batched(
     semaphore: asyncio.Semaphore = None
 ) -> Dict[str, Any]:
     """
-    ✅ VERSION OPTIMISÉE : 1 SEUL APPEL LLM PAR CATÉGORIE (au lieu de 1 par champ)
-    Toutes les questions d'une catégorie sont envoyées EN MÊME TEMPS au LLM,
-    qui répond avec un JSON structuré contenant TOUTES les valeurs.
-    Divise par ~4 à ~7 le temps d'exécution de cette étape.
+    ✅ VERSION ULTRA-RAPIDE : 1 SEUL APPEL LLM PAR CATÉGORIE
+    - Prompt réduit de ~60% (moins de tokens = réponse plus vite)
+    - 1 seule recherche vectorielle globale (plus N retrievals par champ)
+    - Parsing JSON ultra-tolérant
     """
     import json
     category_results = {}
@@ -194,23 +194,12 @@ async def _extract_category_data_batched(
             "type": q_info["type"]
         })
     
-    all_queries_text = " ".join(q["question"] for q in questions)
-    retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, all_queries_text, k=3)
-    
-    all_per_field_docs = []
-    retrieval_task = [
-        asyncio.create_task(asyncio.to_thread(vectorstore.similarity_search, q_info["question"], k=1))
-        for q_info in questions
-    ]
-    per_field_results = await asyncio.gather(*retrieval_task, return_exceptions=True)
-    for r in per_field_results:
-        if isinstance(r, list):
-            all_per_field_docs.extend(r)
+    all_queries_text = ". ".join(q["question"] for q in questions)
+    retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, all_queries_text, k=5)
 
-    combined_docs = retrieved_docs + all_per_field_docs
     seen_contents = set()
     unique_docs = []
-    for d in combined_docs:
+    for d in retrieved_docs:
         content = d.page_content[:100]
         if content not in seen_contents:
             seen_contents.add(content)
@@ -218,85 +207,39 @@ async def _extract_category_data_batched(
     
     context_parts = []
     total_chars = 0
-    for i, doc in enumerate(unique_docs[:8]):
+    for i, doc in enumerate(unique_docs[:5]):
         doc_text = doc.page_content
-        if total_chars + len(doc_text) > 3500:
-            remaining = max(0, 3500 - total_chars)
-            if remaining > 100:
-                context_parts.append(f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc_text[:remaining]}\n...[Tronqué]")
+        if total_chars + len(doc_text) > 2800:
+            remaining = max(0, 2800 - total_chars)
+            if remaining > 80:
+                context_parts.append(f"[Ex{i+1} P{get_page(doc)}] {doc_text[:remaining]}")
             break
-        context_parts.append(f"--- Extrait {i+1} (Page {get_page(doc)}) ---\n{doc_text}")
+        context_parts.append(f"[Ex{i+1} P{get_page(doc)}] {doc_text}")
         total_chars += len(doc_text)
-    context_text = "\n\n".join(context_parts)
+    context_text = "\n".join(context_parts)
 
-    fields_json_schema = {}
-    for fi in fields_info:
-        if fi["type"] == "list":
-            fields_json_schema[fi["champ"]] = {
-                "type": "object",
-                "properties": {
-                    "valeur": {"type": "array", "items": {"type": "string"}, "description": "Liste des valeurs trouvées, tableau vide si non trouvé"},
-                    "page": {"type": ["integer", "null"], "description": "Numéro de page source, null si non trouvé"},
-                    "extrait": {"type": ["string", "null"], "description": "Extrait source court, null si non trouvé"}
-                },
-                "required": ["valeur", "page", "extrait"]
-            }
-        else:
-            fields_json_schema[fi["champ"]] = {
-                "type": "object",
-                "properties": {
-                    "valeur": {"type": ["string", "null"], "description": "Valeur trouvée, null si NON_TROUVE"},
-                    "page": {"type": ["integer", "null"], "description": "Numéro de page source, null si non trouvé"},
-                    "extrait": {"type": ["string", "null"], "description": "Extrait source court (≤ 200 chars), null si non trouvé"}
-                },
-                "required": ["valeur", "page", "extrait"]
-            }
-
-    questions_list_str = "\n".join(
-        f"- [{fi['champ']}] (type: {fi['type']}) {fi['question']}"
+    questions_list_str = " | ".join(
+        f"{fi['champ']}/{fi['type']}:{fi['question']}"
         for fi in fields_info
     )
 
-    prompt_str = f"""Tu es un expert en extraction d'informations de documents d'entreprise.
+    champs_fmt = ",".join(sorted(set(fi["champ"] for fi in fields_info)))
 
-OBJECTIF : Répondre à TOUTES les questions suivantes EN MÊME TEMPS à partir du contexte fourni.
-RÈGLE ABSOLUE : Si une information n'est PAS explicitement dans le contexte, tu DOIS mettre valeur = null ET page = null ET extrait = null. NE DEVINE JAMAIS RIEN.
-
-LISTE DES QUESTIONS :
-{questions_list_str}
-
-CONTEXTE (extraits du document) :
-{context_text}
-
-FORMAT DE RÉPONSE OBLIGATOIRE :
-Tu DOIS répondre UNIQUEMENT avec un objet JSON valide, sans phrase d'introduction ni conclusion.
-Le JSON doit avoir pour clé le NOM DU CHAMP (ex: "chiffre_affaires"), et pour valeur un objet :
-{{
-  "nom_du_champ_1": {{
-    "valeur": "la valeur trouvée OU null si absente",
-    "page": 12 OU null,
-    "extrait": "extrait du contexte qui prouve la réponse (max 200 caractères) OU null"
-  }},
-  "nom_du_champ_2": {{
-    "valeur": ["item1", "item2"] OU [] si liste vide / non trouvé,
-    "page": 5 OU null,
-    "extrait": "..." OU null
-  }}
-}}
-
-Autres règles :
-- Pour un champ de type "field" : "valeur" est une string ou null
-- Pour un champ de type "list"  : "valeur" est un tableau (array) de strings, ou [] si rien n'est trouvé
-- Le numéro de page DOIT être un entier, ou null si on ne sait pas
-- L'extrait DOIT être une portion exacte du contexte qui contient l'information
-- RÉPONSE UNIQUE : JSON VALIDE, RIEN D'AUTRE. Ne pas encadrer de ```json...```."""
+    prompt_str = (
+        "Réponds en JSON UNIQUEMENT. Clés : valeur,page,extrait par champ.\n"
+        f"Champs: {champs_fmt}\n"
+        f"Questions: {questions_list_str}\n"
+        f"Contexte:\n{context_text}\n"
+        "Règles: Si absent→valeur:null/page:null/extrait:null. list→[] sinon string. "
+        "JSON STRICT. Pas de ```. Pas de texte."
+    )
 
     try:
         if semaphore:
             async with semaphore:
-                response = await _safe_ainvoke(llm, prompt_str, max_retries=2)
+                response = await _safe_ainvoke(llm, prompt_str, max_retries=1)
         else:
-            response = await _safe_ainvoke(llm, prompt_str, max_retries=2)
+            response = await _safe_ainvoke(llm, prompt_str, max_retries=1)
 
         raw_text = response.content.strip()
         json_str = raw_text
@@ -316,21 +259,73 @@ Autres règles :
             start = json_str.find("{")
             end = json_str.rfind("}")
             if start != -1 and end != -1 and end > start:
-                json_str = json_str[start:end+1]
-                parsed = json.loads(json_str)
+                try:
+                    json_str = json_str[start:end+1]
+                    parsed = json.loads(json_str)
+                except Exception:
+                    try:
+                        fixed = json_str.replace("\n", "").replace("\r", "").replace("\t", "")
+                        import re
+                        fixed = re.sub(r',\s*}', '}', fixed)
+                        fixed = re.sub(r',\s*]', ']', fixed)
+                        parsed = json.loads(fixed)
+                    except Exception:
+                        raise ValueError(f"JSON invalide catégorie {category_name}")
             else:
-                raise ValueError(f"Impossible de parser la réponse JSON du LLM pour la catégorie {category_name}")
+                raise ValueError(f"Pas de JSON pour {category_name}")
+
+        if not isinstance(parsed, dict):
+            raise ValueError("Racine JSON invalide")
+
+        page_num_by_content = {}
+        for d in unique_docs:
+            pnum = None
+            try:
+                pg = get_page(d)
+                if pg and pg.isdigit():
+                    pnum = int(pg)
+            except Exception:
+                pass
+            key = d.page_content[:80]
+            page_num_by_content[key] = (d.page_content, pnum)
 
         for fi in fields_info:
             champ = fi["champ"]
             is_list = fi["type"] == "list"
             entry = parsed.get(champ)
 
-            if not isinstance(entry, dict):
+            if entry is None:
                 if is_list:
                     category_results[champ] = {"valeur": [], "source": None, "confiance": 0.0}
                 else:
                     category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
+                continue
+
+            if not isinstance(entry, dict):
+                v = entry
+                if is_list:
+                    if isinstance(v, list):
+                        clean = [str(x).strip() for x in v if x is not None and str(x).strip()]
+                        category_results[champ] = {"valeur": clean, "source": None, "confiance": 0.8 if clean else 0.0}
+                    else:
+                        category_results[champ] = {"valeur": [], "source": None, "confiance": 0.0}
+                else:
+                    sv = None if v is None else str(v)
+                    nv = None
+                    if isinstance(sv, str):
+                        sstrip = sv.strip()
+                        if sstrip == "" or "NON_TROUVE" in sstrip.upper():
+                            sv = None
+                            nv = None
+                        elif sstrip.startswith("[P") and "] " in sstrip:
+                            try:
+                                ps = sstrip[2:].split("] ",1)[0]
+                                if ps.isdigit():
+                                    nv = int(ps)
+                                    sv = sstrip.split("] ",1)[1]
+                            except Exception:
+                                pass
+                    category_results[champ] = {"valeur": sv, "source": None, "confiance": 0.8 if sv else 0.0}
                 continue
 
             raw_valeur = entry.get("valeur")
@@ -340,15 +335,33 @@ Autres règles :
             page_num = None
             if isinstance(raw_page, int):
                 page_num = raw_page
-            elif isinstance(raw_page, str) and raw_page.isdigit():
-                page_num = int(raw_page)
+            elif isinstance(raw_page, str) and raw_page.strip().isdigit():
+                page_num = int(raw_page.strip())
+
+            extrait_stored = None
+            if isinstance(raw_extrait, str) and raw_extrait.strip():
+                extrait_stored = raw_extrait[:200] + ("..." if len(raw_extrait) > 200 else "")
+            elif page_num is None and isinstance(raw_valeur, str):
+                match_content = None
+                best_content, best_p = None, None
+                rv_lower = raw_valeur.lower()[:40]
+                for ck, (c_text, c_pnum) in page_num_by_content.items():
+                    if rv_lower and rv_lower in c_text.lower():
+                        best_content, best_p = c_text, c_pnum
+                        break
+                    if match_content is None and ck:
+                        match_content = c_text
+                if best_content:
+                    extrait_stored = best_content[:200] + "..."
+                    if best_p and page_num is None:
+                        page_num = best_p
 
             source_obj = None
-            if page_num is not None or (isinstance(raw_extrait, str) and raw_extrait.strip()):
+            if page_num is not None or extrait_stored:
                 source_obj = {
                     "page": page_num,
                     "section": None,
-                    "extrait": (str(raw_extrait)[:200] + "...") if isinstance(raw_extrait, str) and len(raw_extrait) > 200 else raw_extrait if raw_extrait else None
+                    "extrait": extrait_stored
                 }
 
             if is_list:
@@ -356,7 +369,7 @@ Autres règles :
                     clean_list = [str(v).strip() for v in raw_valeur if v is not None and str(v).strip()]
                     category_results[champ] = {"valeur": clean_list, "source": source_obj, "confiance": 0.85 if clean_list else 0.0}
                 else:
-                    category_results[champ] = {"valeur": [], "source": source_obj if raw_valeur else None, "confiance": 0.0}
+                    category_results[champ] = {"valeur": [], "source": None, "confiance": 0.0}
             else:
                 if raw_valeur is None or (isinstance(raw_valeur, str) and (raw_valeur.strip() == "" or "NON_TROUVE" in raw_valeur.upper())):
                     category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
@@ -373,7 +386,7 @@ Autres règles :
         return category_results
 
     except Exception as e:
-        print(f"[BATCH] Catégorie {category_name} : échec du mode batch ({e}), fallback vers mode séquentiel.")
+        print(f"[BATCH] {category_name}: fallback ({e})")
         tasks = [
             asyncio.create_task(_process_single_field(q_info, vectorstore, llm, 1, semaphore))
             for q_info in questions

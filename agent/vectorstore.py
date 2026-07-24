@@ -10,6 +10,9 @@ _EMBEDDINGS_CACHE: Dict[Any, Any] = {}
 _EMBEDDINGS_LOCK = threading.Lock()
 _FAISS_LOCKS: Dict[str, threading.Lock] = {}
 _FAISS_LOCKS_LOCK = threading.Lock()
+_FAISS_RAM_CACHE: Dict[str, Any] = {}
+_FAISS_RAM_CACHE_MAX: int = 10
+_FAISS_RAM_LOCK = threading.Lock()
 
 #region debug-point extract-slow-performance
 def _dbg(event: str, **data: Any) -> None:
@@ -146,12 +149,13 @@ def get_or_create_faiss_vectorstore(
     config: Optional[Dict[str, Any]] = None
 ):
     """
-    Crée un vectorstore FAISS ou le charge depuis le cache s'il existe déjà.
+    ✅ VERSION OPTIMISÉE : Double cache (DISQUE + RAM)
+    - Cache DISQUE (FAISS save_local) — persistant
+    - Cache RAM (dict global)  — évite relecture disque + deserialization pickles
     """
     from langchain_community.vectorstores import FAISS
     import os
     
-    # Remplacer les caractères spéciaux dans doc_name pour éviter des problèmes de chemin
     safe_doc_name = "".join([c if c.isalnum() else "_" for c in doc_name])
     
     if config is None:
@@ -162,6 +166,11 @@ def get_or_create_faiss_vectorstore(
         
     cache_dir = os.path.join("data", "faiss_cache", safe_doc_name)
     os.makedirs(cache_dir, exist_ok=True)
+
+    with _FAISS_RAM_LOCK:
+        if safe_doc_name in _FAISS_RAM_CACHE:
+            _dbg("faiss.ram_cache_hit", doc_name=doc_name)
+            return _FAISS_RAM_CACHE[safe_doc_name]
 
     with _FAISS_LOCKS_LOCK:
         lock = _FAISS_LOCKS.get(safe_doc_name)
@@ -175,6 +184,10 @@ def get_or_create_faiss_vectorstore(
             t0 = time.perf_counter()
             vs = FAISS.load_local(cache_dir, embeddings, allow_dangerous_deserialization=True)
             _dbg("faiss.load_local", doc_name=doc_name, cache_dir=cache_dir, ms=(time.perf_counter() - t0) * 1000.0)
+            with _FAISS_RAM_LOCK:
+                _FAISS_RAM_CACHE[safe_doc_name] = vs
+                while len(_FAISS_RAM_CACHE) > _FAISS_RAM_CACHE_MAX:
+                    _FAISS_RAM_CACHE.pop(next(iter(_FAISS_RAM_CACHE)))
             return vs
 
         if not chunks:
@@ -184,22 +197,30 @@ def get_or_create_faiss_vectorstore(
             t0 = time.perf_counter()
             vectorstore = FAISS.from_documents([dummy_doc], embeddings)
             _dbg("faiss.empty_created", doc_name=doc_name, ms=(time.perf_counter() - t0) * 1000.0)
+            with _FAISS_RAM_LOCK:
+                _FAISS_RAM_CACHE[safe_doc_name] = vectorstore
+                while len(_FAISS_RAM_CACHE) > _FAISS_RAM_CACHE_MAX:
+                    _FAISS_RAM_CACHE.pop(next(iter(_FAISS_RAM_CACHE)))
             return vectorstore
 
         print(f"[INFO] Création du vectorstore FAISS pour {doc_name} (en batchs)...")
         _dbg("faiss.build_start", doc_name=doc_name, docs=len(chunks))
 
-        batch_size = 10
+        batch_size = 32
         t0 = time.perf_counter()
         vectorstore = FAISS.from_documents(chunks[:batch_size], embeddings)
 
         for start in range(batch_size, len(chunks), batch_size):
             end = start + batch_size
-            print(f"[INFO] FAISS : embedding batch {start}:{min(end, len(chunks))}/{len(chunks)}")
             vectorstore.add_documents(chunks[start:end])
 
         vectorstore.save_local(cache_dir)
         print(f"[CACHE] Vectorstore FAISS sauvegardé pour {doc_name}")
         _dbg("faiss.build_done", doc_name=doc_name, docs=len(chunks), ms=(time.perf_counter() - t0) * 1000.0, cache_dir=cache_dir)
+
+        with _FAISS_RAM_LOCK:
+            _FAISS_RAM_CACHE[safe_doc_name] = vectorstore
+            while len(_FAISS_RAM_CACHE) > _FAISS_RAM_CACHE_MAX:
+                _FAISS_RAM_CACHE.pop(next(iter(_FAISS_RAM_CACHE)))
 
         return vectorstore
