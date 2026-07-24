@@ -186,10 +186,8 @@ async def _extract_category_data_batched(
     semaphore: asyncio.Semaphore = None
 ) -> Dict[str, Any]:
     """
-    ⚡ FORMAT JSON MINIMAL = {champ: valeur_seule}
-    - Page + extrait DÉDUITS EN PYTHON (0 tokens) par matching de texte
-    - Divise par 2-3 les tokens
-    - Beaucoup moins d'erreurs JSON (plus simple)
+    ✅ QUALITÉ + VITESSE : Prompt CLAIR avec EXEMPLE, JSON strictement limité aux champs attendus.
+    Nettoyage post-parsing : suppression des clés non attendues (garantie : plus de "list"/"dérivé"/"string")
     """
     import json
     import re as _re
@@ -206,6 +204,11 @@ async def _extract_category_data_batched(
             "type": q_info["type"]
         })
     
+    expected_keys = sorted(set(fi["champ"] for fi in fields_info))
+    list_keys = sorted(set(fi["champ"] for fi in fields_info if fi["type"] == "list"))
+    scalar_keys = sorted(set(fi["champ"] for fi in fields_info if fi["type"] != "list"))
+    expected_keys_set = set(expected_keys)
+
     all_queries_text = ". ".join(q["question"] for q in questions)
     retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, all_queries_text, k=5)
 
@@ -239,19 +242,47 @@ async def _extract_category_data_batched(
         total_chars += len(doc_text)
     context_text = " ".join(context_parts)
 
-    champs_fmt = ",".join(sorted(set(fi["champ"] for fi in fields_info)))
-    list_champs = ",".join(sorted(set(fi["champ"] for fi in fields_info if fi["type"] == "list"))) or "-"
-    field_questions = " ".join(
-        f"[{fi['champ']}] {fi['question']}" for fi in fields_info
+    questions_lines = "\n".join(
+        f"- [{fi['champ']}] type={'LISTE' if fi['type']=='list' else 'TEXTE'} : {fi['question']}"
+        for fi in fields_info
+    )
+
+    exemple_keys = expected_keys[:3] or expected_keys
+    exemple_vals = {}
+    for ek in exemple_keys:
+        if ek in list_keys:
+            exemple_vals[ek] = ["exemple A", "exemple B"]
+        elif ek in scalar_keys:
+            exemple_vals[ek] = "exemple valeur texte ou null"
+    exemple_str = json.dumps(exemple_vals, ensure_ascii=False)
+
+    list_reminder = (
+        f"LISTE (valeur = [] ou [\"x\",\"y\"]): {', '.join(list_keys)}" if list_keys else "LISTE: (aucun)"
+    )
+    scalar_reminder = (
+        f"TEXTE (valeur = \"...\" ou null): {', '.join(scalar_keys)}" if scalar_keys else "TEXTE: (aucun)"
     )
 
     prompt_str = (
-        f"JSON. Clés: {champs_fmt}. "
-        f"Listes(array): {list_champs}. "
-        f"Règles: absent=null, list=[], dérivé=null, string. "
-        f"Q: {field_questions} "
-        f"DOC: {context_text} "
-        "REPONSE JSON:"
+        "Tu extrais des informations d'un document. REPONSE UNIQUE = OBJECT JSON VALIDE.\n"
+        f"CLÉS JSON AUTORISÉES (OBLIGATOIRE d'utiliser UNIQUEMENT ces noms): {', '.join(expected_keys)}\n"
+        f"{scalar_reminder}\n"
+        f"{list_reminder}\n"
+        "\n"
+        "RÈGLES:\n"
+        "- Info ABSENTE du document → valeur = null (pour TEXTE) ou [] (pour LISTE)\n"
+        "- Ne JAMAIS inventer, ne JAMAIS déduire si ce n'est pas écrit\n"
+        "- Ne PAS ajouter de clés. Ne PAS utiliser \"total\", \"list\", \"dérivé\", \"string\", \"début\", \"durée\" comme clés\n"
+        "\n"
+        "QUESTIONS:\n"
+        f"{questions_lines}\n"
+        "\n"
+        f"EXEMPLE FORMAT ATTENDU: {exemple_str}\n"
+        "\n"
+        "DOCUMENT (extraits):\n"
+        f"{context_text}\n"
+        "\n"
+        "JSON FINAL:"
     )
 
     def _find_source_for_value(raw_v):
@@ -321,15 +352,29 @@ async def _extract_category_data_batched(
                     parsed = json.loads(json_str[start:end+1])
                 except Exception:
                     try:
-                        fixed = json_str.replace("\n", "").replace("\r", "").replace("\t", "")
+                        fixed = json_str.replace("\n", " ").replace("\r", " ").replace("\t", " ")
                         fixed = _re.sub(r',\s*}', '}', fixed)
                         fixed = _re.sub(r',\s*]', ']', fixed)
                         parsed = json.loads(fixed)
                     except Exception:
-                        pass
+                        try:
+                            parsed = _heuristic_extract_values_from_text(raw_text, fields_info)
+                        except Exception:
+                            pass
 
-        if parsed is None or not isinstance(parsed, dict):
+        if parsed is None:
             parsed = {}
+        if not isinstance(parsed, dict):
+            parsed = {}
+
+        # FILTRAGE CRUCIAL: ne garder QUE les clés attendues
+        # Supprime "total"/"list"/"dérivé"/"string"/"début"/"durée" et toute clé parasite
+        cleaned = {}
+        for k, v in parsed.items():
+            if k in expected_keys_set:
+                cleaned[k] = v
+
+        parsed = cleaned
 
         for fi in fields_info:
             champ = fi["champ"]
@@ -344,7 +389,7 @@ async def _extract_category_data_batched(
             raw_v = parsed[champ]
             if isinstance(raw_v, str) and raw_v.strip() == "":
                 raw_v = None
-            if isinstance(raw_v, str) and ("NON_TROUVE" in raw_v.upper() or "null" == raw_v.lower().strip()):
+            if isinstance(raw_v, str) and ("NON_TROUVE" in raw_v.upper() or raw_v.lower().strip() == "null"):
                 raw_v = None
 
             page_num, extrait = _find_source_for_value(raw_v)
@@ -375,6 +420,8 @@ async def _extract_category_data_batched(
                         category_results[champ] = {"valeur": None, "source": None, "confiance": 0.0}
                     else:
                         category_results[champ] = {"valeur": vs, "source": source_obj, "confiance": 0.85}
+                elif isinstance(raw_v, bool) or isinstance(raw_v, (int, float)):
+                    category_results[champ] = {"valeur": str(raw_v), "source": source_obj, "confiance": 0.85}
                 else:
                     category_results[champ] = {"valeur": str(raw_v), "source": source_obj, "confiance": 0.85}
 
@@ -388,13 +435,40 @@ async def _extract_category_data_batched(
         return category_results
 
     except Exception as e:
-        print(f"[BATCH] {category_name}: batch failed ({e}). RETOUR NULL (rapide, pas de fallback lent)")
+        print(f"[BATCH] {category_name}: batch failed ({e}). RETOUR NULL rapide")
         for fi in fields_info:
             if fi["type"] == "list":
                 category_results[fi["champ"]] = {"valeur": [], "source": None, "confiance": 0.0}
             else:
                 category_results[fi["champ"]] = {"valeur": None, "source": None, "confiance": 0.0}
         return category_results
+
+
+def _heuristic_extract_values_from_text(text: str, fields_info):
+    """
+    Dernier recours : extraire des valeurs potentielles par regex/keyword scanning
+    lorsque le LLM a renvoyé un texte non JSON.
+    """
+    import re
+    result = {}
+    for fi in fields_info:
+        champ = fi["champ"]
+        q = fi["question"]
+        keywords = set()
+        for w in re.split(r"\W+", q.lower()):
+            if len(w) >= 5:
+                keywords.add(w)
+        for line in text.split("\n"):
+            if champ in line:
+                m = re.search(rf"{re.escape(champ)}\s*[:=]\s*(.+)", line, re.IGNORECASE)
+                if m:
+                    raw = m.group(1).strip().strip("\"'`").rstrip(",").rstrip(";").strip()
+                    if raw.upper().startswith("NON_TROUVE") or raw in ("null", "NULL"):
+                        result[champ] = None
+                    else:
+                        result[champ] = raw
+                    break
+    return result
 
 
 async def _extract_category_data(
