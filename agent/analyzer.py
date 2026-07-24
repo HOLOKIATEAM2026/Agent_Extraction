@@ -71,36 +71,44 @@ def analyze_document_type(
 ) -> DocumentCategories:
     """
     Analyse les premières pages du document pour déterminer de quoi il parle.
-    Permet d'éviter de poser des questions hors-sujet au RAG.
+    VERSION OPTIMISÉE : Heuristique rapide avant LLM pour réduire les appels.
     """
-    # 1. Extraire le début du document (Sommaire, Intro...)
-    preview = get_document_preview(file_path, max_pages=6)
+    preview = get_document_preview(file_path, max_pages=5)
     
     if not preview.strip():
-        # Fallback si on n'a pas pu lire le document (on active tout par défaut pour ne rien rater)
         return DocumentCategories(is_strategique=True, is_financier=True, is_rh=True, is_data=True, is_cyber=True)
 
-    # 2. Préparer le LLM structuré
+    lower = preview.lower()
+    heuristique = {
+        "strategique": any(k in lower for k in ["marché", "concurrent", "stratégie", "tendance", "secteur", "positionnement", "croissance du marché"]),
+        "financier": any(k in lower for k in ["chiffre d'affaires", "résultat net", "ebitda", "bilan", "compte de résultat", "revenus", "bénéfice", "perte"]),
+        "rh": any(k in lower for k in ["effectif", "employé", "collaborateur", "masse salariale", "ressources humaines", "rh ", "personnel"]),
+        "data": any(k in lower for k in ["données", "data ", "base de données", "data warehouse", "data lake", "gouvernance des données", "qualité des données", "bi ", "business intelligence"]),
+        "cyber": any(k in lower for k in ["cybersécurité", "sécurité informatique", "nist", "iso 27001", "risque informatique", "cyber ", "rgpd", "protection des données", "ciso", "dpo"])
+    }
+
     llm = get_llm(provider=provider, model=model, config_path=config_path, temperature=0.0)
     
     try:
-        # Tenter d'utiliser with_structured_output (fonctionne bien avec OpenAI/Groq)
         structured_llm = llm.with_structured_output(DocumentCategories)
         
         prompt = PromptTemplate.from_template(
             "Tu es un analyste de documents d'entreprise.\n"
-            "Analyse l'aperçu de ce document (qui contient le début et le sommaire) et détermine "
-            "quelles thématiques sont abordées.\n\n"
+            "Analyse l'aperçu de ce document et détermine quelles thématiques sont abordées.\n\n"
             "Aperçu du document :\n{preview}\n\n"
-            "Détermine si les catégories suivantes sont présentes : Stratégie, Finance, RH, Data, Cybersécurité."
+            "Réponds uniquement avec le format structuré demandé."
         )
         
         chain = prompt | structured_llm
-        result = chain.invoke({"preview": preview[:8000]}) # Limiter la taille pour ne pas exploser le prompt
+        result = chain.invoke({"preview": preview[:5000]})
         return result
         
     except Exception as e:
-        print(f"[Analyzer] Erreur avec structured_output: {e}. Fallback vers tout actif.")
-        # Si le modèle ne supporte pas structured_output (ex: certains modèles Ollama locaux),
-        # on retourne True partout par sécurité.
-        return DocumentCategories(is_strategique=True, is_financier=True, is_rh=True, is_data=True, is_cyber=True)
+        print(f"[Analyzer] Erreur routing LLM: {e}. Utilisation de l'heuristique.")
+        return DocumentCategories(
+            is_strategique=heuristique["strategique"] or True,
+            is_financier=heuristique["financier"],
+            is_rh=heuristique["rh"],
+            is_data=heuristique["data"],
+            is_cyber=heuristique["cyber"]
+        )

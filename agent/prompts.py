@@ -1,5 +1,12 @@
-from typing import Dict, List, Any
+import time
+import threading
+from typing import Dict, List, Any, Optional, Tuple
 from agent.analyzer import DocumentCategories
+
+_QUESTIONS_CACHE: Optional[Dict[str, List[Dict[str, str]]]] = None
+_QUESTIONS_CACHE_TS: float = 0.0
+_QUESTIONS_CACHE_LOCK = threading.Lock()
+_QUESTIONS_CACHE_TTL: float = 60.0  # 60s TTL
 
 # -------------------------------------------------------------------------
 # QUESTIONS DYNAMIQUES
@@ -129,11 +136,19 @@ QUESTIONS_PAR_CATEGORIE = {
 def get_all_questions() -> Dict[str, List[Dict[str, str]]]:
     """
     Récupère les questions depuis Supabase si disponible, sinon utilise le dictionnaire par défaut.
+    VERSION OPTIMISÉE : Cache en mémoire + timeout court + fallback immédiat.
     """
+    global _QUESTIONS_CACHE, _QUESTIONS_CACHE_TS
+
+    now = time.time()
+    with _QUESTIONS_CACHE_LOCK:
+        if _QUESTIONS_CACHE is not None and (now - _QUESTIONS_CACHE_TS) < _QUESTIONS_CACHE_TTL:
+            return _QUESTIONS_CACHE
+
     try:
         from agent.supabase_store import SupabaseStore, supabase_enabled
         if supabase_enabled():
-            store = SupabaseStore()
+            store = SupabaseStore(timeout_s=2)
             db_questions = store.get_custom_questions()
             if db_questions:
                 q_dict = {}
@@ -149,11 +164,16 @@ def get_all_questions() -> Dict[str, List[Dict[str, str]]]:
                         "question": row.get("question_text"),
                         "type": row.get("type", "field")
                     })
+                with _QUESTIONS_CACHE_LOCK:
+                    _QUESTIONS_CACHE = q_dict
+                    _QUESTIONS_CACHE_TS = now
                 return q_dict
-    except Exception as e:
-        print(f"[Supabase] Erreur lors de la récupération des questions: {e}")
+    except Exception:
         pass
-    
+
+    with _QUESTIONS_CACHE_LOCK:
+        _QUESTIONS_CACHE = QUESTIONS_PAR_CATEGORIE
+        _QUESTIONS_CACHE_TS = now
     return QUESTIONS_PAR_CATEGORIE
 
 def build_dynamic_queries(categories: DocumentCategories) -> Dict[str, List[Dict[str, str]]]:
@@ -189,3 +209,11 @@ def get_empty_category_result(category_name: str) -> Dict[str, Any]:
             result[champ] = {"valeur": None, "source": None, "confiance": 0.0}
             
     return result
+
+
+def invalidate_questions_cache() -> None:
+    """Force le rechargement des questions au prochain appel (ex: après ajout/suppression)."""
+    global _QUESTIONS_CACHE, _QUESTIONS_CACHE_TS
+    with _QUESTIONS_CACHE_LOCK:
+        _QUESTIONS_CACHE = None
+        _QUESTIONS_CACHE_TS = 0.0

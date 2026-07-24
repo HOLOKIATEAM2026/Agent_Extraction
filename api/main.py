@@ -998,6 +998,12 @@ def add_question(q: CustomQuestionCreate, user_auth: dict = Depends(get_current_
         )
         if not q_id:
             return JSONResponse(status_code=500, content={"ok": False, "error": "Échec de l'ajout"})
+
+        try:
+            from agent.prompts import invalidate_questions_cache
+            invalidate_questions_cache()
+        except Exception:
+            pass
             
         return {"ok": True, "id": q_id}
     except Exception as e:
@@ -1013,6 +1019,13 @@ def delete_question(q_id: str, user_auth: dict = Depends(get_current_user)):
             
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.delete_custom_question(q_id)
+        
+        try:
+            from agent.prompts import invalidate_questions_cache
+            invalidate_questions_cache()
+        except Exception:
+            pass
+        
         return {"ok": success}
     except Exception as e:
         traceback.print_exc()
@@ -1027,6 +1040,13 @@ def reset_questions(user_auth: dict = Depends(get_current_user)):
             
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         success = store.reset_custom_questions()
+        
+        try:
+            from agent.prompts import invalidate_questions_cache
+            invalidate_questions_cache()
+        except Exception:
+            pass
+        
         return {"ok": success}
     except Exception as e:
         traceback.print_exc()

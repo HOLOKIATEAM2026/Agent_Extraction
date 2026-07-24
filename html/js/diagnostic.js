@@ -229,7 +229,7 @@ btnExtract.addEventListener('click', async () => {
 });
 
 async function pollJobStatus(jobId) {
-  let delay = 1500;
+  let delay = 800;
   let failures = 0;
   const tick = async () => {
     try {
@@ -257,9 +257,13 @@ async function pollJobStatus(jobId) {
         setStored("holokia_status", statusText.textContent);
       } else {
         failures = 0;
-        statusText.textContent = `Statut: ${data.status.toUpperCase()}...`;
+        const statusUpper = data.status.toUpperCase();
+        let extra = "";
+        if (data.status === "queued") extra = " • En attente de ressources...";
+        else if (data.status === "processing") extra = " • Analyse en cours (RAG + BATCH LLM)...";
+        statusText.textContent = `Statut: ${statusUpper}${extra}`;
         setStored("holokia_status", statusText.textContent);
-        delay = Math.min(5000, Math.round(delay * 1.2));
+        delay = Math.min(2000, Math.round(delay * 1.1));
         pollInterval = window.setTimeout(tick, delay);
       }
     } catch(e) {
@@ -267,9 +271,9 @@ async function pollJobStatus(jobId) {
       const status = e && typeof e === "object" ? e.status : undefined;
       const retriable = status === 502 || status === 503 || status === 504;
       if (retriable && failures <= 12) {
-        delay = Math.min(15000, Math.round(delay * 1.6) + 500);
+        delay = Math.min(8000, Math.round(delay * 1.4) + 200);
         const seconds = Math.max(1, Math.round(delay / 1000));
-        statusText.textContent = `Statut: Serveur temporairement indisponible (${status}). Nouvelle tentative dans ${seconds}s...`;
+        statusText.textContent = `Statut: Serveur occupé (${status}). Nouvelle tentative dans ${seconds}s...`;
         setStored("holokia_status", statusText.textContent);
         pollInterval = window.setTimeout(tick, delay);
         return;
