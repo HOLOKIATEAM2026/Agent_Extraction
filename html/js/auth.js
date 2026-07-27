@@ -143,6 +143,31 @@ const Auth = {
     return data;
   },
 
+  async forgotPassword(email, redirectTo) {
+    const client = await getSupabaseClient();
+    const options = {};
+    if (redirectTo) options.redirectTo = redirectTo;
+    const { data, error } = await client.auth.resetPasswordForEmail(email, options);
+    if (error) throw error;
+    return data;
+  },
+
+  async resetPassword(newPassword) {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.updateUser({
+      password: newPassword
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  async verifyOtp(params) {
+    const client = await getSupabaseClient();
+    const { data, error } = await client.auth.verifyOtp(params);
+    if (error) throw error;
+    return data;
+  },
+
   async logout() {
     let client = null;
     try {
