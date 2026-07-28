@@ -40,33 +40,6 @@ def _dbg(event: str, **data: Any) -> None:
 
 import re as _re_num
 
-def _excerpt_around_value(doc_text: str, v_texts, window: int = 120) -> str:
-    """Retourne un extrait centré sur la première occurrence d'une des valeurs,
-       avec ±window caractères de contexte. Retourne les 200 premiers chars si non trouvé."""
-    if not doc_text:
-        return ""
-    t = doc_text or ""
-    best_pos = -1
-    best_len = 0
-    tl = t.lower()
-    for vt in (v_texts or []):
-        vs = str(vt).lower().strip()
-        if len(vs) < 3:
-            continue
-        idx = tl.find(vs)
-        if idx != -1:
-            if best_pos == -1 or len(vs) > best_len:
-                best_pos = idx
-                best_len = len(vs)
-    if best_pos == -1:
-        return (t[:200] + ("..." if len(t) > 200 else ""))
-    start = max(0, best_pos - window)
-    end = min(len(t), best_pos + best_len + window)
-    prefix = ("..." if start > 0 else "")
-    suffix = ("..." if end < len(t) else "")
-    return prefix + t[start:end].replace("\r", "").replace("\n", " ").strip() + suffix
-
-
 def _parse_first_page_number(raw) -> Optional[int]:
     """Parse robustement un numéro de page depuis n'importe quel format:
        '1', '1, 2, 3', '[1, 2, 3]', 'partie 1', 'Inconnue' → retourne 1 ou None."""
@@ -356,59 +329,31 @@ async def _extract_category_data_batched(
                     v_texts.append(str(x))
         else:
             v_texts.append(str(raw_v))
-
         best_page = None
         best_extrait = None
         best_score = 0
         for di in doc_infos:
-            dt = di["text"] or ""
-            dt_lower = dt.lower()
-            dt_lower_stripped = _re_num.sub(r'\s+', dt_lower)
+            dt_lower = di["text"].lower()
             score = 0
-            exact_hit = False
-            token_hits = 0
+            matched_any = False
             for vt in v_texts:
-                v_orig = str(vt).strip()
-                vlow = v_orig.lower().strip()
+                vlow = vt.lower().strip()
                 if not vlow:
                     continue
-                
-                vnorm = _re_num.sub(r'\s+', vlow)
-                if len(vnorm) >= 3 and vnorm in dt_lower_stripped:
-                    exact_hit = True
-                    score += len(vnorm) * 5
-                elif len(vlow) >= 6 and vlow in dt_lower:
-                    exact_hit = True
-                    score += len(vlow) * 3
+                if len(vlow) >= 4 and vlow in dt_lower:
+                    score += len(vlow)
+                    matched_any = True
                 else:
-                    for word in _re_num.split(vlow):
-                        w = word.strip(" ,.;:!?()[]\"'-_–“”‘’/\\")
-                        if len(w) >= 5 and not w.isdigit() and w in dt_lower:
-                            token_hits += 1
-                            score += 3
-            if exact_hit or token_hits >= 2:
-                if score > best_score:
-                    best_score = score
-                    best_page = di["page"]
-                    best_extrait = _excerpt_around_value(dt, v_texts, window=120)
-        if best_page is None and best_extrait is None:
-            for di in doc_infos:
-                if not di.get("text"):
-                    continue
-                any_in = False
-                for vt in v_texts:
-                    wl = str(vt).lower().strip()
-                    if len(wl) >= 3 and wl in (di["text"] or "").lower():
-                        any_in = True
-                        break
-                if any_in and best_page is None:
-                    best_page = di["page"]
-                    best_extrait = _excerpt_around_value(di["text"] or "", v_texts, window=120)
-                    break
-            if best_page is None and len(doc_infos) > 0:
-                first_doc = doc_infos[0]
-                best_page = first_doc["page"]
-                best_extrait = _excerpt_around_value(first_doc.get("text") or "", v_texts, window=120)
+                    for word in vlow.split():
+                        w = word.strip(" ,.;:!?()[]\"'-")
+                        if len(w) >= 4 and w in dt_lower:
+                            score += 2
+                            matched_any = True
+            if matched_any and score > best_score:
+                best_score = score
+                best_page = di["page"]
+                trunc = di["text"][:200]
+                best_extrait = trunc + ("..." if len(di["text"]) > 200 else "")
         return best_page, best_extrait
 
     try:
