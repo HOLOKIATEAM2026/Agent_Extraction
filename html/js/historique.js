@@ -195,23 +195,7 @@ function renderHistorique(extractions) {
 }
 
 function filterHistorique() {
-  const entrepriseStr = document.getElementById('filterEntreprise').value.toLowerCase();
-  const dateStr = document.getElementById('filterDate').value;
-  const modelStr = document.getElementById('filterModel').value.toLowerCase();
-  
-  const filtered = allExtractions.filter(ext => {
-    const matchEnt = !entrepriseStr || (ext.company && ext.company.toLowerCase().includes(entrepriseStr));
-    const extDate = ext.created_at ? ext.created_at.split('T')[0] : '';
-    const matchDate = !dateStr || extDate === dateStr;
-    const matchModel = !modelStr || (
-      (ext.model && ext.model.toLowerCase().includes(modelStr)) || 
-      (ext.provider && ext.provider.toLowerCase().includes(modelStr))
-    );
-    
-    return matchEnt && matchDate && matchModel;
-  });
-  
-  renderHistorique(filtered);
+  renderHistorique(getFilteredExtractions());
 }
 
 document.getElementById('filterEntreprise').addEventListener('input', filterHistorique);
@@ -331,3 +315,66 @@ document.getElementById('btnCopyModal').addEventListener('click', async () => {
     }
   } catch (_) {}
 });
+
+function getFilteredExtractions() {
+  const entrepriseStr = document.getElementById('filterEntreprise').value.toLowerCase();
+  const dateStr = document.getElementById('filterDate').value;
+  const modelStr = document.getElementById('filterModel').value.toLowerCase();
+
+  return allExtractions.filter(ext => {
+    const matchEnt = !entrepriseStr || (ext.company && ext.company.toLowerCase().includes(entrepriseStr));
+    const extDate = ext.created_at ? ext.created_at.split('T')[0] : '';
+    const matchDate = !dateStr || extDate === dateStr;
+    const matchModel = !modelStr || (
+      (ext.model && ext.model.toLowerCase().includes(modelStr)) ||
+      (ext.provider && ext.provider.toLowerCase().includes(modelStr))
+    );
+    return matchEnt && matchDate && matchModel;
+  });
+}
+
+function exportToCSV() {
+  const extractions = getFilteredExtractions();
+  if (extractions.length === 0) {
+    alert('Aucune extraction à exporter.');
+    return;
+  }
+
+  const headers = ['Date', 'Entreprise', 'Fichier', 'Modèle', 'Confiance moy. (%)', 'Complétude (%)'];
+  const rows = extractions.map(ext => {
+    const date = new Date(ext.created_at).toLocaleString('fr-FR', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+    const conf = (calculateAverageConfidence(ext) * 100).toFixed(1);
+    const comp = (calculateCompleteness(ext) * 100).toFixed(1);
+    return [
+      date,
+      ext.company || '',
+      ext.document_file || '',
+      ext.model || ext.provider || '',
+      conf,
+      comp
+    ];
+  });
+
+  const csvContent = [
+    headers.join(';'),
+    ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+  ].join('\n');
+
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const dateStr = new Date().toISOString().split('T')[0];
+  link.setAttribute('href', url);
+  link.setAttribute('download', `historique_extractions_${dateStr}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
