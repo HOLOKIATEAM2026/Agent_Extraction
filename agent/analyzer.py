@@ -30,10 +30,9 @@ class DocumentCategories(BaseModel):
         return active
 
 
-def get_document_preview(file_path: str, max_pages: int = 5) -> str:
+def get_document_preview(file_path: str, max_pages: int = 6) -> str:
     """
     Extrait les premières pages d'un document pour donner un aperçu au LLM.
-    C'est généralement suffisant pour analyser le sommaire et l'introduction.
     """
     ext = os.path.splitext(file_path)[1].lower()
     text_preview = ""
@@ -49,14 +48,12 @@ def get_document_preview(file_path: str, max_pages: int = 5) -> str:
         elif ext == ".docx":
             import docx
             doc = docx.Document(file_path)
-            # On prend approximativement les X premiers paragraphes (ex: 50 paragraphes ~ 3-4 pages)
             paras = [p.text for p in doc.paragraphs if p.text.strip()]
-            text_preview = "\n".join(paras[:100])
+            text_preview = "\n".join(paras[:200])
             
-        elif ext == ".txt":
-            with open(file_path, "r", encoding="utf-8") as f:
-                # Lire les 10000 premiers caractères
-                text_preview = f.read(10000)
+        elif ext in (".txt", ".md"):
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                text_preview = f.read(30000)
     except Exception as e:
         print(f"Erreur lors de la lecture de l'aperçu du fichier {file_path}: {e}")
         
@@ -74,7 +71,7 @@ def analyze_document_type(
     1. Heuristique mots-clés (0 ms) — utilisée DIRECTEMENT 90% du temps
     2. LLM structured_output — SEULEMENT si heuristique ambiguë
     """
-    preview = get_document_preview(file_path, max_pages=4)
+    preview = get_document_preview(file_path, max_pages=6)
     
     if not preview.strip():
         return DocumentCategories(is_strategique=True, is_financier=True, is_rh=True, is_data=True, is_cyber=True)
@@ -83,14 +80,20 @@ def analyze_document_type(
     heuristique = {
         "strategique": any(k in lower for k in ["marché", "concurrent", "stratégie", "tendance", "secteur", "positionnement", "croissance du marché", "environnement concurrentiel", "offensive", "développement"]),
         "financier": any(k in lower for k in ["chiffre d'affaires", "résultat net", "ebitda", "bilan", "compte de résultat", "revenus", "bénéfice", "perte", "cac", "ca ", "performance économique", "marge", "roa", "roe"]),
-        "rh": any(k in lower for k in ["effectif", "employé", "collaborateur", "masse salariale", "ressources humaines", "rh ", "personnel", "turnover", "recrutement", "formation", "santé au travail"]),
-        "data": any(k in lower for k in ["données", "data ", "base de données", "data warehouse", "data lake", "gouvernance des données", "qualité des données", "bi ", "business intelligence", "analytics", "big data", "données personnelles"]),
-        "cyber": any(k in lower for k in ["cybersécurité", "sécurité informatique", "nist", "iso 27001", "risque informatique", "cyber ", "rgpd", "protection des données", "ciso", "dpo", "incident de sécurité", "menace", "vulnérabilité", "hameçonnage", "phishing"])
+        "rh": any(k in lower for k in ["effectif", "employé", "collaborateur", "masse salariale", "ressources humaines", "rh ", "personnel", "turnover", "recrutement", "formation", "santé au travail", "kpi rh", "salaire moyen", "absentéisme", "ressources humaine"]),
+        "data": any(k in lower for k in ["données", "data ", "base de données", "data warehouse", "data lake", "gouvernance des données", "qualité des données", "bi ", "business intelligence", "analytics", "big data", "données personnelles", "catalog de donnée", "catalogue de données", "data lakehouse", "donnéees", "data warehouse"]),
+        "cyber": any(k in lower for k in ["cybersécurité", "sécurité informatique", "nist", "iso 27001", "risque informatique", "cyber ", "rgpd", "protection des données", "ciso", "dpo", "incident de sécurité", "menace", "vulnérabilité", "hameçonnage", "phishing", "waf", "3d secure", "cyber"])
     }
 
     all_true = all(heuristique.values())
     any_true = any(heuristique.values())
-    is_ambiguous = (not any_true) or (sum(1 for v in heuristique.values() if v) <= 1 and not heuristique["financier"])
+    cat_count = sum(1 for v in heuristique.values() if v)
+    is_ambiguous = (not any_true) or (cat_count <= 1 and not heuristique["financier"])
+
+    if heuristique["financier"] and heuristique["strategique"] and cat_count >= 2:
+        heuristique["rh"] = True
+        heuristique["data"] = True
+        heuristique["cyber"] = True
 
     if not is_ambiguous:
         print(f"[Analyzer] Routing par HEURISTIQUE (0s LLM) : {[k for k,v in heuristique.items() if v]}")

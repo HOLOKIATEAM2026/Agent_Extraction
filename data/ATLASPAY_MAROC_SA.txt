@@ -1,0 +1,202 @@
+RAPPORT ANNUEL 2024 — ATLASPAY MAROC SA
+Exercice clos le 31 décembre 2024
+
+[PAGE 1]
+INFORMATIONS GÉNÉRALES
+
+Dénomination sociale   : AtlasPay Maroc SA
+Siège social           : 45 Boulevard Zerktouni, Casablanca, Maroc
+Secteur d'activité     : Fintech et paiement digital
+Directeur Général      : M. Youssef El Amrani
+Date de création       : 2017
+Capital social         : 22 000 000 MAD
+
+[PAGE 2]
+RÉSULTATS FINANCIERS — EXERCICE 2024
+
+Chiffre d'affaires consolidé
+Le chiffre d'affaires consolidé d'AtlasPay Maroc SA s'élève à
+68,5 millions de dirhams pour l'exercice 2024, contre 52,3 millions
+de dirhams en 2023, soit une progression de 31,0% sur un an.
+
+  CA 2024 : 68 500 000 MAD
+  CA 2023 : 52 300 000 MAD
+  Variation : +16 200 000 MAD (+31,0%)
+
+Résultat net
+Le résultat net part du groupe atteint 5,9 millions de dirhams en 2024,
+en hausse de 37,2% par rapport à l'exercice précédent (4,3 millions MAD).
+
+  Résultat net 2024 : 5 900 000 MAD
+  Résultat net 2023 : 4 300 000 MAD
+
+EBITDA
+L'EBITDA consolidé ressort à 12,4 millions de dirhams, représentant
+une marge de 18,1% du chiffre d'affaires.
+
+  EBITDA 2024 : 12 400 000 MAD
+  Marge EBITDA : 18,1%
+
+[PAGE 3]
+ANALYSE DU MARCHÉ ET POSITIONNEMENT CONCURRENTIEL
+
+Taille du marché
+Le marché du paiement digital et des services fintech au Maroc est
+estimé à 780 millions de dirhams en 2024, porté par la digitalisation
+croissante des commerces et des services publics.
+
+  Taille du marché 2024 : 780 000 000 MAD
+  Taille du marché 2023 : 610 000 000 MAD
+
+Taux de croissance
+Le secteur fintech affiche un taux de croissance annuel de 27,9% sur
+la période 2022-2024, l'un des plus dynamiques du secteur financier
+marocain.
+
+  Taux de croissance du marché 2024 : +27,9% annuel
+  Taux de croissance prévisionnel 2025 : +24,0% annuel
+
+Intensité concurrentielle
+Le marché est en pleine structuration avec une intensité concurrentielle
+forte. Les barrières réglementaires (agrément Bank Al-Maghrib) limitent
+l'entrée de nouveaux acteurs. AtlasPay Maroc détient une part de marché
+estimée à 9,3%.
+
+  Part de marché AtlasPay Maroc : 9,3%
+  Intensité concurrentielle : Forte
+
+Principaux concurrents
+Les principaux acteurs identifiés sur le marché fintech marocain sont
+les suivants :
+
+  1. PayMaroc               — part de marché estimée : 15,2%
+  2. CashLink Casablanca     — part de marché estimée : 11,8%
+  3. M-Wallet Solutions      — part de marché estimée : 8,6%
+  4. FinTech Rabat Group     — part de marché estimée : 6,1%
+  5. QuickPay Tanger         — part de marché estimée : 4,9%
+
+Tendances du marché
+Les tendances structurantes identifiées pour 2024-2026 sont :
+  - Adoption croissante du paiement mobile (QR code, wallets)
+  - Interopérabilité des systèmes de paiement nationaux
+  - Renforcement de la réglementation Bank Al-Maghrib sur les fintechs
+  - Développement de l'inclusion financière en zones rurales
+  - Partenariats avec les opérateurs télécoms pour le mobile money
+
+[PAGE 4]
+RESSOURCES HUMAINES
+
+Effectif total
+L'effectif total d'AtlasPay Maroc SA au 31 décembre 2024 s'élève à
+94 collaborateurs, contre 71 collaborateurs au 31 décembre 2023,
+soit une croissance des effectifs de 32,4%.
+
+  Effectif total 2024  : 94 collaborateurs
+  Effectif total 2023  : 71 collaborateurs
+  Recrutements 2024    : 29 nouveaux collaborateurs
+  Départs 2024         : 6 collaborateurs
+  Taux de turnover     : 7,1%
+
+Répartition des effectifs
+  Ingénieurs & développeurs      : 42  (44,7%)
+  Fonctions conformité & risque   : 21  (22,3%)
+  Fonctions support & management  : 31  (33,0%)
+
+Masse salariale
+La masse salariale globale s'élève à 19,8 millions de dirhams en 2024,
+représentant 28,9% du chiffre d'affaires consolidé.
+
+  Masse salariale 2024 : 19 800 000 MAD
+  Masse salariale 2023 : 15 100 000 MAD
+  Variation            : +31,1%
+
+  Salaire moyen annuel brut : 210 638 MAD
+  Taux d'absentéisme        : 2,1%
+
+[PAGE 5]
+MATURITÉ DATA & GOUVERNANCE DES DONNÉES
+
+Existence et disponibilité des données
+AtlasPay Maroc dispose d'une infrastructure data basée sur un data
+warehouse cloud (AWS Redshift) déployé en 2022. L'ensemble des
+données transactionnelles et clients est centralisé et accessible
+en temps quasi-réel.
+
+  Couverture data warehouse      : 91% des données métier intégrées
+  Disponibilité plateforme       : 99,95% (SLA cloud AWS)
+  Sources de données connectées  : 17 connecteurs actifs
+
+Qualité des données
+AtlasPay Maroc place la fiabilité des données transactionnelles au
+cœur de sa proposition de valeur. Un pipeline de contrôle qualité
+automatisé tourne en continu sur l'ensemble des flux de paiement.
+
+  Taux de complétude données critiques : 98,5%
+  Taux d'erreurs détectées             : 0,3%
+  Fréquence d'audit qualité            : Continue (temps réel)
+
+Accessibilité et volumétrie
+  Volume total données stockées   : 9,6 To
+  Données historisées depuis      : 2018 (6 ans d'historique)
+  Accès données pour les métiers  : API REST + tableaux de bord BI
+
+Conformité et documentation
+La documentation des flux et modèles est gérée via un catalogue de
+données interne maintenu par l'équipe Data & Conformité créée en
+mars 2023.
+
+  Catalogue de données            : 856 entrées documentées
+  Conformité RGPD/CNDP            : Certifié — audit externe 2024
+  Politique de rétention données  : Définie par catégorie (5-10 ans)
+
+[PAGE 6]
+CYBERSÉCURITÉ & GOUVERNANCE
+
+Évaluation des risques cyber
+AtlasPay Maroc a réalisé en 2024 un pentest complet de son
+infrastructure cloud et de ses API de paiement, conduit par un
+cabinet spécialisé en sécurité offensive.
+
+  Risque 1 : Fraude transactionnelle              — Niveau : Élevé
+  Risque 2 : Compromission comptes clients         — Niveau : Élevé
+  Risque 3 : Exposition API de paiement            — Niveau : Moyen
+  Risque 4 : Exfiltration données bancaires        — Niveau : Moyen
+  Risque 5 : Attaques par déni de service (DDoS)   — Niveau : Faible
+
+Actions correctives menées en 2024 :
+  - Renforcement de l'authentification forte (3D Secure, OTP)
+  - Mise en place d'un WAF (Web Application Firewall)
+  - Chiffrement bout-en-bout de toutes les données de paiement
+  - Programme de bug bounty lancé en septembre 2024
+
+Conformité NIST
+AtlasPay Maroc a complété son alignement NIST CSF 2.0 en 2024 avec
+l'appui d'un consultant certifié CISSP.
+
+  Niveau de maturité NIST global     : 3,4 / 5 (Géré)
+  Fonction IDENTIFY                  : 3,8 / 5
+  Fonction PROTECT                   : 3,9 / 5
+  Fonction DETECT                    : 3,2 / 5
+  Fonction RESPOND                   : 3,0 / 5
+  Fonction RECOVER                   : 3,1 / 5
+
+  Objectif cible 2025                : Atteindre 4,0 / 5 (Optimisé)
+
+Conformité ISO 27001
+AtlasPay Maroc a obtenu la certification ISO 27001:2022 en juin 2024,
+renforçant la confiance de ses partenaires bancaires et institutionnels.
+
+  Statut ISO 27001:2022              : Certifiée depuis juin 2024
+  Organisme certificateur            : AFNOR Certification
+  Prochaine revue de surveillance    : Juin 2025
+
+Gouvernance des données
+  Comité Data & Sécurité             : Actif depuis 2022
+  DPO (Data Protection Officer)      : Nommé depuis mars 2021
+  Charte Sécurité des Paiements      : Publiée et signée par la direction
+  Politique de classification données: 4 niveaux
+    (Public / Interne / Confidentiel / Secret)
+  Fréquence revue politique sécurité : Semestrielle
+
+FIN DU RAPPORT ANNUEL 2024 — ATLASPAY MAROC SA
+Document confidentiel — Usage interne uniquement

@@ -38,17 +38,41 @@ def _dbg(event: str, **data: Any) -> None:
         return
 #endregion debug-point extract-slow-performance
 
+import re as _re_num
+
+def _parse_first_page_number(raw) -> Optional[int]:
+    """Parse robustement un numéro de page depuis n'importe quel format:
+       '1', '1, 2, 3', '[1, 2, 3]', 'partie 1', 'Inconnue' → retourne 1 ou None."""
+    if raw is None:
+        return None
+    s = str(raw)
+    m = _re_num.search(r'\d+', s)
+    if m:
+        try:
+            return int(m.group())
+        except Exception:
+            return None
+    return None
+
 # Helper to safely extract page numbers from document metadata
 def get_page(doc):
     p = doc.metadata.get('page')
     if p is not None:
-        return str(p)
+        n = _parse_first_page_number(p)
+        if n is not None:
+            return str(n)
+        return str(p) if isinstance(p, str) else None
     pages = doc.metadata.get('pages')
-    if pages and len(pages) > 0:
-        if isinstance(pages, list):
-            return str(pages[0])
-        return str(pages)
-    return 'Inconnue'
+    if pages is not None:
+        if isinstance(pages, list) and len(pages) > 0:
+            n = _parse_first_page_number(pages[0])
+            return str(n) if n is not None else str(pages[0])
+        if isinstance(pages, str) and pages.strip():
+            n = _parse_first_page_number(pages)
+            if n is not None:
+                return str(n)
+            return pages
+    return None
 
 async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 1):
     import re
@@ -130,13 +154,7 @@ Règles de formatage de ta réponse :
         if "[Page " in response:
             try:
                 page_str = response.split("[Page ")[1].split("]")[0]
-                if page_str.isdigit():
-                    page_num = int(page_str)
-                elif page_str.lower() != "inconnue":
-                    import re
-                    m = re.search(r'\d+', page_str)
-                    if m:
-                        page_num = int(m.group())
+                page_num = _parse_first_page_number(page_str)
                 response = response.split("[Page ")[0].strip()
             except:
                 pass
@@ -150,15 +168,14 @@ Règles de formatage de ta réponse :
         if page_num is not None:
             for doc in retrieved_docs:
                 doc_page = get_page(doc)
-                if str(page_num) == doc_page:
+                if doc_page and _parse_first_page_number(doc_page) == page_num:
                     best_extrait = doc.page_content[:200] + "..."
                     break
         else:
             if retrieved_docs:
                 best_extrait = retrieved_docs[0].page_content[:200] + "..."
                 doc_page = get_page(retrieved_docs[0])
-                if doc_page and doc_page.isdigit():
-                    page_num = int(doc_page)
+                page_num = _parse_first_page_number(doc_page)
             
         return champ, {
             "valeur": valeur,
@@ -209,33 +226,50 @@ async def _extract_category_data_batched(
     scalar_keys = sorted(set(fi["champ"] for fi in fields_info if fi["type"] != "list"))
     expected_keys_set = set(expected_keys)
 
-    all_queries_text = ". ".join(q["question"] for q in questions)
-    retrieved_docs = await asyncio.to_thread(vectorstore.similarity_search, all_queries_text, k=5)
-
-    seen_contents = set()
+    seen_keys = set()
     unique_docs = []
+
+    async def _search_one(q_text: str, k: int):
+        try:
+            return await asyncio.to_thread(vectorstore.similarity_search, q_text, k=k)
+        except Exception:
+            return []
+
+    if len(questions) <= 1:
+        all_queries_text = ". ".join(q["question"] for q in questions)
+        retrieved_docs = await _search_one(all_queries_text, 5)
+    else:
+        sub_tasks = [asyncio.create_task(_search_one(q["question"], k=3)) for q in questions]
+        all_results = await asyncio.gather(*sub_tasks, return_exceptions=True)
+        retrieved_docs = []
+        for r in all_results:
+            if isinstance(r, list):
+                retrieved_docs.extend(r)
+
     for d in retrieved_docs:
-        content = d.page_content[:100]
-        if content not in seen_contents:
-            seen_contents.add(content)
+        key = d.page_content[:120]
+        if key not in seen_keys:
+            seen_keys.add(key)
             unique_docs.append(d)
-    
+
+    unique_docs = unique_docs[:8]
+
     doc_infos = []
     context_parts = []
     total_chars = 0
-    for i, doc in enumerate(unique_docs[:5]):
+    context_char_limit = 4500
+    for i, doc in enumerate(unique_docs):
         doc_text = doc.page_content
         pg = None
         try:
             pg_raw = get_page(doc)
-            if pg_raw and str(pg_raw).isdigit():
-                pg = int(pg_raw)
+            pg = _parse_first_page_number(pg_raw)
         except Exception:
-            pass
+            pg = None
         doc_infos.append({"text": doc_text, "page": pg, "idx": i})
-        if total_chars + len(doc_text) > 2600:
-            remaining = max(0, 2600 - total_chars)
-            if remaining > 80:
+        if total_chars + len(doc_text) > context_char_limit:
+            remaining = max(0, context_char_limit - total_chars)
+            if remaining > 100:
                 context_parts.append(f"[E{i+1}:{doc_text[:remaining]}]")
             break
         context_parts.append(f"[E{i+1}:{doc_text}]")
