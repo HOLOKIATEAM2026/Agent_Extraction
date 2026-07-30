@@ -114,6 +114,23 @@
       color:var(--ink);
       border-radius:10px;
     }
+    .select{
+      color-scheme:light;
+    }
+    :root:not([data-theme="light"]) .select{
+      background:var(--paper-2);
+      color:var(--ink);
+      color-scheme:dark;
+    }
+    :root:not([data-theme="light"]) .select option,
+    :root:not([data-theme="light"]) .select optgroup{
+      background:var(--paper-2);
+      color:var(--ink);
+    }
+    .select option,
+    .select optgroup{
+      color:inherit;
+    }
     .kpis{
       display:grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -291,7 +308,7 @@
           <div class="chart-box-sm">
             <canvas id="donutChart"></canvas>
           </div>
-          <div class="hint" data-i18n="dashboard.models_split_hint">Part des analyses par modèle (groq, mistral, openai, …).</div>
+          <div class="hint" data-i18n="dashboard.models_split_hint">Part des analyses par modèle (groq, openai, …).</div>
         </section>
       </div>
 

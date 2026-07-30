@@ -198,6 +198,12 @@ const I18n = {
       .lang-switcher.open .lang-menu {
         display: flex;
       }
+      :root:not([data-theme="light"]) .lang-trigger {
+        background: var(--paper-2, #fff);
+      }
+      :root:not([data-theme="light"]) .lang-menu {
+        background: var(--paper-2, #fff);
+      }
       .lang-option {
         width: 100%;
         border: 0;

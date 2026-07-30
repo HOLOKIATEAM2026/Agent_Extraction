@@ -109,6 +109,19 @@
     color:var(--ink);
     outline:none;
   }
+  .select{
+    background:var(--paper-2);
+    color:var(--ink);
+    color-scheme:dark;
+  }
+  :root[data-theme="light"] .select{
+    color-scheme:light;
+  }
+  .select option,
+  .select optgroup{
+    background:var(--paper-2);
+    color:var(--ink);
+  }
   .input:focus, .select:focus{
     border-color:rgba(60,87,243,0.65);
     box-shadow:0 0 0 4px var(--focus);

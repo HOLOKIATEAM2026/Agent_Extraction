@@ -17,6 +17,25 @@
     } catch (_) {}
   })();
 </script>
+<style>
+  #filterModel,
+  #compareSelect{
+    color-scheme:light;
+  }
+  :root:not([data-theme="light"]) #filterModel,
+  :root:not([data-theme="light"]) #compareSelect{
+    background:var(--paper-2) !important;
+    color:var(--ink) !important;
+    color-scheme:dark;
+  }
+  :root:not([data-theme="light"]) #filterModel option,
+  :root:not([data-theme="light"]) #filterModel optgroup,
+  :root:not([data-theme="light"]) #compareSelect option,
+  :root:not([data-theme="light"]) #compareSelect optgroup{
+    background:var(--paper-2);
+    color:var(--ink);
+  }
+</style>
 </head>
 <body>
 <div class="grid-bg"></div>
@@ -74,8 +93,9 @@
         <select id="filterModel" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
           <option value="" data-i18n="history.all_models">Tous les modèles</option>
           <option value="groq">Groq (LLaMA 3.1 8B)</option>
-          <option value="mistral">Mistral</option>
-          <option value="qwen3:8b">Qwen 3 8B</option>
+          <option value="llama-3.3-70b-versatile">Groq (LLaMA 3.3 70B)</option>
+          <!--<option value="mistral">Mistral</option>
+          <option value="qwen3:8b">Qwen 3 8B</option>-->
           <option value="openai">OpenAI (GPT-4o)</option>
         </select>
         <button id="btnExportCSV" class="btn-outline" style="margin-left: auto; padding: 10px 20px;" data-i18n="history.export_csv">Exporter CSV</button>

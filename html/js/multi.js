@@ -41,6 +41,22 @@ function tr(key, vars) {
   return key;
 }
 
+function resolveMultiModelSelection(selectedModel) {
+  if (selectedModel === 'gpt-4o' || selectedModel === 'openai') {
+    return { provider: 'openai', model: 'gpt-4o' };
+  }
+  if (selectedModel === 'llama-3.3-70b-versatile') {
+    return { provider: 'groq', model: 'llama-3.3-70b-versatile' };
+  }
+  if (selectedModel === 'qwen3:8b') {
+    return { provider: 'ollama', model: 'qwen3:8b' };
+  }
+  if (selectedModel === 'mistral') {
+    return { provider: 'ollama', model: 'mistral' };
+  }
+  return { provider: 'groq', model: 'llama-3.1-8b-instant' };
+}
+
 // ── TOGGLES ──
 if (btnHistoryToggle) {
   btnHistoryToggle.addEventListener('click', () => {
@@ -520,8 +536,9 @@ if (btnMultiExtract) {
     
     formData.append('questions', JSON.stringify(multiQuestions));
     
-    const provider = 'groq';
-    const modelName = 'llama-3.1-8b-instant';
+    const selection = resolveMultiModelSelection(model);
+    const provider = selection.provider;
+    const modelName = selection.model;
     formData.append('provider', provider);
     formData.append('model', modelName);
 

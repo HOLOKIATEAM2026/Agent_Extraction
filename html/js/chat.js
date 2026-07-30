@@ -40,10 +40,33 @@ function tr(key, vars) {
 
 // ── MODEL INFO MAP ──
 const modelMap = {
-  'groq':    { name: 'LLaMA 3.1 70B', sub: 'Groq Cloud · Latence ~1s', color: 'var(--blue)' },
-  'mistral': { name: 'Mistral 7B',    sub: 'Ollama Local · CPU/GPU',   color: 'var(--teal)' },
-  'qwen3:8b':{ name: 'Qwen 3 8B',     sub: 'Ollama Local · CPU/GPU',   color: 'var(--amber)'}
+  'groq':                    { name: 'Groq (LLaMA 3.1 8B)',  sub: 'Groq Cloud · Rapide', color: 'var(--blue)' },
+  'llama-3.3-70b-versatile': { name: 'Groq (LLaMA 3.3 70B)', sub: 'Groq Cloud · Qualite', color: 'var(--blue)' },
+  'gpt-4o':                  { name: 'OpenAI (GPT-4o)',      sub: 'OpenAI Cloud', color: 'var(--teal)' },
+  'openai':                  { name: 'OpenAI (GPT-4o)',      sub: 'OpenAI Cloud', color: 'var(--teal)' },
+  'mistral':                 { name: 'Mistral 7B',           sub: 'Ollama Local · CPU/GPU', color: 'var(--teal)' },
+  'qwen3:8b':                { name: 'Qwen 3 8B',            sub: 'Ollama Local · CPU/GPU', color: 'var(--amber)' }
 };
+
+function getSelectedModelMeta(modelKey) {
+  return modelMap[modelKey] || { name: modelKey || 'Modele inconnu', sub: '', color: 'var(--blue)' };
+}
+
+function resolveChatModelSelection(selectedModel) {
+  if (selectedModel === 'gpt-4o' || selectedModel === 'openai') {
+    return { provider: 'openai', model: 'gpt-4o' };
+  }
+  if (selectedModel === 'llama-3.3-70b-versatile') {
+    return { provider: 'groq', model: 'llama-3.3-70b-versatile' };
+  }
+  if (selectedModel === 'mistral') {
+    return { provider: 'ollama', model: 'mistral' };
+  }
+  if (selectedModel === 'qwen3:8b') {
+    return { provider: 'ollama', model: 'qwen3:8b' };
+  }
+  return { provider: 'groq', model: 'llama-3.1-8b-instant' };
+}
 
 // ── UTILS ──
 function formatTime() {
@@ -162,7 +185,8 @@ if (modelSelect) {
     state.model = modelSelect.value;
     saveChatState();
     if (headerModel) {
-      headerModel.innerHTML = `<span class="dot" style="background:var(--blue);box-shadow:0 0 6px var(--blue)"></span> ${state.model}`;
+      const meta = getSelectedModelMeta(state.model);
+      headerModel.innerHTML = `<span class="dot" style="background:${meta.color};box-shadow:0 0 6px ${meta.color}"></span> ${meta.name}`;
     }
   });
 }
@@ -178,13 +202,23 @@ function addMessage(role, content, sources = [], confidence = null) {
   const avatar = role === 'user' ? 'U' : 'AI';
   const name   = role === 'user' ? tr('chat.you') : tr('chat.assistant');
 
+  let confidenceBadgeHtml = '';
+  let confHtml = '';
+  if (confidence !== null) {
+    state.confidenceSum += confidence;
+    state.confidenceCount++;
+    const cls = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
+    const pct = Math.round(confidence * 100);
+    confidenceBadgeHtml = `<div class="confidence-badge confidence-${cls}">${tr('chat.confidence_badge', { pct })}</div>`;
+  }
+
   let sourcesHtml = '';
   if (sources && sources.length > 0) {
     state.totalSources += sources.length;
     sourcesHtml = `
       <div class="msg-sources">
         <div class="sources-header">${tr('chat.sources_label', { count: sources.length })}</div>
-        ${sources.map(s => {
+        <div class="sources-tags">${sources.map(s => {
           let pageText = s.page || '?';
           if (pageText.toString().includes(',')) {
             pageText = 'p.' + pageText;
@@ -196,18 +230,13 @@ function addMessage(role, content, sources = [], confidence = null) {
             📄 ${s.fichier || s.file_name || 'Document'} · ${pageText}
           </span>
           `;
-        }).join('')}
+        }).join('')}</div>
+        ${confidenceBadgeHtml ? `<div class="sources-footer">${confidenceBadgeHtml}</div>` : ''}
       </div>
     `;
   }
-
-  let confHtml = '';
-  if (confidence !== null) {
-    state.confidenceSum += confidence;
-    state.confidenceCount++;
-    const cls = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
-    const pct = Math.round(confidence * 100);
-    confHtml = `<div class="confidence-badge confidence-${cls}">${tr('chat.confidence_badge', { pct })}</div>`;
+  if (!sourcesHtml && confidenceBadgeHtml) {
+    confHtml = confidenceBadgeHtml;
   }
 
   msg.innerHTML = `
@@ -282,20 +311,9 @@ async function sendMessage() {
       .map(m => ({ role: m.role, content: m.content }));
     formData.append('history', JSON.stringify(historyPayload));
 
-    // Fixation du modèle sur llama-3.1-8b-instant
-    let provider = 'groq';
-    let model = 'llama-3.1-8b-instant';
-    
-    if (state.model === 'mistral') {
-        provider = 'ollama';
-        model = 'mistral';
-    } else if (state.model === 'qwen3:8b') {
-        provider = 'ollama';
-        model = 'qwen3:8b';
-    } else if (state.model === 'gpt-4o') {
-        provider = 'openai';
-        model = 'gpt-4o';
-    }
+    const selection = resolveChatModelSelection(state.model);
+    const provider = selection.provider;
+    const model = selection.model;
 
     formData.append('provider', provider);
     formData.append('model', model);

@@ -817,6 +817,11 @@ nav {
   border-radius: var(--radius);
 }
 
+.sources-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .sources-header {
   font-family: var(--mono);
   font-size: 9px;
@@ -852,6 +857,12 @@ nav {
   border-color: var(--teal);
 }
 
+.sources-footer {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+}
+
 /* Confidence badge */
 .confidence-badge {
   display: inline-flex;
@@ -868,6 +879,28 @@ nav {
 .confidence-high   { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.25); }
 .confidence-medium { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
 .confidence-low    { background: rgba(248,113,113,0.1); color: var(--red);   border: 1px solid rgba(248,113,113,0.25); }
+
+:root:not([data-theme="light"]) .msg-sources {
+  background: rgba(34,197,94,0.08);
+  border-color: rgba(34,197,94,0.24);
+}
+
+:root:not([data-theme="light"]) .sources-header,
+:root:not([data-theme="light"]) .source-tag,
+:root:not([data-theme="light"]) .confidence-high {
+  color: #86efac;
+}
+
+:root:not([data-theme="light"]) .source-tag {
+  background: rgba(34,197,94,0.14);
+  border-color: rgba(34,197,94,0.30);
+}
+
+:root:not([data-theme="light"]) .source-tag:hover,
+:root:not([data-theme="light"]) .confidence-high {
+  background: rgba(34,197,94,0.18);
+  border-color: rgba(34,197,94,0.38);
+}
 
 /* Typing */
 .typing-bubble {
@@ -1345,6 +1378,8 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
         <div class="input-option-item">
           <select id="modelSelect" class="model-select-compact" data-i18n-aria-label="chat.select_model" aria-label="Sélectionner un modèle">
             <option value="groq">⚡ Groq (LLaMA 3.1 8B)</option>
+            <option value="llama-3.3-70b-versatile">⚡ Groq (LLaMA 3.3 70B)</option>
+            <option value="gpt-4o">OpenAI (GPT-4o)</option>
             <!-- <option value="mistral">🦙 Mistral 7B</option> -->
             <!-- <option value="qwen3:8b">🐉 Qwen 3 8B</option> -->
           </select>
@@ -1397,7 +1432,7 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
 <script>
   Auth.protectRoute();
 </script>
-<script src="js/chat.js?v=20260728_1"></script>
+<script src="js/chat.js?v=20260730_3"></script>
 
 </body>
 </html>

@@ -349,6 +349,22 @@ function setStored(key, value) {
   } catch (_) {}
 }
 
+function resolveDiagnosticModelSelection(selectedModel) {
+  if (selectedModel === 'gpt-4o' || selectedModel === 'openai') {
+    return { provider: 'openai', model: 'gpt-4o' };
+  }
+  if (selectedModel === 'llama-3.3-70b-versatile') {
+    return { provider: 'groq', model: 'llama-3.3-70b-versatile' };
+  }
+  if (selectedModel === 'qwen3:8b') {
+    return { provider: 'ollama', model: 'qwen3:8b' };
+  }
+  if (selectedModel === 'groq') {
+    return { provider: 'groq', model: 'llama-3.1-8b-instant' };
+  }
+  return { provider: 'ollama', model: selectedModel };
+}
+
 function getStored(key) {
   try {
     return localStorage.getItem(key);
@@ -402,16 +418,9 @@ btnExtract.addEventListener('click', async () => {
   fd.append('file', fileInput.files[0]);
   
   const selectedModel = modelSelect.value;
-  let provider = 'ollama';
-  let model = selectedModel;
-  
-  if(['groq','gpt-4o'].includes(selectedModel)){
-    provider = selectedModel === 'gpt-4o' ? 'openai' : selectedModel;
-    model = selectedModel === 'groq' ? 'llama-3.1-8b-instant' : '';
-  } else if (selectedModel === 'qwen3:8b') {
-    provider = 'ollama';
-    model = 'qwen3:8b';
-  }
+  const selection = resolveDiagnosticModelSelection(selectedModel);
+  const provider = selection.provider;
+  const model = selection.model;
   
   fd.append('provider', provider);
   if(model) fd.append('model', model);
