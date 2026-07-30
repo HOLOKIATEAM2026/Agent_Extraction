@@ -12,6 +12,7 @@ const I18n = {
     this.currentLang = ['fr', 'en', 'es'].includes(saved) ? saved : 'fr';
     await this.load(this.currentLang);
     this.applyTranslations(document);
+    this.enhanceSwitchers();
     this.updateButtons();
     this.injectStyles();
     document.documentElement.lang = this.currentLang;
@@ -92,6 +93,78 @@ const I18n = {
     document.querySelectorAll('.lang-btn').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.lang === this.currentLang);
     });
+    this.syncSwitcherLabels();
+  },
+
+  enhanceSwitchers() {
+    document.querySelectorAll('.lang-switcher').forEach((switcher, index) => {
+      if (switcher.dataset.i18nEnhanced === '1') return;
+      switcher.dataset.i18nEnhanced = '1';
+      switcher.classList.add('lang-switcher-dropdown');
+
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'lang-current';
+      toggle.setAttribute('aria-haspopup', 'true');
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = `
+        <span class="lang-current-icon" aria-hidden="true">🌐</span>
+        <span class="lang-current-label">FR</span>
+        <span class="lang-current-caret" aria-hidden="true">▾</span>
+      `;
+
+      const menu = document.createElement('div');
+      menu.className = 'lang-menu';
+      menu.setAttribute('role', 'menu');
+
+      const buttons = Array.from(switcher.querySelectorAll('.lang-btn'));
+      buttons.forEach((btn) => {
+        btn.type = 'button';
+        btn.classList.add('lang-menu-btn');
+        menu.appendChild(btn);
+      });
+
+      switcher.innerHTML = '';
+      switcher.appendChild(toggle);
+      switcher.appendChild(menu);
+
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const willOpen = !switcher.classList.contains('open');
+        document.querySelectorAll('.lang-switcher.open').forEach((other) => {
+          other.classList.remove('open');
+          const otherToggle = other.querySelector('.lang-current');
+          if (otherToggle) otherToggle.setAttribute('aria-expanded', 'false');
+        });
+        switcher.classList.toggle('open', willOpen);
+        toggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      });
+
+      menu.addEventListener('click', () => {
+        switcher.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+
+      if (index === 0) {
+        document.addEventListener('click', (e) => {
+          document.querySelectorAll('.lang-switcher.open').forEach((openSwitcher) => {
+            if (!openSwitcher.contains(e.target)) {
+              openSwitcher.classList.remove('open');
+              const openToggle = openSwitcher.querySelector('.lang-current');
+              if (openToggle) openToggle.setAttribute('aria-expanded', 'false');
+            }
+          });
+        });
+      }
+    });
+    this.syncSwitcherLabels();
+  },
+
+  syncSwitcherLabels() {
+    document.querySelectorAll('.lang-switcher').forEach((switcher) => {
+      const label = switcher.querySelector('.lang-current-label');
+      if (label) label.textContent = String(this.currentLang || 'fr').toUpperCase();
+    });
   },
 
   injectStyles() {
@@ -100,19 +173,70 @@ const I18n = {
     style.id = 'i18n-styles';
     style.textContent = `
       .lang-switcher {
-        display: flex;
-        gap: 4px;
+        position: relative;
+        display: inline-flex;
         align-items: center;
+        align-items: center;
+      .lang-current,
+      .lang-btn {
+        font-family: var(--mono);
+      }
+      .lang-current {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 68px;
+        justify-content: center;
+        padding: 6px 10px;
+        border: 1px solid var(--line, var(--border));
+        border-radius: 8px;
+        border-radius: 6px;
+        color: var(--muted);
+        font-size: 10px;
+        color: var(--ink, var(--text));
+        font-family: var(--mono);
+        transition: all 0.2s ease;
+      .lang-current:hover,
+      .lang-switcher.open .lang-current {
+        border-color: var(--blue);
+        background: rgba(60,87,243,0.10);
+      }
+      .lang-current-icon,
+      .lang-current-caret {
+        opacity: 0.85;
+      }
+      .lang-current-label {
+        font-weight: 600;
+        letter-spacing: 0.08em;
+      }
+      .lang-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        min-width: 78px;
+        padding: 6px;
+        border: 1px solid var(--line, var(--border));
+        border-radius: 10px;
+        background: var(--paper-2, var(--surface));
+        box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+        display: none;
+        flex-direction: column;
+        gap: 4px;
+        z-index: 220;
+      }
+      .lang-switcher.open .lang-menu {
+        display: flex;
       }
       .lang-btn {
-        padding: 4px 8px;
-        border: 1px solid var(--line, var(--border));
-        border-radius: 6px;
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid transparent;
+        border-radius: 8px;
         background: transparent;
         color: var(--muted);
         font-size: 10px;
         cursor: pointer;
-        font-family: var(--mono);
+        text-align: left;
         transition: all 0.2s ease;
       }
       .lang-btn:hover,
