@@ -1454,12 +1454,56 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
 <script src="js/common.js" onerror="void 0"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js?v=20260706_1"></script>
-<script src="js/i18n.js?v=20260728_4"></script>
+<script src="js/i18n.js?v=20260730_1"></script>
 <script src="js/auth.js?v=20260730_1"></script>
 <script>
   Auth.protectRoute();
 </script>
+<script>
+// #region debug-point A-B-C-D:chat-lang-styles
+document.addEventListener('DOMContentLoaded', () => {
+  const trigger = document.querySelector('.lang-trigger');
+  const menu = document.querySelector('.lang-menu');
+  const switcher = document.querySelector('.lang-switcher');
+  if (!trigger || !menu || !switcher) return;
+  const report = (phase) => {
+    try {
+      const root = document.documentElement;
+      const triggerStyle = getComputedStyle(trigger);
+      const menuStyle = getComputedStyle(menu);
+      const rootStyle = getComputedStyle(root);
+      fetch('http://127.0.0.1:7777/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: 'chat-lang-dark',
+          runId: 'pre-fix',
+          hypothesisId: phase === 'open' ? 'A' : 'B',
+          location: 'html/chat.html:lang-switcher',
+          msg: `[DEBUG] Chat language styles ${phase}`,
+          data: {
+            theme: root.getAttribute('data-theme') || '',
+            switcherOpen: switcher.classList.contains('open'),
+            triggerBackground: triggerStyle.backgroundColor,
+            triggerColor: triggerStyle.color,
+            menuBackground: menuStyle.backgroundColor,
+            menuColor: menuStyle.color,
+            paper2: rootStyle.getPropertyValue('--paper-2').trim(),
+            ink: rootStyle.getPropertyValue('--ink').trim(),
+            line: rootStyle.getPropertyValue('--line').trim()
+          },
+          ts: Date.now()
+        })
+      }).catch(() => {});
+    } catch (_) {}
+  };
+  report('init');
+  trigger.addEventListener('click', () => {
+    setTimeout(() => report('open'), 80);
+  });
+});
+// #endregion
+</script>
 <script src="js/chat.js?v=20260730_3"></script>
 
 </body>
-</html>
