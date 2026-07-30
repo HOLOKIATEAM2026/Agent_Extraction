@@ -506,8 +506,8 @@ T8.8  → Historique                       ← en dernier
 > Ces fonctionnalités dépassent le cadre du stage
 > mais représentent la vision produit long terme Holokia.
 
-- [ ] **T11.1** — Export PDF du diagnostic
-        (rapport professionnel avec logo Holokia)
+- [x] **T11.1** — Export PDF du diagnostic
+        (rapport professionnel avec logo Holokia + bouton d'export côté mode Diagnostic)
 - [x] **T11.2** — Génération automatique de recommandations IA
         (3 actions prioritaires basées sur la complétude/confiance + affichage dans le mode Diagnostic)
 - [x] **T11.3** — Dashboard Analytics

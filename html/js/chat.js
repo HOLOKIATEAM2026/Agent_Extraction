@@ -31,6 +31,13 @@ const ragStatus     = document.getElementById('ragStatus');
 const headerModel   = document.getElementById('headerModel');
 const headerDocs    = document.getElementById('headerDocs');
 
+function tr(key, vars) {
+  if (window.I18n && typeof window.I18n.t === 'function') {
+    return window.I18n.t(key, vars);
+  }
+  return key;
+}
+
 // ── MODEL INFO MAP ──
 const modelMap = {
   'groq':    { name: 'LLaMA 3.1 70B', sub: 'Groq Cloud · Latence ~1s', color: 'var(--blue)' },
@@ -40,7 +47,8 @@ const modelMap = {
 
 // ── UTILS ──
 function formatTime() {
-  return new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  const locale = window.I18n && window.I18n.currentLang ? window.I18n.currentLang : 'fr';
+  return new Date().toLocaleTimeString(locale, { hour:'2-digit', minute:'2-digit' });
 }
 
 function getExt(filename) {
@@ -64,7 +72,7 @@ function updateStats() {
   }
 
   if (headerDocs) {
-    headerDocs.innerHTML = `<span class="dot dot-amber"></span> ${state.files.length} doc${state.files.length !== 1 ? 's' : ''}`;
+    headerDocs.innerHTML = `<span class="dot dot-amber"></span> ${tr('common.doc_count', { count: state.files.length, suffix: state.files.length !== 1 ? 's' : '' })}`;
   }
   
   if(docCountBadge) {
@@ -83,8 +91,8 @@ function updateRagStatus() {
   const hasFiles = state.files.length > 0;
   if (ragStatus) {
     ragStatus.innerHTML = hasFiles
-      ? `<span class="dot dot-green"></span> ${state.files.length} document(s) chargé(s) — RAG actif`
-      : `<span class="dot" style="background:var(--amber);box-shadow:0 0 6px var(--amber)"></span> En attente de documents`;
+      ? tr('chat.rag_ready', { count: state.files.length })
+      : tr('chat.rag_waiting');
   }
 }
 
@@ -124,7 +132,7 @@ function renderFileList() {
     item.className = 'file-item';
     item.innerHTML = `
       <span class="file-name" title="${f.name}">${f.name.length > 15 ? f.name.slice(0,12) + '...' + getExt(f.name) : f.name}</span>
-      <span class="file-remove" role="button" tabindex="0" title="Supprimer" data-name="${f.name}">✕</span>
+      <span class="file-remove" role="button" tabindex="0" title="${tr('common.delete')}" data-name="${f.name}">✕</span>
     `;
     fileList.appendChild(item);
   });
@@ -168,14 +176,14 @@ function addMessage(role, content, sources = [], confidence = null) {
   msg.className = `message ${role}`;
 
   const avatar = role === 'user' ? 'U' : 'AI';
-  const name   = role === 'user' ? 'Vous' : 'Holokia RAG';
+  const name   = role === 'user' ? tr('chat.you') : tr('chat.assistant');
 
   let sourcesHtml = '';
   if (sources && sources.length > 0) {
     state.totalSources += sources.length;
     sourcesHtml = `
       <div class="msg-sources">
-        <div class="sources-header">Sources (${sources.length})</div>
+        <div class="sources-header">${tr('chat.sources_label', { count: sources.length })}</div>
         ${sources.map(s => {
           let pageText = s.page || '?';
           if (pageText.toString().includes(',')) {
@@ -199,7 +207,7 @@ function addMessage(role, content, sources = [], confidence = null) {
     state.confidenceCount++;
     const cls = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
     const pct = Math.round(confidence * 100);
-    confHtml = `<div class="confidence-badge confidence-${cls}">● Confiance ${pct}%</div>`;
+    confHtml = `<div class="confidence-badge confidence-${cls}">${tr('chat.confidence_badge', { pct })}</div>`;
   }
 
   msg.innerHTML = `
@@ -235,7 +243,7 @@ function addTyping() {
   msg.innerHTML = `
     <div class="msg-avatar">AI</div>
     <div class="msg-body">
-      <div class="msg-meta">Holokia RAG <span class="msg-time">${formatTime()}</span></div>
+      <div class="msg-meta">${tr('chat.assistant')} <span class="msg-time">${formatTime()}</span></div>
       <div class="typing-bubble">
         <span class="typing-dot"></span>
         <span class="typing-dot"></span>
@@ -314,7 +322,7 @@ async function sendMessage() {
 
     typing.remove();
 
-    if (!res.ok) throw new Error(`Erreur serveur : ${res.status}`);
+    if (!res.ok) throw new Error(tr('chat.server_error', { status: res.status }));
 
     const data = await res.json();
     const citations = data.citations || data.sources || [];
@@ -322,7 +330,7 @@ async function sendMessage() {
 
     addMessage(
       'assistant',
-      data.answer || data.response || 'Aucune réponse reçue.',
+      data.answer || data.response || tr('chat.no_answer'),
       citations,
       data.confidence ?? simulatedConfidence
     );
@@ -331,8 +339,8 @@ async function sendMessage() {
     typing.remove();
     const details = (err && err.message) ? String(err.message) : String(err || "");
     const msg = state.files.length > 0
-      ? `Je n’arrive pas à obtenir une réponse du backend.\n\nDétails: ${details}\n\nVérifiez que l’API est en ligne et réessayez.`
-      : `Aucun document chargé. Uploadez un rapport d'activité dans la sidebar pour que je puisse analyser son contenu et répondre à : "${text}"`;
+      ? tr('chat.backend_unreachable', { details })
+      : tr('chat.no_document', { text });
     addMessage('assistant', msg, [], null);
   }
 
@@ -477,7 +485,7 @@ async function saveToHistory() {
   const firstUserMsg = state.messages.find(m => m.role === 'user');
   const title = firstUserMsg 
     ? firstUserMsg.content.slice(0, 30) + (firstUserMsg.content.length > 30 ? '...' : '') 
-    : 'Nouvelle conversation';
+    : tr('chat.new_conversation');
   
   const existingIdx = cachedChatHistory.findIndex(h => h.id === state.id);
   const creationDate = existingIdx >= 0 && cachedChatHistory[existingIdx].date 
@@ -517,7 +525,7 @@ async function renderHistory() {
   historyList.innerHTML = '';
   
   if (hist.length === 0) {
-    historyList.innerHTML = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px;text-align:center;">Aucun historique</div>';
+    historyList.innerHTML = `<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px;text-align:center;">${tr('common.no_history')}</div>`;
     return;
   }
   
@@ -526,12 +534,12 @@ async function renderHistory() {
     item.className = `history-item ${h.id === state.id ? 'active' : ''}`;
     
     const dateObj = new Date(h.date || h.created_at);
-    const dateStr = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const dateStr = dateObj.toLocaleDateString(window.I18n && window.I18n.currentLang ? window.I18n.currentLang : 'fr', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     
     item.innerHTML = `
       <div class="history-title" title="${h.title}">${h.title}</div>
       <div class="history-date">${dateStr}</div>
-      <button class="history-delete" title="Supprimer">✕</button>
+      <button class="history-delete" title="${tr('common.delete')}">✕</button>
     `;
     
     item.addEventListener('click', (e) => {
@@ -551,7 +559,7 @@ async function renderHistory() {
 }
 
 async function deleteSession(id) {
-  if (!confirm("Voulez-vous vraiment supprimer cette conversation ?")) return;
+  if (!confirm(tr('chat.confirm_delete_conversation'))) return;
   
   try {
     await Auth.apiFetch(`${API_URL}/history/chat/${id}`, { method: 'DELETE' });
@@ -637,3 +645,18 @@ if (document.readyState === 'loading') {
 } else {
   initChat();
 }
+
+document.addEventListener('i18n:updated', () => {
+  updateStats();
+  updateRagStatus();
+  if (messagesArea && state.messages.length > 0) {
+    const restored = [...state.messages];
+    state.messages = [];
+    state.totalSources = 0;
+    state.confidenceSum = 0;
+    state.confidenceCount = 0;
+    messagesArea.innerHTML = '';
+    restored.forEach((m) => addMessage(m.role, m.content, m.sources, m.confidence));
+  }
+  renderHistory();
+});

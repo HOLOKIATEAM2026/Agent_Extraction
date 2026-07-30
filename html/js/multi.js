@@ -34,6 +34,13 @@ const questionsPanel    = document.getElementById('questionsPanel');
 const btnMultiExtract   = document.getElementById('btnMultiExtract');
 const btnNewMulti       = document.getElementById('btnNewMulti');
 
+function tr(key, vars) {
+  if (window.I18n && typeof window.I18n.t === 'function') {
+    return window.I18n.t(key, vars);
+  }
+  return key;
+}
+
 // ── TOGGLES ──
 if (btnHistoryToggle) {
   btnHistoryToggle.addEventListener('click', () => {
@@ -96,11 +103,11 @@ function updateHeader() {
   const dCount = multiFiles.length;
   const qCount = multiQuestions.length;
   
-  if (headerDocs) headerDocs.innerHTML = `<span class="dot dot-teal"></span> ${dCount} doc${dCount > 1 ? 's' : ''}`;
-  if (headerQuestions) headerQuestions.innerHTML = `<span class="dot dot-amber"></span> ${qCount} question${qCount > 1 ? 's' : ''}`;
+  if (headerDocs) headerDocs.innerHTML = `<span class="dot dot-teal"></span> ${tr('common.doc_count', { count: dCount, suffix: dCount > 1 ? 's' : '' })}`;
+  if (headerQuestions) headerQuestions.innerHTML = `<span class="dot dot-amber"></span> ${tr('common.question_count', { count: qCount, suffix: qCount > 1 ? 's' : '' })}`;
   
-  if (tbDocsCount) tbDocsCount.innerText = `${dCount} doc${dCount > 1 ? 's' : ''}`;
-  if (tbQuestionsCount) tbQuestionsCount.innerText = `${qCount} question${qCount > 1 ? 's' : ''}`;
+  if (tbDocsCount) tbDocsCount.innerText = tr('common.doc_count', { count: dCount, suffix: dCount > 1 ? 's' : '' });
+  if (tbQuestionsCount) tbQuestionsCount.innerText = tr('common.question_count', { count: qCount, suffix: qCount > 1 ? 's' : '' });
   
   if (btnMultiExtract) {
     if (dCount > 0 && qCount > 0) {
@@ -149,10 +156,8 @@ function clearMultiState() {
             <line x1="9" y1="21" x2="9" y2="9"/>
           </svg>
         </div>
-        <div class="results-empty-text">Aucun résultat</div>
-        <div class="results-empty-sub">
-          Ajoutez vos documents et vos questions via le menu en haut, puis lancez l'analyse pour voir les résultats s'afficher ici.
-        </div>
+        <div class="results-empty-text">${tr('common.no_results')}</div>
+        <div class="results-empty-sub">${tr('multi.empty_subtitle')}</div>
       </div>
     `;
   }
@@ -208,7 +213,7 @@ async function saveMultiToHistory() {
   
   const title = multiFiles.length > 0 
     ? multiFiles.map(f => f.name.split('.')[0]).join(', ') 
-    : 'Nouvelle comparaison';
+    : tr('multi.new_comparison');
   
   const existingIdx = cachedMultiHistory.findIndex(h => h.id === multiId);
   const creationDate = existingIdx >= 0 && cachedMultiHistory[existingIdx].date 
@@ -251,7 +256,7 @@ async function renderMultiHistory() {
   histList.innerHTML = '';
   
   if (hist.length === 0) {
-    histList.innerHTML = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px;text-align:center;">Aucun historique</div>';
+    histList.innerHTML = `<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px;text-align:center;">${tr('common.no_history')}</div>`;
     return;
   }
   
@@ -260,12 +265,12 @@ async function renderMultiHistory() {
     item.className = `history-item ${h.id === multiId ? 'active' : ''}`;
     
     const dateObj = new Date(h.date || h.created_at);
-    const dateStr = dateObj.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const dateStr = dateObj.toLocaleDateString(window.I18n && window.I18n.currentLang ? window.I18n.currentLang : 'fr', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
     
     item.innerHTML = `
       <div class="history-title" title="${esc(h.title)}">${esc(h.title)}</div>
       <div class="history-date">${dateStr}</div>
-      <button class="history-delete" title="Supprimer">✕</button>
+      <button class="history-delete" title="${tr('common.delete')}">✕</button>
     `;
     
     item.addEventListener('click', (e) => {
@@ -285,7 +290,7 @@ async function renderMultiHistory() {
 }
 
 async function deleteMultiSession(id) {
-  if (!confirm("Voulez-vous vraiment supprimer cet historique ?")) return;
+  if (!confirm(tr('multi.confirm_delete_history'))) return;
   
   try {
     await Auth.apiFetch(`${API_URL}/history/multi/${id}`, { method: 'DELETE' });
@@ -345,10 +350,8 @@ function restoreEmptyState() {
             <line x1="9" y1="21" x2="9" y2="9"/>
           </svg>
         </div>
-        <div class="results-empty-text">Aucun résultat</div>
-        <div class="results-empty-sub">
-          Ajoutez vos documents et vos questions via le menu en haut, puis lancez l'analyse pour voir les résultats s'afficher ici.
-        </div>
+        <div class="results-empty-text">${tr('common.no_results')}</div>
+        <div class="results-empty-sub">${tr('multi.empty_subtitle')}</div>
       </div>
     `;
   }
@@ -385,7 +388,7 @@ function handleMultiFiles(files, isVirtual = false) {
       li.innerHTML = `
         <span class="file-ext">${getExt(f.name)}</span>
         <span class="file-name" title="${esc(f.name)}">${esc(f.name)}</span>
-        <button class="file-remove" title="Supprimer" data-name="${esc(f.name)}">✕</button>
+        <button class="file-remove" title="${tr('common.delete')}" data-name="${esc(f.name)}">✕</button>
       `;
       multiFileList.appendChild(li);
       
@@ -432,7 +435,7 @@ function addQuestion(q, skipSave = false) {
     li.innerHTML = `
       <span class="q-num">${String(num).padStart(2,'0')}</span>
       <span class="q-text">${esc(q)}</span>
-      <button class="btn-remove" title="Supprimer">×</button>
+      <button class="btn-remove" title="${tr('common.delete')}">×</button>
     `;
     li.querySelector('.btn-remove').onclick = () => {
       multiQuestions = multiQuestions.filter(x => x !== q);
@@ -488,8 +491,8 @@ if (modelSelect) {
 // ── LAUNCH ──
 if (btnMultiExtract) {
   btnMultiExtract.addEventListener('click', async () => {
-    if (multiFiles.length === 0)     { alert('Veuillez ajouter au moins un document.'); return; }
-    if (multiQuestions.length === 0) { alert('Veuillez ajouter au moins une question.'); return; }
+    if (multiFiles.length === 0)     { alert(tr('multi.need_document')); return; }
+    if (multiQuestions.length === 0) { alert(tr('multi.need_question')); return; }
 
     const container = document.getElementById('multiResultsContainer');
     const model     = modelSelect ? modelSelect.value : 'groq';
@@ -501,7 +504,7 @@ if (btnMultiExtract) {
       container.innerHTML = `
         <div class="loading-state">
           <div class="loading-spinner-lg"></div>
-          <div class="loading-text">Analyse de ${multiFiles.length} document(s) en cours…</div>
+          <div class="loading-text">${tr('multi.loading_analysis', { count: multiFiles.length })}</div>
         </div>
       `;
     }
@@ -541,7 +544,7 @@ if (btnMultiExtract) {
           alert(msg);
           return;
         }
-        if (container) container.innerHTML = `<div class="error-block">Erreur serveur (${response.status}) : ${esc(msg)}</div>`;
+        if (container) container.innerHTML = `<div class="error-block">${tr('multi.server_error', { msg: `(${response.status}) ${msg}` })}</div>`;
         return;
       }
 
@@ -551,10 +554,10 @@ if (btnMultiExtract) {
       }
 
       const msg = data && (data.error || data.detail) ? (data.error || data.detail) : 'Inconnue';
-      if (container) container.innerHTML = `<div class="error-block">Erreur serveur : ${esc(msg)}</div>`;
+      if (container) container.innerHTML = `<div class="error-block">${tr('multi.server_error', { msg: esc(msg) })}</div>`;
 
     } catch (err) {
-      if (container) container.innerHTML = `<div class="error-block">Erreur réseau : ${esc(err && err.message ? err.message : 'Inconnue')}</div>`;
+      if (container) container.innerHTML = `<div class="error-block">${tr('multi.network_error', { msg: esc(err && err.message ? err.message : 'Inconnue') })}</div>`;
     } finally {
       if (multiStatus) multiStatus.classList.remove('visible');
       btnMultiExtract.disabled = false;
@@ -575,7 +578,7 @@ function renderResults(results) {
     const block = document.createElement('div');
     block.className = 'synthese-block';
     block.innerHTML = `
-      <div class="synthese-label">Synthèse Comparative</div>
+      <div class="synthese-label">${tr('multi.comparative_summary')}</div>
       <div class="synthese-body">${esc(results.synthese_comparative)}</div>
     `;
     container.appendChild(block);
@@ -583,7 +586,7 @@ function renderResults(results) {
 
   const label = document.createElement('div');
   label.className = 'results-label';
-  label.textContent = `Résultats par document (${Object.keys(results.results_by_document || {}).length})`;
+  label.textContent = tr('multi.results_by_document', { count: Object.keys(results.results_by_document || {}).length });
   container.appendChild(label);
 
   const grid = document.createElement('div');
@@ -599,7 +602,7 @@ function renderResults(results) {
       <div class="doc-card-header">
         <div class="doc-card-icon">📄</div>
         <span class="doc-card-name" title="${esc(fname)}">${esc(fname)}</span>
-        <span class="doc-card-count">${qCount} réponse${qCount !== 1 ? 's' : ''}</span>
+        <span class="doc-card-count">${tr('common.reply_count', { count: qCount, suffix: qCount !== 1 ? 's' : '' })}</span>
       </div>
     `;
 
@@ -611,7 +614,7 @@ function renderResults(results) {
       const answerContent = document.createElement('div');
       answerContent.className = 'qa-answer';
       answerContent.style.flexDirection = 'row';
-      answerContent.innerHTML = val ? `${esc(val)} ${page} ${conf}` : '<span class="qa-empty">Non trouvé dans ce document</span>';
+      answerContent.innerHTML = val ? `${esc(val)} ${page} ${conf}` : `<span class="qa-empty">${tr('common.not_found')}</span>`;
 
       const row    = document.createElement('div');
       row.className = 'qa-row';
@@ -632,7 +635,7 @@ function getConfBadge(conf) {
 
 function renderDemoResults() {
   const demoData = {
-    synthese_comparative: `Analyse comparative de ${multiFiles.length} document(s) sur ${multiQuestions.length} question(s).\n\nServeur non disponible — résultats de démonstration. Lancez votre backend FastAPI sur localhost:8000 pour les vraies extractions.`,
+    synthese_comparative: tr('multi.demo_summary', { docCount: multiFiles.length, questionCount: multiQuestions.length }),
     results_by_document: {}
   };
   multiFiles.forEach(f => {
@@ -654,3 +657,12 @@ if (document.readyState === 'loading') {
 } else {
   initMulti();
 }
+
+document.addEventListener('i18n:updated', () => {
+  updateHeader();
+  restoreEmptyState();
+  if (lastResults) {
+    renderResults(lastResults);
+  }
+  renderMultiHistory();
+});

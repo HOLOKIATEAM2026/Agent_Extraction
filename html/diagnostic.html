@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holokia — Agent RAG</title>
+<title data-i18n="diagnostic.page_title">Holokia — Agent RAG</title>
 <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -26,15 +26,20 @@
     HOLOKIA
   </a>
   <ul class="nav-links">
-    <li><a href="index.html">Accueil</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="diagnostic.html" style="color:var(--blue);font-weight:500;">Mode Diagnostic</a></li>
-    <li><a href="multi.html">Mode Comparaison</a></li>
-    <li><a href="chat.html">Mode Chat</a></li>
+    <li><a href="index.html" data-i18n="nav.home">Accueil</a></li>
+    <li><a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a></li>
+    <li><a href="diagnostic.html" style="color:var(--blue);font-weight:500;" data-i18n="nav.diagnostic">Mode Diagnostic</a></li>
+    <li><a href="multi.html" data-i18n="nav.multi">Mode Comparaison</a></li>
+    <li><a href="chat.html" data-i18n="nav.chat">Mode Chat</a></li>
   </ul>
   <div class="nav-actions">
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
-    <div class="nav-status">Copilot Strategy IA</div>
+    <div class="lang-switcher">
+      <button type="button" class="lang-btn" data-lang="fr">FR</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="es">ES</button>
+    </div>
+    <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria-label="nav.toggle_theme" data-i18n-title="nav.theme" aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status" data-i18n="nav.badge">Copilot Strategy IA</div>
   </div>
 </nav>
 
@@ -45,18 +50,18 @@
     <span>/ Extraction / Rapports d'Activité / IA /</span>
     <!-- Toggle Navigation Diagnostic / Historique -->
     <div style="display: flex; gap: 8px; margin-left: auto; background: var(--paper-2); padding: 4px; border-radius: 8px; border: 1px solid var(--line); width: fit-content; text-transform: none; letter-spacing: normal;">
-      <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(60,87,243,0.18); color: var(--blue); font-weight: 500; border: 1px solid rgba(60,87,243,0.30);">Diagnostic</a>
-      <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;">Historique</a>
+      <a href="diagnostic.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; background: rgba(60,87,243,0.18); color: var(--blue); font-weight: 500; border: 1px solid rgba(60,87,243,0.30);" data-i18n="diagnostic.tab_diagnostic">Diagnostic</a>
+      <a href="historique.html" style="padding: 6px 20px; border-radius: 6px; font-family: var(--mono); font-size: 12px; text-decoration: none; color: var(--muted); font-weight: 500; transition: all 0.2s;" data-i18n="diagnostic.tab_history">Historique</a>
     </div>
   </div>
 
 
   <div class="hero-left reveal">
     <h1 class="hero-title">
-      Extraction<br>
-      <em>Intelligente</em>
+      <span data-i18n="diagnostic.hero_title_1">Extraction</span><br>
+      <em data-i18n="diagnostic.hero_title_2">Intelligente</em>
     </h1>
-    <p class="hero-desc">
+    <p class="hero-desc" data-i18n="diagnostic.hero_desc">
       Analyse automatique de rapports d'activité d'entreprises (PDF, Word, TXT). Extraction structurée avec citations sourcées pour préremplir le diagnostic stratégique.
     </p>
     <!--
@@ -72,22 +77,22 @@
   <div class="hero-right reveal" id="demo">
     <div class="hero-metrics" style="display:flex; flex-direction:column; padding:20px; background:var(--paper-2); border:1px solid var(--line);">
       <div style="margin-bottom:20px;">
-        <div class="ekg-label">1. UPLOAD DOCUMENT</div>
+        <div class="ekg-label" data-i18n="diagnostic.upload_label">1. UPLOAD DOCUMENT</div>
         <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md" style="margin-top:10px; font-family:var(--mono); font-size:12px;" />
       </div>
       
       <div style="margin-bottom:20px;">
-        <div class="ekg-label">2. CHOIX DU MODÈLE</div>
+        <div class="ekg-label" data-i18n="diagnostic.model_label">2. CHOIX DU MODÈLE</div>
         <select id="modelSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
           <option value="groq">⚡ Groq (LLaMA 3.1 8B)</option>
-          <option value="mistral">Mistral (Local Ollama)</option>
-          <option value="qwen3:8b">Qwen 3 8B (Local Ollama)</option>
+          <!-- <option value="mistral">Mistral (Local Ollama)</option> -->
+          <!-- <option value="qwen3:8b">Qwen 3 8B (Local Ollama)</option> -->
           <option value="gpt-4o">GPT-4o (OpenAI)</option>
         </select>
       </div>
 
       <div style="margin-bottom:20px;">
-        <div class="ekg-label">3. APPROCHE</div>
+        <div class="ekg-label" data-i18n="diagnostic.approach_label">3. APPROCHE</div>
         <select id="approachSelect" style="margin-top:10px; padding:8px; font-family:var(--mono); font-size:12px; width:100%; border:1px solid var(--line);">
           <option value="agent" selected>L'Agent Final (Analyse Préliminaire + RAG Ciblé)</option>
           <option value="d">Approche D (RAG + Validation)</option>
@@ -98,18 +103,18 @@
       </div>
 
       <div style="margin-bottom:20px;">
-        <div class="ekg-label">4. MODE D'EXTRACTION</div>
+        <div class="ekg-label" data-i18n="diagnostic.mode_label">4. MODE D'EXTRACTION</div>
         <div style="display:flex; gap:10px; margin-top:10px;">
-          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false"> Rapide (synchrone)</label>
-          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true" checked> Robuste (asynchrone • gros PDF)</label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="false"> <span data-i18n="diagnostic.async_fast">Rapide (synchrone)</span></label>
+          <label style="font-family:var(--mono); font-size:12px;"><input type="radio" name="asyncMode" value="true" checked> <span data-i18n="diagnostic.async_safe">Robuste (asynchrone • gros PDF)</span></label>
         </div>
       </div>
 
-      <button id="btnExtract" class="btn-primary" style="width:100%; justify-content:center; margin-top:10px;">LANCER L'EXTRACTION</button>
+      <button id="btnExtract" class="btn-primary" style="width:100%; justify-content:center; margin-top:10px;" data-i18n="diagnostic.extract_btn">LANCER L'EXTRACTION</button>
       
-      <button id="btnOpenQuestions" class="btn-outline" style="width:100%; justify-content:center; margin-top:10px; padding: 12px; font-size: 11px;">ÉDITER LES QUESTIONS</button>
+      <button id="btnOpenQuestions" class="btn-outline" style="width:100%; justify-content:center; margin-top:10px; padding: 12px; font-size: 11px;" data-i18n="diagnostic.edit_questions">ÉDITER LES QUESTIONS</button>
       
-      <div id="statusText" style="margin-top:15px; font-family:var(--mono); font-size:10px; color:var(--blue); display:none;">Statut: En cours...</div>
+      <div id="statusText" style="margin-top:15px; font-family:var(--mono); font-size:10px; color:var(--blue); display:none;" data-i18n="diagnostic.status_processing">Statut: En cours...</div>
     </div>
   </div>
 </section>
@@ -118,7 +123,7 @@
 <section id="results" class="features" style="display:none; padding-bottom:0;">
   <div class="section-header reveal">
     <span class="section-num">01</span>
-    <h2 class="section-title">Diagnostic<br><em>Stratégique</em></h2>
+    <h2 class="section-title"><span data-i18n="diagnostic.results_title_1">Diagnostic</span><br><em data-i18n="diagnostic.results_title_2">Stratégique</em></h2>
   </div>
   
   <!-- Conteneur pour les cartes visuelles -->
@@ -132,10 +137,13 @@
   <div style="padding: 40px; background:var(--paper-3); color:var(--ink); overflow-x:auto;">
     <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
       <div>
-        <span style="font-family:var(--mono); font-size:12px; color:var(--teal);">OUTPUT.JSON</span>
-        <span style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:15px;">(Vue développeur)</span>
+        <span style="font-family:var(--mono); font-size:12px; color:var(--teal);" data-i18n="diagnostic.output_json">OUTPUT.JSON</span>
+        <span style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-left:15px;" data-i18n="diagnostic.dev_view">(Vue développeur)</span>
       </div>
-      <button id="btnCopy" class="btn-outline" style="color:var(--ink); border-color:var(--ink); padding:6px 12px;">COPIER</button>
+      <div style="display:flex; gap:10px;">
+        <button id="btnExportPdf" class="btn-outline" style="color:var(--ink); border-color:var(--ink); padding:6px 12px;" data-i18n="common.export_pdf">EXPORTER PDF</button>
+        <button id="btnCopy" class="btn-outline" style="color:var(--ink); border-color:var(--ink); padding:6px 12px;" data-i18n="common.copy">COPIER</button>
+      </div>
     </div>
     <pre id="jsonOutput" style="font-family:var(--mono); font-size:12px; line-height:1.5; color:var(--ink-2); max-height:400px; overflow-y:auto;"></pre>
   </div>
@@ -144,12 +152,12 @@
 <!-- Panneau latéral : Mes Questions -->
 <div id="questionsPanel" style="position:fixed; top:0; right:-450px; width:400px; height:100vh; background:var(--paper-2); border-left:1px solid var(--line); z-index:9999; transition: right 0.3s ease; box-shadow: -5px 0 15px rgba(0,0,0,0.35); display:flex; flex-direction:column;">
   <div style="padding: 20px; border-bottom: 1px solid var(--line); display:flex; justify-content:space-between; align-items:center; background: var(--paper-2);">
-    <h3 style="font-family:var(--display); font-size:20px; margin:0;">Mes Questions</h3>
+    <h3 style="font-family:var(--display); font-size:20px; margin:0;" data-i18n="diagnostic.my_questions">Mes Questions</h3>
     <button id="btnCloseQuestions" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted);">&times;</button>
   </div>
   
   <div style="padding: 20px; border-bottom: 1px solid var(--line); background: var(--paper-2);">
-    <div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px;">AJOUTER UNE QUESTION</div>
+    <div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:10px;" data-i18n="diagnostic.add_question">AJOUTER UNE QUESTION</div>
     <form id="addQuestionForm" style="display:flex; flex-direction:column; gap:10px;">
       <select id="qCategory" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
         <option value="strategique">Stratégique</option>
@@ -158,23 +166,23 @@
         <option value="data">Maturité Data</option>
         <option value="cyber">Cyber & Gouvernance</option>
       </select>
-      <input type="text" id="qChamp" placeholder="Clé (ex: nom_champ)" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
-      <input type="text" id="qText" placeholder="La question à poser au LLM..." required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
+      <input type="text" id="qChamp" placeholder="Clé (ex: nom_champ)" data-i18n-placeholder="diagnostic.field_placeholder" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
+      <input type="text" id="qText" placeholder="La question à poser au LLM..." data-i18n-placeholder="diagnostic.question_placeholder" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
       <select id="qType" required style="padding:8px; font-family:var(--mono); font-size:12px; border:1px solid var(--line); background: var(--glass); color: var(--ink);">
-        <option value="field">Champ unique (Texte, Nombre)</option>
-        <option value="list">Liste d'éléments</option>
+        <option value="field" data-i18n="diagnostic.type_field">Champ unique (Texte, Nombre)</option>
+        <option value="list" data-i18n="diagnostic.type_list">Liste d'éléments</option>
       </select>
-      <button type="submit" class="btn-primary" style="padding:8px; font-size:11px; justify-content:center;">AJOUTER</button>
+      <button type="submit" class="btn-primary" style="padding:8px; font-size:11px; justify-content:center;" data-i18n="diagnostic.add_btn">AJOUTER</button>
     </form>
   </div>
   
   <div style="flex:1; overflow-y:auto; padding: 20px;" id="questionsList">
     <!-- Liste des questions injectée ici -->
-    <div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);">Chargement...</div>
+    <div style="text-align:center; font-family:var(--mono); font-size:12px; color:var(--muted);" data-i18n="diagnostic.loading_questions">Chargement...</div>
   </div>
   
   <div style="padding: 20px; border-top: 1px solid var(--line); background: var(--paper-2);">
-    <button id="btnResetQuestions" class="btn-outline" style="width:100%; justify-content:center; padding:10px; font-size:11px; border-color:var(--red); color:var(--red);">RÉINITIALISER AUX DÉFAUTS</button>
+    <button id="btnResetQuestions" class="btn-outline" style="width:100%; justify-content:center; padding:10px; font-size:11px; border-color:var(--red); color:var(--red);" data-i18n="diagnostic.reset_defaults">RÉINITIALISER AUX DÉFAUTS</button>
   </div>
 </div>
 <!-- Overlay -->
@@ -183,12 +191,14 @@
 <script src="js/theme.js"></script>
 <script src="js/common.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="js/config.js?v=20260706_1"></script>
+<script src="js/i18n.js?v=20260728_1"></script>
 <script src="js/auth.js?v=20260620_1"></script>
 <script>
   Auth.protectRoute();
 </script>
-<script src="js/diagnostic.js?v=20260728_1"></script>
+<script src="js/diagnostic.js?v=20260728_3"></script>
 
 </body>
 </html>
