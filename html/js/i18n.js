@@ -124,15 +124,16 @@ const I18n = {
         align-items: center;
       }
       .lang-trigger {
-        min-width: 132px;
-        padding: 7px 10px;
+        min-width: 72px;
+        padding: 7px 9px;
         border: 1px solid var(--line, var(--border));
         border-radius: 10px;
         background: color-mix(in srgb, var(--paper-2, #fff) 92%, transparent);
         color: var(--ink, var(--text));
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 6px;
         cursor: pointer;
         font-family: var(--mono);
         font-size: 10px;
@@ -155,21 +156,18 @@ const I18n = {
         line-height: 1;
       }
       .lang-trigger-text {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1px;
-        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         min-width: 0;
       }
       .lang-trigger-label {
-        color: var(--ink, var(--text));
-        font-size: 11px;
-        white-space: nowrap;
+        display: none;
       }
       .lang-trigger-code {
-        color: var(--muted);
-        font-size: 9px;
+        color: var(--ink, var(--text));
+        font-size: 11px;
+        font-weight: 600;
         letter-spacing: 0.08em;
       }
       .lang-trigger-caret {
@@ -232,11 +230,8 @@ const I18n = {
       }
       @media (max-width: 768px) {
         .lang-trigger {
-          min-width: 110px;
-          padding: 6px 9px;
-        }
-        .lang-trigger-label {
-          font-size: 10px;
+          min-width: 64px;
+          padding: 6px 8px;
         }
         .lang-menu {
           right: auto;
