@@ -10,6 +10,31 @@ const btnCopy = document.getElementById('btnCopy');
 
 function buildCards(data) {
   cardsGrid.innerHTML = '';
+
+  const recs = Array.isArray(data && data.recommandations) ? data.recommandations : [];
+  if (recs.length > 0) {
+    let recHtml = `
+      <div style="grid-column: 1 / -1; background:var(--paper-2); border:1px solid var(--line); padding:24px;">
+        <h3 style="font-family:var(--display); font-size:24px; margin-bottom:12px;">Actions prioritaires</h3>
+        <div style="font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:16px;">3 recommandations automatiques basées sur la complétude et la confiance de l'extraction</div>
+        <ol style="margin:0; padding-left:18px; display:flex; flex-direction:column; gap:12px;">
+    `;
+    recs.slice(0, 3).forEach((r) => {
+      const title = r && r.titre ? String(r.titre) : 'Action';
+      const action = r && r.action ? String(r.action) : '';
+      const reason = r && r.raison ? String(r.raison) : '';
+      const cat = r && r.categorie ? String(r.categorie) : '';
+      recHtml += `
+        <li>
+          <div style="font-family:var(--mono); font-size:10px; color:var(--muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">${cat}${reason ? ` • ${reason}` : ''}</div>
+          <div style="font-size:14px; color:var(--ink); font-weight:600; margin-bottom:4px;">${title}</div>
+          <div style="font-size:13px; color:var(--ink-2); line-height:1.5;">${action}</div>
+        </li>
+      `;
+    });
+    recHtml += `</ol></div>`;
+    cardsGrid.innerHTML += recHtml;
+  }
   
   const sections = [
     { key: 'diagnostic_strategique', title: 'Stratégique' },

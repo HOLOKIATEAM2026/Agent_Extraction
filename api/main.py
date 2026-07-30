@@ -272,6 +272,12 @@ def _to_ui_schema(payload: Dict[str, Any]) -> Dict[str, Any]:
         },
     )
 
+    recs = result_obj.get("recommandations")
+    if isinstance(recs, list):
+        ui["recommandations"] = recs
+    else:
+        ui["recommandations"] = []
+
     return ui
 
 

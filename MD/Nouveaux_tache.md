@@ -508,9 +508,8 @@ T8.8  → Historique                       ← en dernier
 
 - [ ] **T11.1** — Export PDF du diagnostic
         (rapport professionnel avec logo Holokia)
-- [ ] **T11.2** — Génération automatique de recommandations IA
-        ("Voici les 3 actions prioritaires pour améliorer
-         votre score NIST de 2,8 à 4,0")
+- [x] **T11.2** — Génération automatique de recommandations IA
+        (3 actions prioritaires basées sur la complétude/confiance + affichage dans le mode Diagnostic)
 - [x] **T11.3** — Dashboard Analytics
         (KPIs Confiance / Complétude / Score qualité + graphiques d'évolution, benchmark sectoriel)
 - [ ] **T11.4** — Support multilingue

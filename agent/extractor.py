@@ -74,6 +74,129 @@ def get_page(doc):
             return pages
     return None
 
+
+def _generate_recommandations(raw_results: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _is_present(field: Any) -> bool:
+        if not isinstance(field, dict):
+            return False
+        v = field.get("valeur")
+        if isinstance(v, list):
+            return len(v) > 0
+        if v is None:
+            return False
+        return str(v).strip() != ""
+
+    def _confidence(field: Any) -> float:
+        if not isinstance(field, dict):
+            return 0.0
+        try:
+            return float(field.get("confiance", 0.0) or 0.0)
+        except Exception:
+            return 0.0
+
+    categories = [
+        ("strategique", "diagnostic_strategique", [
+            "taille_marche", "taux_croissance", "intensite_concurrentielle", "concurrents", "tendances_marche",
+        ]),
+        ("financier", "diagnostic_financier", [
+            "chiffre_affaires", "resultat_net", "ebitda",
+        ]),
+        ("rh", "diagnostic_rh", [
+            "effectif_total", "masse_salariale",
+        ]),
+        ("data", "diagnostic_data", [
+            "existence_donnees", "qualite", "accessibilite", "volumetrie", "historisation", "conformite", "documentation",
+        ]),
+        ("cyber", "diagnostic_cyber_gouvernance", [
+            "risques_identifies", "conformite_nist", "gouvernance_data",
+        ]),
+    ]
+
+    stats = []
+    for cat_key, schema_key, fields in categories:
+        group = raw_results.get(schema_key) if isinstance(raw_results.get(schema_key), dict) else {}
+        total = len(fields)
+        present = 0
+        low_conf = 0
+        for f in fields:
+            field_obj = group.get(f)
+            if _is_present(field_obj):
+                present += 1
+                if _confidence(field_obj) < 0.60:
+                    low_conf += 1
+        missing = total - present
+        score = present / total if total > 0 else 0.0
+        stats.append(
+            {
+                "cat": cat_key,
+                "schema": schema_key,
+                "total": total,
+                "present": present,
+                "missing": missing,
+                "low_conf": low_conf,
+                "score": score,
+            }
+        )
+
+    stats_sorted = sorted(stats, key=lambda x: (x["score"], -x["missing"], -x["low_conf"]))
+
+    templates = {
+        "financier": {
+            "titre": "Fiabiliser les indicateurs financiers clés",
+            "action": "Consolider le chiffre d’affaires, le résultat net et l’EBITDA (même format, même exercice) et vérifier la source dans les états financiers.",
+        },
+        "strategique": {
+            "titre": "Structurer l’analyse de marché",
+            "action": "Rassembler la taille de marché, la croissance, les concurrents et les tendances; ajouter un passage explicite “Marché & concurrence” si absent.",
+        },
+        "rh": {
+            "titre": "Compléter les données RH",
+            "action": "Documenter l’effectif, la masse salariale et les principaux KPIs (turnover, recrutements, absentéisme) pour fiabiliser la lecture RH.",
+        },
+        "data": {
+            "titre": "Renforcer la gouvernance data",
+            "action": "Clarifier les sources, la qualité, l’accessibilité, la volumétrie, l’historisation et la conformité; produire un inventaire + quelques chiffres (To, SLA, connecteurs).",
+        },
+        "cyber": {
+            "titre": "Formaliser la posture cybersécurité",
+            "action": "Mettre à jour la cartographie des risques, l’alignement NIST/ISO et la gouvernance (rôles, comités, politiques) avec preuves et plan d’action.",
+        },
+    }
+
+    recs: List[Dict[str, Any]] = []
+    for s in stats_sorted:
+        if len(recs) >= 3:
+            break
+        cat = s["cat"]
+        tpl = templates.get(cat)
+        if not tpl:
+            continue
+        raison = f"Complétude {int(round(s['score'] * 100))}% ({s['present']}/{s['total']})"
+        if s["low_conf"] > 0:
+            raison += f", {s['low_conf']} champ(s) à faible confiance"
+        recs.append(
+            {
+                "priorite": len(recs) + 1,
+                "categorie": cat,
+                "titre": tpl["titre"],
+                "action": tpl["action"],
+                "raison": raison,
+            }
+        )
+
+    if not recs:
+        recs = [
+            {
+                "priorite": 1,
+                "categorie": "global",
+                "titre": "Vérifier et compléter les informations clés",
+                "action": "Ajouter dans le document les informations manquantes et relancer l’extraction afin d’obtenir une complétude élevée et des sources fiables.",
+                "raison": None,
+            }
+        ]
+
+    return recs[:3]
+
 async def _safe_ainvoke(llm, prompt_str: str, max_retries: int = 1):
     import re
     for attempt in range(max_retries + 1):
@@ -667,6 +790,8 @@ async def run_agent_extraction(
             continue
         schema_key, cat_data = res
         raw_results[schema_key] = cat_data
+
+    raw_results["recommandations"] = _generate_recommandations(raw_results)
             
     # ÉTAPE 4 : Validation Pydantic
     print("[Agent] Étape 4: Validation Pydantic...")

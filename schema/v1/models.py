@@ -72,6 +72,14 @@ class DiagnosticCyberGouvernance(BaseModel):
     gouvernance_data: ExtractedField = Field(default_factory=ExtractedField)
 
 
+class RecommendationItem(BaseModel):
+    priorite: int = Field(..., ge=1, le=3)
+    categorie: str
+    titre: str
+    action: str
+    raison: Optional[str] = None
+
+
 class CopilotExtraction(BaseModel):
     """
     Modèle racine pour l'extraction de données du Copilot Holokia.
@@ -83,3 +91,4 @@ class CopilotExtraction(BaseModel):
     diagnostic_rh: DiagnosticRH = Field(default_factory=DiagnosticRH)
     diagnostic_data: DiagnosticData = Field(default_factory=DiagnosticData)
     diagnostic_cyber_gouvernance: DiagnosticCyberGouvernance = Field(default_factory=DiagnosticCyberGouvernance)
+    recommandations: List[RecommendationItem] = Field(default_factory=list)
