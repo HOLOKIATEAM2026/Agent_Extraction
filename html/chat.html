@@ -913,6 +913,19 @@ nav {
   gap:10px;
   flex:0 0 auto;
 }
+html:not([data-i18n-ready="1"]) .lang-switcher{
+  opacity:0;
+  pointer-events:none;
+}
+.lang-switcher{
+  position:relative;
+  display:flex;
+  align-items:center;
+  transition:opacity 0.16s ease;
+}
+.lang-menu{
+  display:none;
+}
 .theme-toggle{
   width:34px;
   height:34px;

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holokia — Profil</title>
+<title data-i18n="profile.page_title">Holokia — Profil</title>
 <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -171,11 +171,11 @@
     HOLOKIA
   </a>
   <ul class="nav-links">
-    <li><a href="index.html">Accueil</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="diagnostic.html">Mode Diagnostic</a></li>
-    <li><a href="multi.html">Mode Comparaison</a></li>
-    <li><a href="chat.html">Mode Chat</a></li>
+    <li><a href="index.html" data-i18n="nav.home">Accueil</a></li>
+    <li><a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a></li>
+    <li><a href="diagnostic.html" data-i18n="nav.diagnostic">Mode Diagnostic</a></li>
+    <li><a href="multi.html" data-i18n="nav.multi">Mode Comparaison</a></li>
+    <li><a href="chat.html" data-i18n="nav.chat">Mode Chat</a></li>
   </ul>
   <div class="nav-actions">
     <div class="lang-switcher">
@@ -201,8 +201,8 @@
         </button>
       </div>
     </div>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
-    <div class="nav-status">Copilot Strategy IA</div>
+    <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria-label="nav.toggle_theme" data-i18n-title="nav.theme" aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status" data-i18n="nav.badge">Copilot Strategy IA</div>
   </div>
 </nav>
 
@@ -210,49 +210,49 @@
   <div class="profile-max">
     <div class="profile-header">
       <div>
-        <div class="profile-title">Profil <em>Client</em></div>
-        <div class="profile-sub">Gérez votre profil entreprise, suivez l’évolution de vos scores et retrouvez vos derniers diagnostics.</div>
+        <div class="profile-title"><span data-i18n="profile.title_1">Profil</span> <em data-i18n="profile.title_2">Client</em></div>
+        <div class="profile-sub" data-i18n="profile.subtitle">Gérez votre profil entreprise, suivez l’évolution de vos scores et retrouvez vos derniers diagnostics.</div>
       </div>
       <div class="profile-actions">
-        <a class="btn-outline btn-sm" href="historique.html">Historique</a>
-        <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
+        <a class="btn-outline btn-sm" href="historique.html" data-i18n="profile.history_btn">Historique</a>
+        <a class="btn-primary btn-sm" href="diagnostic.html" data-i18n="profile.new_extraction">Nouvelle extraction</a>
       </div>
     </div>
 
     <div class="profile-grid">
       <section class="panel">
-        <div class="panel-title">Sélection</div>
+        <div class="panel-title" data-i18n="profile.selection">Sélection</div>
         <div class="row">
           <div class="field">
-            <label for="profileSelect">Entreprise</label>
+            <label for="profileSelect" data-i18n="profile.company">Entreprise</label>
             <select id="profileSelect" class="select"></select>
           </div>
         </div>
 
-        <div class="panel-title">Édition</div>
+        <div class="panel-title" data-i18n="profile.edit">Édition</div>
         <div class="row">
           <div class="field">
-            <label for="nomInput">Nom</label>
-            <input id="nomInput" class="input" type="text" placeholder="Nom de l'entreprise">
+            <label for="nomInput" data-i18n="profile.name">Nom</label>
+            <input id="nomInput" class="input" type="text" placeholder="Nom de l'entreprise" data-i18n-placeholder="profile.name_placeholder">
           </div>
           <div class="field">
-            <label for="secteurInput">Secteur</label>
-            <input id="secteurInput" class="input" type="text" placeholder="Secteur d'activité (optionnel)">
+            <label for="secteurInput" data-i18n="profile.sector">Secteur</label>
+            <input id="secteurInput" class="input" type="text" placeholder="Secteur d'activité (optionnel)" data-i18n-placeholder="profile.sector_placeholder">
           </div>
         </div>
         <div class="row">
-          <button id="btnSave" class="btn-primary btn-sm" type="button">Enregistrer</button>
-          <div class="hint">Les changements s’appliquent uniquement à votre compte.</div>
+          <button id="btnSave" class="btn-primary btn-sm" type="button" data-i18n="profile.save_btn">Enregistrer</button>
+          <div class="hint" data-i18n="profile.save_hint">Les changements s’appliquent uniquement à votre compte.</div>
         </div>
-        <div id="okMsg" class="msg">Profil mis à jour.</div>
-        <div id="errMsg" class="err">Erreur lors de la mise à jour.</div>
+        <div id="okMsg" class="msg" data-i18n="profile.updated">Profil mis à jour.</div>
+        <div id="errMsg" class="err" data-i18n="profile.update_error">Erreur lors de la mise à jour.</div>
 
-        <div class="panel-title">Indicateurs</div>
-        <div id="kpis" class="kpis">Chargement...</div>
+        <div class="panel-title" data-i18n="profile.indicators">Indicateurs</div>
+        <div id="kpis" class="kpis" data-i18n="profile.loading">Chargement...</div>
       </section>
 
       <section class="panel">
-        <div class="panel-title">Évolution (NIST / Data)</div>
+        <div class="panel-title" data-i18n="profile.evolution">Évolution (NIST / Data)</div>
         <div class="chart-box">
           <canvas id="chartCanvas" height="180" style="width:100%;display:block;"></canvas>
         </div>
@@ -268,7 +268,7 @@
 
 <script src="js/theme.js"></script>
 <script src="js/common.js"></script>
-<script src="js/i18n.js?v=20260728_4"></script>
+<script src="js/i18n.js?v=20260728_5"></script>
 <script src="js/config.js?v=20260706_1"></script>
 <script src="js/auth.js?v=20260620_1"></script>
 <script>
@@ -284,7 +284,7 @@
     const err = document.getElementById('errMsg');
     ok.style.display = 'none';
     err.style.display = 'block';
-    err.textContent = msg || "Erreur lors de la mise à jour.";
+    err.textContent = msg || window.t('profile.update_error');
   }
 
   function setOk(msg) {
@@ -292,7 +292,7 @@
     const err = document.getElementById('errMsg');
     err.style.display = 'none';
     ok.style.display = 'block';
-    ok.textContent = msg || "Profil mis à jour.";
+    ok.textContent = msg || window.t('profile.updated');
   }
 
   function renderSelect() {
@@ -326,12 +326,16 @@
     if (!current) {
       nom.value = '';
       secteur.value = '';
-      kpis.textContent = 'Aucun profil disponible.';
+      kpis.textContent = window.t('profile.no_profile');
       return;
     }
     nom.value = current.nom || '';
     secteur.value = current.secteur || '';
-    kpis.textContent = `Score NIST moyen: ${(current.score_nist_moyen || 0).toFixed(1)} · Score Data moyen: ${(current.score_data_moyen || 0).toFixed(1)} · Rapports: ${current.nb_rapports_analyses || 0}`;
+    kpis.textContent = window.t('profile.kpis', {
+      nist: (current.score_nist_moyen || 0).toFixed(1),
+      data: (current.score_data_moyen || 0).toFixed(1),
+      reports: current.nb_rapports_analyses || 0
+    });
   }
 
   async function loadEvolution() {
@@ -362,8 +366,8 @@
       data: {
         labels,
         datasets: [
-          { label: 'Score NIST', data: nist, borderColor: '#3C57F3', backgroundColor: 'rgba(60,87,243,0.18)', tension: 0.35 },
-          { label: 'Score Data', data: data, borderColor: '#7525E0', backgroundColor: 'rgba(117,37,224,0.18)', tension: 0.35 }
+          { label: window.t('profile.chart_nist'), data: nist, borderColor: '#3C57F3', backgroundColor: 'rgba(60,87,243,0.18)', tension: 0.35 },
+          { label: window.t('profile.chart_data'), data: data, borderColor: '#7525E0', backgroundColor: 'rgba(117,37,224,0.18)', tension: 0.35 }
         ]
       },
       options: {
@@ -377,7 +381,7 @@
 
   async function refresh() {
     const kpis = document.getElementById('kpis');
-    kpis.textContent = 'Chargement...';
+    kpis.textContent = window.t('profile.loading');
     const session = await Auth.getSession();
     const metaCompany = session && session.user && session.user.user_metadata ? session.user.user_metadata.nom : '';
     const res = await Auth.apiFetch(`${API_URL}/profile`);
@@ -410,14 +414,14 @@
   document.getElementById('btnSave').addEventListener('click', async () => {
     const btn = document.getElementById('btnSave');
     btn.disabled = true;
-    btn.textContent = 'Enregistrement...';
+    btn.textContent = window.t('profile.saving');
     try {
       const payload = {
         nom: document.getElementById('nomInput').value,
         secteur: document.getElementById('secteurInput').value
       };
       if (!payload.nom || !payload.nom.trim()) {
-        setErr("Le nom de l'entreprise est requis.");
+        setErr(window.t('profile.name_required'));
         return;
       }
       const isCreate = !current || !current.id;
@@ -434,18 +438,21 @@
       if (!data || !data.ok) {
         setErr(data && data.error ? data.error : 'Erreur lors de la mise à jour.');
       } else {
-        setOk(isCreate ? 'Profil créé.' : 'Profil mis à jour.');
+        setOk(isCreate ? window.t('profile.created') : window.t('profile.updated'));
         await refresh();
       }
     } catch (e) {
-      setErr('Erreur lors de la mise à jour.');
+      setErr(window.t('profile.update_error'));
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Enregistrer';
+      btn.textContent = window.t('profile.save_btn');
     }
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
+    await refresh();
+  });
+  document.addEventListener('i18n:updated', async () => {
     await refresh();
   });
 </script>

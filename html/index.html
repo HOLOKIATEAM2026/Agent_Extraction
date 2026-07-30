@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holokia — Copilot Strategy IA</title>
+<title data-i18n="home.page_title">Holokia — Copilot Strategy IA</title>
   <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -24,11 +24,11 @@
     HOLOKIA
   </a>
   <ul class="nav-links">
-    <li><a href="index.html" style="color:var(--blue);font-weight:500;">Accueil</a></li>
-    <li><a href="dashboard.html">Dashboard</a></li>
-    <li><a href="diagnostic.html">Mode Diagnostic</a></li>
-    <li><a href="multi.html">Mode Comparaison</a></li>
-    <li><a href="chat.html">Mode Chat</a></li>
+    <li><a href="index.html" style="color:var(--blue);font-weight:500;" data-i18n="nav.home">Accueil</a></li>
+    <li><a href="dashboard.html" data-i18n="nav.dashboard">Dashboard</a></li>
+    <li><a href="diagnostic.html" data-i18n="nav.diagnostic">Mode Diagnostic</a></li>
+    <li><a href="multi.html" data-i18n="nav.multi">Mode Comparaison</a></li>
+    <li><a href="chat.html" data-i18n="nav.chat">Mode Chat</a></li>
   </ul>
   <div class="nav-actions">
     <div class="lang-switcher">
@@ -54,39 +54,39 @@
         </button>
       </div>
     </div>
-    <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
-    <div class="nav-status">Copilot Strategy IA</div>
+    <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria-label="nav.toggle_theme" data-i18n-title="nav.theme" aria-label="Basculer le thème" title="Thème"></button>
+    <div class="nav-status" data-i18n="nav.badge">Copilot Strategy IA</div>
   </div>
 </nav>
 
 <div class="home-container">
-    <h1 class="home-title">Sélectionnez votre mode d'analyse</h1>
-    <p class="home-desc">Choisissez l'outil le plus adapté à votre besoin. Notre Agent IA RAG multi-modèles vous assistera dans l'exploitation de vos documents.</p>
+    <h1 class="home-title" data-i18n="home.title">Sélectionnez votre mode d'analyse</h1>
+    <p class="home-desc" data-i18n="home.desc">Choisissez l'outil le plus adapté à votre besoin. Notre Agent IA RAG multi-modèles vous assistera dans l'exploitation de vos documents.</p>
 
     <section id="welcomeBox" class="welcome-panel" style="display:none;">
       <div class="welcome-head">
         <div>
-          <div class="welcome-kicker">Espace client</div>
+          <div class="welcome-kicker" data-i18n="home.client_space">Espace client</div>
           <div id="welcomeTitle" class="welcome-title"></div>
           <div id="profileSummary" class="welcome-summary"></div>
         </div>
         <div class="welcome-actions">
-          <a class="btn-outline btn-sm" href="historique.html">Historique</a>
-          <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
+          <a class="btn-outline btn-sm" href="historique.html" data-i18n="home.history_btn">Historique</a>
+          <a class="btn-primary btn-sm" href="diagnostic.html" data-i18n="home.new_extraction">Nouvelle extraction</a>
         </div>
       </div>
 
       <div class="welcome-grid">
         <div class="welcome-card">
           <div class="welcome-card-title">
-            <span>Dernières analyses</span>
+            <span data-i18n="home.recent_analyses">Dernières analyses</span>
           </div>
           <div id="welcomeList" class="welcome-list"></div>
         </div>
 
         <div class="welcome-card">
           <div class="welcome-card-title">
-            <span>Profil</span>
+            <span data-i18n="home.profile">Profil</span>
           </div>
           <div id="profileStats" class="welcome-kpis"></div>
           <div id="profileBox" style="display:none;">
@@ -101,20 +101,20 @@
     <div class="cards-grid">
       <a href="chat.html" class="mode-card">
         <div class="mode-card-icon">💬</div>
-        <h2 class="mode-card-title">Mode Chat</h2>
-        <p class="mode-card-desc"><strong>Posez vos propres questions sur vos documents.</strong><br>Téléchargez vos rapports et discutez librement avec l'IA. Elle sourcera toutes ses réponses directement depuis le contenu fourni.</p>
+        <h2 class="mode-card-title" data-i18n="home.chat_title">Mode Chat</h2>
+        <p class="mode-card-desc" data-i18n-html="home.chat_desc"><strong>Posez vos propres questions sur vos documents.</strong><br>Téléchargez vos rapports et discutez librement avec l'IA. Elle sourcera toutes ses réponses directement depuis le contenu fourni.</p>
       </a>
       
       <a href="diagnostic.html" class="mode-card">
         <div class="mode-card-icon">📊</div>
-        <h2 class="mode-card-title">Mode Diagnostic</h2>
-        <p class="mode-card-desc"><strong>Analyse structurée automatique.</strong><br>Le pipeline RAG extrait intelligemment les indicateurs clés (CA, RH, Data, Cyber) et génère un JSON pré-formaté pour le Copilot.</p>
+        <h2 class="mode-card-title" data-i18n="home.diagnostic_title">Mode Diagnostic</h2>
+        <p class="mode-card-desc" data-i18n-html="home.diagnostic_desc"><strong>Analyse structurée automatique.</strong><br>Le pipeline RAG extrait intelligemment les indicateurs clés (CA, RH, Data, Cyber) et génère un JSON pré-formaté pour le Copilot.</p>
       </a>
 
       <a href="multi.html" class="mode-card">
         <div class="mode-card-icon">📑</div>
-        <h2 class="mode-card-title">Mode Comparaison</h2>
-        <p class="mode-card-desc"><strong>Analyse croisée multi-documents.</strong><br>Uploadez plusieurs rapports simultanément (ex: concurrents, années différentes) et générez une synthèse comparative ciblée.</p>
+        <h2 class="mode-card-title" data-i18n="home.multi_title">Mode Comparaison</h2>
+        <p class="mode-card-desc" data-i18n-html="home.multi_desc"><strong>Analyse croisée multi-documents.</strong><br>Uploadez plusieurs rapports simultanément (ex: concurrents, années différentes) et générez une synthèse comparative ciblée.</p>
       </a>
     </div>
   </div>
@@ -125,7 +125,7 @@
 
 <script src="js/theme.js"></script>
 <script src="js/common.js"></script>
-  <script src="js/i18n.js?v=20260728_4"></script>
+  <script src="js/i18n.js?v=20260728_5"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js?v=20260706_1"></script>
   <script src="js/auth.js?v=20260620_1"></script>
@@ -148,9 +148,9 @@
           const profileSummary = document.getElementById('profileSummary');
           const chart = document.getElementById('profileChart');
 
-          welcomeTitle.textContent = `Bon retour ${userName} — voici vos dernières analyses`;
+          welcomeTitle.textContent = window.t('home.welcome_title', { name: userName });
           profileSummary.textContent = "";
-          welcomeList.textContent = "Chargement...";
+          welcomeList.textContent = window.t('home.loading_analyses');
           welcomeBox.style.display = "block";
 
           const res = await Auth.apiFetch(`${API_URL}/extractions?limit=5`);
@@ -158,7 +158,7 @@
           if (data && data.ok) {
             const rows = data.data || [];
             if (!rows.length) {
-              welcomeList.textContent = "Aucune analyse enregistrée pour le moment.";
+              welcomeList.textContent = window.t('home.no_analyses');
             } else {
               const itemHtml = (r) => {
                 const meta = (r.result && r.result.meta) ? r.result.meta : {};
@@ -171,13 +171,13 @@
               const first = rows.slice(0, 2).map(itemHtml).join("");
               const rest = rows.slice(2).map(itemHtml).join("");
               if (rest) {
-                welcomeList.innerHTML = `${first}<details class="welcome-details"><summary>Voir ${rows.length - 2} autres</summary>${rest}</details>`;
+                welcomeList.innerHTML = `${first}<details class="welcome-details"><summary>${window.t('home.view_more', { count: rows.length - 2 })}</summary>${rest}</details>`;
               } else {
                 welcomeList.innerHTML = first;
               }
             }
           } else {
-            welcomeList.textContent = "Impossible de charger les analyses.";
+            welcomeList.textContent = window.t('home.load_error');
           }
 
           const pRes = await Auth.apiFetch(`${API_URL}/profile`);
@@ -186,7 +186,12 @@
           if (profileRows.length) {
             const p = profileRows[0];
             profileBox.style.display = "block";
-            profileStats.textContent = `Profil: ${p.nom || 'Entreprise'} · Score NIST moyen: ${(p.score_nist_moyen || 0).toFixed(1)} · Score Data moyen: ${(p.score_data_moyen || 0).toFixed(1)} · Rapports: ${p.nb_rapports_analyses || 0}`;
+            profileStats.textContent = window.t('home.profile_stats', {
+              name: p.nom || window.t('profile.company'),
+              nist: (p.score_nist_moyen || 0).toFixed(1),
+              data: (p.score_data_moyen || 0).toFixed(1),
+              reports: p.nb_rapports_analyses || 0
+            });
 
             const sRes = await Auth.apiFetch(`${API_URL}/profile/summary`);
             const sData = await sRes.json();

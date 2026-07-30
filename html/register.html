@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holokia — Inscription</title>
+<title data-i18n="auth.register_page_title">Holokia — Inscription</title>
 <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
@@ -272,8 +272,20 @@
     HOLOKIA
   </a>
   <div class="nav-actions">
-    <button type="button" class="theme-toggle" data-theme-toggle></button>
-    <div class="nav-status">Copilot Strategy IA</div>
+    <div class="lang-switcher">
+      <button type="button" class="lang-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <span class="lang-trigger-icon" aria-hidden="true">🌐</span>
+        <span class="lang-trigger-text"><span class="lang-trigger-code">FR</span></span>
+        <span class="lang-trigger-caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="lang-menu" role="listbox" aria-label="Language selector">
+        <button type="button" class="lang-option" data-lang="fr" role="option"><span class="lang-option-label">Français</span><span class="lang-option-code">FR</span></button>
+        <button type="button" class="lang-option" data-lang="en" role="option"><span class="lang-option-label">English</span><span class="lang-option-code">EN</span></button>
+        <button type="button" class="lang-option" data-lang="es" role="option"><span class="lang-option-label">Español</span><span class="lang-option-code">ES</span></button>
+      </div>
+    </div>
+    <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria-label="nav.toggle_theme" data-i18n-title="nav.theme"></button>
+    <div class="nav-status" data-i18n="nav.badge">Copilot Strategy IA</div>
   </div>
 </nav>
 
@@ -282,51 +294,51 @@
     <section class="auth-side">
       <div class="auth-badge">
         <span class="auth-badge-dot"></span>
-        Accès sécurisé
+        <span data-i18n="auth.secure_access">Accès sécurisé</span>
       </div>
-      <h1 class="auth-title">Créer votre espace client</h1>
-      <p class="auth-desc">Centralisez vos analyses documentaires et retrouvez vos historiques par compte, sur tous vos appareils.</p>
+      <h1 class="auth-title" data-i18n="auth.create_space">Créer votre espace client</h1>
+      <p class="auth-desc" data-i18n="auth.register_desc">Centralisez vos analyses documentaires et retrouvez vos historiques par compte, sur tous vos appareils.</p>
       <div class="auth-features">
         <div class="auth-feature">
           <div class="auth-feature-ico">01</div>
-          <div class="auth-feature-text">Authentification Supabase · accès isolé par utilisateur (RLS)</div>
+          <div class="auth-feature-text" data-i18n="auth.feature_register_1">Authentification Supabase · accès isolé par utilisateur (RLS)</div>
         </div>
         <div class="auth-feature">
           <div class="auth-feature-ico">02</div>
-          <div class="auth-feature-text">Diagnostic, comparaison, chat · journalisation des sessions</div>
+          <div class="auth-feature-text" data-i18n="auth.feature_register_2">Diagnostic, comparaison, chat · journalisation des sessions</div>
         </div>
         <div class="auth-feature">
           <div class="auth-feature-ico">03</div>
-          <div class="auth-feature-text">Email de confirmation</div>
+          <div class="auth-feature-text" data-i18n="auth.feature_register_3">Email de confirmation</div>
         </div>
       </div>
     </section>
 
     <section class="auth-form-wrap">
-      <h2 class="auth-form-title">Inscription</h2>
-      <p class="auth-form-sub">Renseignez vos informations. Vous serez redirigé vers la connexion.</p>
+      <h2 class="auth-form-title" data-i18n="auth.register_form_title">Inscription</h2>
+      <p class="auth-form-sub" data-i18n="auth.register_form_sub">Renseignez vos informations. Vous serez redirigé vers la connexion.</p>
 
       <form id="registerForm" class="auth-form">
         <div class="auth-field">
-          <label for="nom">Entreprise</label>
-          <input type="text" id="nom" class="auth-input" placeholder="Nom de l'entreprise" required>
+          <label for="nom" data-i18n="auth.company">Entreprise</label>
+          <input type="text" id="nom" class="auth-input" placeholder="Nom de l'entreprise" data-i18n-placeholder="auth.company_placeholder" required>
         </div>
         <div class="auth-field">
-          <label for="email">Email</label>
-          <input type="email" id="email" class="auth-input" placeholder="vous@entreprise.com" required>
+          <label for="email" data-i18n="auth.email">Email</label>
+          <input type="email" id="email" class="auth-input" placeholder="vous@entreprise.com" data-i18n-placeholder="auth.email_placeholder" required>
         </div>
         <div class="auth-field">
-          <label for="password">Mot de passe</label>
-          <input type="password" id="password" class="auth-input" placeholder="Minimum 6 caractères" required minlength="6">
+          <label for="password" data-i18n="auth.password">Mot de passe</label>
+          <input type="password" id="password" class="auth-input" placeholder="Minimum 6 caractères" data-i18n-placeholder="auth.password_min_placeholder" required minlength="6">
         </div>
-        <button type="submit" class="auth-btn" id="submitBtn">S'INSCRIRE</button>
+        <button type="submit" class="auth-btn" id="submitBtn" data-i18n="auth.register_btn">S'INSCRIRE</button>
       </form>
 
       <div id="errorMsg" class="auth-error">Erreur lors de l'inscription.</div>
-      <div id="successMsg" class="auth-success">Compte créé avec succès ! Veuillez vérifier votre boîte mail pour valider votre compte avant de vous connecter.</div>
+      <div id="successMsg" class="auth-success" data-i18n="auth.created_success">Compte créé avec succès ! Veuillez vérifier votre boîte mail pour valider votre compte avant de vous connecter.</div>
 
       <div class="auth-link">
-        Déjà un compte ? <a href="login.html">Se connecter</a>
+        <span data-i18n="auth.already_account">Déjà un compte ?</span> <a href="login.html" data-i18n="auth.sign_in">Se connecter</a>
       </div>
     </section>
   </div>
@@ -337,6 +349,7 @@
 </footer>
 
 <script src="js/theme.js"></script>
+<script src="js/i18n.js?v=20260728_5"></script>
 <script src="js/config.js?v=20260706_1"></script>
 <script src="js/auth.js?v=20260620_1"></script>
 <script>
@@ -353,7 +366,7 @@
     const errorMsg = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
     
-    btn.textContent = 'INSCRIPTION...';
+    btn.textContent = window.t('auth.register_loading');
     btn.disabled = true;
     errorMsg.style.display = 'none';
     successMsg.style.display = 'none';
@@ -363,9 +376,9 @@
       
       // Si la session est null après l'inscription, cela signifie que Supabase attend une validation par email
       if (data && data.user && !data.session) {
-        successMsg.textContent = "Compte créé ! Un email de confirmation vous a été envoyé. Veuillez valider votre adresse avant de vous connecter.";
+        successMsg.textContent = window.t('auth.created_success');
       } else {
-        successMsg.textContent = "Compte créé avec succès ! Redirection...";
+        successMsg.textContent = window.t('auth.created_success');
       }
       
       successMsg.style.display = 'block';
@@ -375,7 +388,7 @@
     } catch (err) {
       errorMsg.textContent = err.message || "Erreur lors de l'inscription";
       errorMsg.style.display = 'block';
-      btn.textContent = 'S\'INSCRIRE';
+      btn.textContent = window.t('auth.register_btn');
       btn.disabled = false;
     }
   });

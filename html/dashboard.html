@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Holokia — Dashboard</title>
+  <title data-i18n="dashboard.page_title">Holokia — Dashboard</title>
   <link rel="icon" href="./logo/cropped-logo_holokia_noir.jpg" type="image/jpeg">
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
@@ -180,11 +180,11 @@
       HOLOKIA
     </a>
     <ul class="nav-links">
-      <li><a href="index.html">Accueil</a></li>
-      <li><a href="dashboard.html" style="color:var(--blue);font-weight:500;">Dashboard</a></li>
-      <li><a href="diagnostic.html">Mode Diagnostic</a></li>
-      <li><a href="multi.html">Mode Comparaison</a></li>
-      <li><a href="chat.html">Mode Chat</a></li>
+      <li><a href="index.html" data-i18n="nav.home">Accueil</a></li>
+      <li><a href="dashboard.html" style="color:var(--blue);font-weight:500;" data-i18n="nav.dashboard">Dashboard</a></li>
+      <li><a href="diagnostic.html" data-i18n="nav.diagnostic">Mode Diagnostic</a></li>
+      <li><a href="multi.html" data-i18n="nav.multi">Mode Comparaison</a></li>
+      <li><a href="chat.html" data-i18n="nav.chat">Mode Chat</a></li>
     </ul>
     <div class="nav-actions">
     <div class="lang-switcher">
@@ -210,8 +210,8 @@
         </button>
       </div>
     </div>
-      <button type="button" class="theme-toggle" data-theme-toggle aria-label="Basculer le thème" title="Thème"></button>
-      <div class="nav-status">Copilot Strategy IA</div>
+      <button type="button" class="theme-toggle" data-theme-toggle data-i18n-aria-label="nav.toggle_theme" data-i18n-title="nav.theme" aria-label="Basculer le thème" title="Thème"></button>
+      <div class="nav-status" data-i18n="nav.badge">Copilot Strategy IA</div>
     </div>
   </nav>
 
@@ -219,96 +219,96 @@
     <div class="dash-max">
       <div class="dash-header">
         <div>
-          <div class="dash-title">Dashboard <em>Analytics</em></div>
-          <div class="dash-sub">Visualisez vos analyses : volume, répartition par modèles, maturité par domaine (radar) et évolution temporelle. Tous les graphiques sont filtrables.</div>
+          <div class="dash-title"><span data-i18n="dashboard.title_1">Dashboard</span> <em data-i18n="dashboard.title_2">Analytics</em></div>
+          <div class="dash-sub" data-i18n="dashboard.subtitle">Visualisez vos analyses : volume, répartition par modèles, maturité par domaine (radar) et évolution temporelle. Tous les graphiques sont filtrables.</div>
           <div class="filters">
             <div class="field">
-              <label for="companyFilter">Entreprise</label>
+              <label for="companyFilter" data-i18n="dashboard.company">Entreprise</label>
               <select id="companyFilter" class="select"></select>
             </div>
             <div class="field">
-              <label for="modelFilter">Modèle</label>
+              <label for="modelFilter" data-i18n="dashboard.model">Modèle</label>
               <select id="modelFilter" class="select"></select>
             </div>
             <div class="field">
-              <label for="fromDate">Depuis</label>
+              <label for="fromDate" data-i18n="dashboard.from">Depuis</label>
               <input id="fromDate" class="input" type="date">
             </div>
             <div class="field">
-              <label for="toDate">Jusqu'à</label>
+              <label for="toDate" data-i18n="dashboard.to">Jusqu'à</label>
               <input id="toDate" class="input" type="date">
             </div>
             <div class="field" style="min-width:160px;">
-              <button id="btnApply" class="btn-primary btn-sm" type="button">Appliquer</button>
+              <button id="btnApply" class="btn-primary btn-sm" type="button" data-i18n="dashboard.apply">Appliquer</button>
             </div>
           </div>
         </div>
         <div class="dash-actions">
-          <a class="btn-outline btn-sm" href="profil.html">Profil</a>
-          <a class="btn-outline btn-sm" href="historique.html">Historique</a>
-          <a class="btn-primary btn-sm" href="diagnostic.html">Nouvelle extraction</a>
+          <a class="btn-outline btn-sm" href="profil.html" data-i18n="dashboard.profile_btn">Profil</a>
+          <a class="btn-outline btn-sm" href="historique.html" data-i18n="dashboard.history_btn">Historique</a>
+          <a class="btn-primary btn-sm" href="diagnostic.html" data-i18n="dashboard.new_extraction">Nouvelle extraction</a>
         </div>
       </div>
 
       <div id="errBox" class="err"></div>
 
       <section class="panel">
-        <div class="panel-title">Indicateurs</div>
+        <div class="panel-title" data-i18n="dashboard.kpi_title">Indicateurs</div>
         <div class="kpis">
           <div class="kpi">
-            <div class="kpi-label">Analyses</div>
+            <div class="kpi-label" data-i18n="dashboard.analyses">Analyses</div>
             <div id="kpiCount" class="kpi-val">0</div>
             <div id="kpiCountHint" class="hint"></div>
           </div>
           <div class="kpi">
-            <div class="kpi-label">Confiance moyenne</div>
+            <div class="kpi-label" data-i18n="dashboard.avg_confidence">Confiance moyenne</div>
             <div id="kpiConfidence" class="kpi-val">—</div>
-            <div class="hint">Moyenne des champs diagnostic_* (0–100%).</div>
+            <div class="hint" data-i18n="dashboard.avg_confidence_hint">Moyenne des champs diagnostic_* (0–100%).</div>
           </div>
           <div class="kpi">
-            <div class="kpi-label">Complétude</div>
+            <div class="kpi-label" data-i18n="dashboard.completeness">Complétude</div>
             <div id="kpiCompleteness" class="kpi-val">—</div>
-            <div class="hint">Champs remplis / champs attendus (avec confiance ≥ 0.6).</div>
+            <div class="hint" data-i18n="dashboard.completeness_hint">Champs remplis / champs attendus (avec confiance ≥ 0.6).</div>
           </div>
           <div class="kpi">
-            <div class="kpi-label">Score qualité</div>
+            <div class="kpi-label" data-i18n="dashboard.quality">Score qualité</div>
             <div id="kpiQuality" class="kpi-val">—</div>
-            <div class="hint">Confiance × Complétude (score combiné).</div>
+            <div class="hint" data-i18n="dashboard.quality_hint">Confiance × Complétude (score combiné).</div>
           </div>
         </div>
       </section>
 
       <div class="dash-grid" style="margin-top:18px;">
         <section class="panel">
-          <div class="panel-title">Évolution (confiance moyenne)</div>
+          <div class="panel-title" data-i18n="dashboard.evolution">Évolution (confiance moyenne)</div>
           <div class="chart-box">
             <canvas id="lineChart"></canvas>
           </div>
-          <div class="hint">Affiche l’évolution quotidienne de la confiance moyenne.</div>
+          <div class="hint" data-i18n="dashboard.evolution_hint">Affiche l’évolution quotidienne de la confiance moyenne.</div>
         </section>
         <section class="panel">
-          <div class="panel-title">Répartition par modèle</div>
+          <div class="panel-title" data-i18n="dashboard.models_split">Répartition par modèle</div>
           <div class="chart-box-sm">
             <canvas id="donutChart"></canvas>
           </div>
-          <div class="hint">Part des analyses par modèle (groq, mistral, openai, …).</div>
+          <div class="hint" data-i18n="dashboard.models_split_hint">Part des analyses par modèle (groq, mistral, openai, …).</div>
         </section>
       </div>
 
       <div class="dash-grid-2">
         <section class="panel">
-          <div class="panel-title">Maturité par domaine (radar)</div>
+          <div class="panel-title" data-i18n="dashboard.radar">Maturité par domaine (radar)</div>
           <div class="chart-box-sm">
             <canvas id="radarChart"></canvas>
           </div>
-          <div class="hint">Moyenne par section : stratégique, financier, RH, data, cyber.</div>
+          <div class="hint" data-i18n="dashboard.radar_hint">Moyenne par section : stratégique, financier, RH, data, cyber.</div>
         </section>
         <section class="panel">
-          <div class="panel-title">Top entreprises (volume)</div>
+          <div class="panel-title" data-i18n="dashboard.top_companies">Top entreprises (volume)</div>
           <div class="chart-box-sm">
             <canvas id="barChart"></canvas>
           </div>
-          <div class="hint">Nombre d’analyses par entreprise (top 8).</div>
+          <div class="hint" data-i18n="dashboard.top_companies_hint">Nombre d’analyses par entreprise (top 8).</div>
         </section>
       </div>
     </div>
@@ -320,7 +320,7 @@
 
   <script src="js/theme.js"></script>
   <script src="js/common.js"></script>
-  <script src="js/i18n.js?v=20260728_4"></script>
+  <script src="js/i18n.js?v=20260728_5"></script>
   <script src="js/config.js?v=20260706_1"></script>
   <script src="js/auth.js?v=20260620_1"></script>
   <script>
