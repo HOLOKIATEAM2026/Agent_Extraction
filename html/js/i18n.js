@@ -10,6 +10,7 @@ const I18n = {
   },
 
   async init() {
+    document.documentElement.setAttribute('data-i18n-ready', '0');
     let saved = 'fr';
     try {
       saved = localStorage.getItem('holokia_lang') || 'fr';
@@ -20,6 +21,7 @@ const I18n = {
     this.updateLanguageSwitcher();
     this.injectStyles();
     document.documentElement.lang = this.currentLang;
+    document.documentElement.setAttribute('data-i18n-ready', '1');
     document.dispatchEvent(new CustomEvent('i18n:updated', { detail: { lang: this.currentLang } }));
   },
 

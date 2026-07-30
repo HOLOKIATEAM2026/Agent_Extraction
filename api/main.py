@@ -1188,7 +1188,22 @@ def _score_pair_from_payload(payload: dict) -> Tuple[float, float]:
         core = _payload_core(payload)
         if not isinstance(core, dict):
             return 0.0, 0.0
-        return _compute_scores(core)
+        nist_score, data_score = _compute_scores(core)
+        #region debug-point A:profile-score-pair
+        _dbg(
+            "profile.score_pair",
+            runId="pre-fix",
+            hypothesisId="A",
+            location="api/main.py:_score_pair_from_payload",
+            msg="[DEBUG] Profile score pair computed",
+            company=((core.get("meta") or {}).get("entreprise") if isinstance(core.get("meta"), dict) else None),
+            nist_score=nist_score,
+            data_score=data_score,
+            has_cyber=isinstance(core.get("diagnostic_cyber_gouvernance"), dict),
+            has_data=isinstance(core.get("diagnostic_data"), dict),
+        )
+        #endregion debug-point A:profile-score-pair
+        return nist_score, data_score
     except Exception:
         return 0.0, 0.0
 
@@ -1202,6 +1217,18 @@ def get_profile_evolution(company: str = "", limit: int = 30, user_auth: dict = 
 
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         rows = store.get_recent_extractions(limit=max(1, min(int(limit or 30), 100)))
+        #region debug-point B:profile-evolution-start
+        _dbg(
+            "profile.evolution.start",
+            runId="pre-fix",
+            hypothesisId="B",
+            location="api/main.py:get_profile_evolution",
+            msg="[DEBUG] Profile evolution request started",
+            company=company,
+            rows_count=len(rows) if isinstance(rows, list) else None,
+            limit=limit,
+        )
+        #endregion debug-point B:profile-evolution-start
         points = []
         for r in reversed(rows):
             payload = r.get("result") if isinstance(r, dict) else None
@@ -1220,11 +1247,35 @@ def get_profile_evolution(company: str = "", limit: int = 30, user_auth: dict = 
                 if not isinstance(meta, dict) or (meta.get("entreprise") or "") != company:
                     continue
             nist, data = _score_pair_from_payload(core)
+            #region debug-point C:profile-evolution-point
+            _dbg(
+                "profile.evolution.point",
+                runId="pre-fix",
+                hypothesisId="C",
+                location="api/main.py:get_profile_evolution",
+                msg="[DEBUG] Profile evolution point added",
+                company=((core.get("meta") or {}).get("entreprise") if isinstance(core.get("meta"), dict) else None),
+                created_at=r.get("created_at"),
+                nist=nist,
+                data=data,
+            )
+            #endregion debug-point C:profile-evolution-point
             points.append({
                 "created_at": r.get("created_at"),
                 "score_nist": nist,
                 "score_data": data,
             })
+        #region debug-point B:profile-evolution-done
+        _dbg(
+            "profile.evolution.done",
+            runId="pre-fix",
+            hypothesisId="B",
+            location="api/main.py:get_profile_evolution",
+            msg="[DEBUG] Profile evolution request finished",
+            company=company,
+            points_count=len(points),
+        )
+        #endregion debug-point B:profile-evolution-done
         return {"ok": True, "data": points}
     except Exception as e:
         traceback.print_exc()
@@ -1275,6 +1326,21 @@ def get_profile_summary(company: str = "", user_auth: dict = Depends(get_current
         new_nist, _ = _score_pair_from_payload(p_new)
         d0 = oldest.get("created_at") or ""
         d1 = newest.get("created_at") or ""
+        #region debug-point D:profile-summary
+        _dbg(
+            "profile.summary",
+            runId="pre-fix",
+            hypothesisId="D",
+            location="api/main.py:get_profile_summary",
+            msg="[DEBUG] Profile summary computed",
+            company=company,
+            rows_count=len(rows),
+            oldest=d0,
+            newest=d1,
+            old_nist=old_nist,
+            new_nist=new_nist,
+        )
+        #endregion debug-point D:profile-summary
         summary = f"Depuis votre premier diagnostic ({d0}), votre score NIST est passé de {old_nist:.1f} à {new_nist:.1f} ({d1})."
         return {"ok": True, "summary": summary}
     except Exception as e:
