@@ -246,11 +246,28 @@ const Auth = {
     } else {
       const navStatus = document.querySelector('.nav-status') || document.querySelector('.nav-badge');
       if (navStatus) {
-        navStatus.innerHTML = '<a href="login.html" style="color: var(--blue); text-decoration: none; font-weight: 500;">Se connecter</a>';
+        navStatus.replaceChildren(this.createNavAccountLink('Se connecter', 'login.html'));
         navStatus.style.cursor = "";
         navStatus.onclick = null;
       }
     }
+  },
+
+  createNavAccountLink(label, href) {
+    const link = document.createElement('a');
+    link.href = href;
+    link.textContent = label;
+    link.style.color = 'var(--blue)';
+    link.style.textDecoration = 'none';
+    link.style.display = 'inline-flex';
+    link.style.alignItems = 'center';
+    link.style.gap = '6px';
+    link.style.fontWeight = '600';
+    link.style.fontSize = '12px';
+    link.style.letterSpacing = 'normal';
+    link.style.textTransform = 'none';
+    link.style.fontFamily = 'var(--body, Inter, sans-serif)';
+    return link;
   },
 
   updateUserName(user) {
@@ -260,7 +277,7 @@ const Auth = {
       // Récupérer le nom depuis les user_metadata, sinon utiliser l'email
       const userName = user.user_metadata?.nom || user.email.split('@')[0];
       const profileHref = "profil.html";
-      navStatus.innerHTML = `<a href="${profileHref}" style="font-weight: 500; color: var(--blue); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">👤 ${userName}</a>`;
+      navStatus.replaceChildren(this.createNavAccountLink(`👤 ${userName}`, profileHref));
       navStatus.style.cursor = "pointer";
       navStatus.onclick = (e) => {
         if (e && (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey)) {
