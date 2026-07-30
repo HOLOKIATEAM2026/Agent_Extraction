@@ -1181,24 +1181,14 @@ def create_profile(request: dict, user_auth: dict = Depends(get_current_user)):
 
 def _score_pair_from_payload(payload: dict) -> Tuple[float, float]:
     try:
-        cyber = payload.get("diagnostic_cyber_gouvernance")
-        nist_score = 0.0
-        if isinstance(cyber, dict):
-            n = cyber.get("conformite_nist")
-            if isinstance(n, dict):
-                conf = n.get("confiance")
-                if isinstance(conf, (int, float)):
-                    nist_score = float(conf) * 5.0
-        data = payload.get("diagnostic_data")
-        data_score = 0.0
-        if isinstance(data, dict):
-            confs = []
-            for _, f in data.items():
-                if isinstance(f, dict) and isinstance(f.get("confiance"), (int, float)):
-                    confs.append(float(f["confiance"]))
-            if confs:
-                data_score = (sum(confs) / len(confs)) * 5.0
-        return nist_score, data_score
+        from agent.supabase_store import _compute_scores, _payload_core
+
+        if not isinstance(payload, dict):
+            return 0.0, 0.0
+        core = _payload_core(payload)
+        if not isinstance(core, dict):
+            return 0.0, 0.0
+        return _compute_scores(core)
     except Exception:
         return 0.0, 0.0
 
@@ -1217,11 +1207,19 @@ def get_profile_evolution(company: str = "", limit: int = 30, user_auth: dict = 
             payload = r.get("result") if isinstance(r, dict) else None
             if not isinstance(payload, dict):
                 continue
+            core = payload
+            try:
+                from agent.supabase_store import _payload_core
+                core = _payload_core(payload)
+            except Exception:
+                core = payload
+            if not isinstance(core, dict):
+                continue
             if company:
-                meta = payload.get("meta")
+                meta = core.get("meta")
                 if not isinstance(meta, dict) or (meta.get("entreprise") or "") != company:
                     continue
-            nist, data = _score_pair_from_payload(payload)
+            nist, data = _score_pair_from_payload(core)
             points.append({
                 "created_at": r.get("created_at"),
                 "score_nist": nist,
@@ -1243,19 +1241,34 @@ def get_profile_summary(company: str = "", user_auth: dict = Depends(get_current
         store = SupabaseStore(user_id=user_auth["user"].get("id"), token=user_auth["token"])
         rows = store.get_recent_extractions(limit=100)
         if company:
-            rows = [
-                r for r in rows
-                if isinstance(r, dict)
-                and isinstance(r.get("result"), dict)
-                and isinstance(r["result"].get("meta"), dict)
-                and (r["result"]["meta"].get("entreprise") or "") == company
-            ]
+            filtered = []
+            for r in rows:
+                if not isinstance(r, dict) or not isinstance(r.get("result"), dict):
+                    continue
+                payload = r.get("result")
+                core = payload
+                try:
+                    from agent.supabase_store import _payload_core
+                    core = _payload_core(payload)
+                except Exception:
+                    core = payload
+                if isinstance(core, dict) and isinstance(core.get("meta"), dict) and (core["meta"].get("entreprise") or "") == company:
+                    filtered.append(r)
+            rows = filtered
         if not rows:
             return {"ok": True, "summary": ""}
         oldest = rows[-1]
         newest = rows[0]
         p_old = oldest.get("result") if isinstance(oldest, dict) else None
         p_new = newest.get("result") if isinstance(newest, dict) else None
+        if not isinstance(p_old, dict) or not isinstance(p_new, dict):
+            return {"ok": True, "summary": ""}
+        try:
+            from agent.supabase_store import _payload_core
+            p_old = _payload_core(p_old)
+            p_new = _payload_core(p_new)
+        except Exception:
+            pass
         if not isinstance(p_old, dict) or not isinstance(p_new, dict):
             return {"ok": True, "summary": ""}
         old_nist, _ = _score_pair_from_payload(p_old)
