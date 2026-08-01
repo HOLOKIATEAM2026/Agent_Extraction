@@ -53,6 +53,7 @@ app.add_middleware(
         "https://holokia-rag-api.netlify.app",
         "https://agentextraction.netlify.app",
         "https://holokia-rag.vercel.app",
+        "https://rag-lyart-two.vercel.app",
         "https://holokia-jfl1za1y8-boubkers-projects.vercel.app",
         "https://rag-nine-self.vercel.app",
     ],
