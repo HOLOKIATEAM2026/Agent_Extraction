@@ -85,6 +85,12 @@
     justify-content:space-between;
     gap:10px;
   }
+  .info-wrap{
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
   .info-btn{
     width:18px;
     height:18px;
@@ -98,11 +104,36 @@
     align-items:center;
     justify-content:center;
     padding:0;
-    cursor:help;
+    cursor:pointer;
   }
   :root:not([data-theme="light"]) .info-btn{
     background:var(--paper-3);
     color:var(--ink);
+  }
+  .info-pop{
+    position:absolute;
+    top:calc(100% + 10px);
+    right:0;
+    width:min(380px, 78vw);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 12px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--ink);
+    line-height:1.5;
+    box-shadow:0 16px 48px var(--shadow), 0 4px 12px rgba(0,0,0,0.18);
+    display:none;
+    z-index:50;
+    text-transform:none;
+    letter-spacing:normal;
+  }
+  :root:not([data-theme="light"]) .info-pop{
+    background:var(--paper-2);
+  }
+  .info-wrap.open .info-pop{
+    display:block;
   }
   .row{
     display:flex;
@@ -292,7 +323,10 @@
       <section class="panel">
         <div class="panel-title panel-title-row">
           <span data-i18n="profile.evolution">Évolution (NIST / Data)</span>
-          <button type="button" class="info-btn" data-i18n-title="profile.evolution_tip" data-i18n-aria-label="profile.evolution_tip" aria-label="Info" title="Info">i</button>
+          <span class="info-wrap" id="evolutionInfo">
+            <button type="button" class="info-btn" data-i18n-aria-label="profile.evolution_tip" aria-label="Info" title="Info">i</button>
+            <span class="info-pop" role="tooltip" data-i18n="profile.evolution_tip">Graphique d'évolution des scores dans le temps. NIST = maturité cybersécurité/gouvernance (inspirée du NIST CSF). Data = maturité data (qualité, gouvernance, documentation).</span>
+          </span>
         </div>
         <div class="chart-box">
           <canvas id="chartCanvas" height="180" style="width:100%;display:block;"></canvas>
@@ -491,6 +525,21 @@
   });
 
   document.addEventListener('DOMContentLoaded', async () => {
+    const info = document.getElementById('evolutionInfo');
+    const btn = info ? info.querySelector('.info-btn') : null;
+    if (info && btn) {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        info.classList.toggle('open');
+      });
+      document.addEventListener('click', () => {
+        info.classList.remove('open');
+      });
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape') info.classList.remove('open');
+      });
+    }
     await refresh();
   });
   document.addEventListener('i18n:updated', async () => {
