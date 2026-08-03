@@ -356,9 +356,9 @@ async function exportDiagnosticPdf(data) {
   const drawWatermark = () => {
     const pageNumber = getCurrentPageNumber();
     if (pageNumber <= 1) return;
-    pdf.setTextColor(248, 250, 252);
+    pdf.setTextColor(252, 253, 255);
     pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(44);
+    pdf.setFontSize(52);
     pdf.text(
       cleanPdfText(tPdf('diagnostic.pdf_confidential', 'CONFIDENTIEL')),
       pageWidth / 2,
@@ -529,17 +529,17 @@ async function exportDiagnosticPdf(data) {
 
   if (logoDataUrl) {
     try {
-      pdf.addImage(logoDataUrl, 'PNG', margin, 13, 50, 26);
+      pdf.addImage(logoDataUrl, 'PNG', margin, 11, 56, 30);
     } catch (_) {}
   }
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(25);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.setTextColor(0, 0, 0);
   pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_title', 'RAPPORT DE DIAGNOSTIC IA')), margin, 82);
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(11);
-  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.setTextColor(0, 0, 0);
   pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_subtitle', 'Analyse automatique des documents et synthese executive')), margin, 90);
 
   pdf.setFillColor(255, 255, 255);
