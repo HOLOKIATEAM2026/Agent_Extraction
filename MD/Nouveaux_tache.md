@@ -508,12 +508,50 @@ T8.8  → Historique                       ← en dernier
 
 - [x] **T11.1** — Export PDF du diagnostic
         (rapport professionnel avec logo Holokia + bouton d'export côté mode Diagnostic)
+        **Améliorations qualité PDF recommandées :**
+        - utiliser le logo Holokia en **SVG** ou **PNG HD** avec marges correctes
+        - ajouter une **vraie page de garde** :
+          logo, titre "Rapport de Diagnostic IA", entreprise, date/heure, version, mention confidentiel
+        - adopter une **charte visuelle sobre entreprise IT** :
+          bleu Holokia `#0F62FE`, bleu foncé `#16355D`, gris clair `#F5F7FA`
+        - utiliser une **typographie professionnelle** :
+          Inter / Roboto / Open Sans / Helvetica
+        - structurer le PDF avec un **sommaire** :
+          informations générales, résumé exécutif, complétude, confiance, documents, recommandations IA, conclusion
+        - générer un **résumé exécutif** en tête de rapport
+        - afficher les indicateurs sous forme de **cartes KPI** :
+          complétude, confiance, nombre de documents, score global
+        - produire des **graphiques HD / vectoriels** et éviter les captures d'écran
+        - intégrer des **icônes cohérentes** :
+          complétude, confiance, documents, éléments manquants, recommandations
+        - présenter les résultats documentaires dans un **tableau professionnel** :
+          type document, complétude, confiance, statut, lignes alternées, en-tête coloré
+        - mettre les **3 recommandations IA** dans des encadrés dédiés avec :
+          priorité, action proposée, impact attendu
+        - ajouter des **badges de priorité** :
+          Haute / Moyenne / Faible
+        - uniformiser **en-tête + pied de page** sur toutes les pages :
+          © Holokia 2026, rapport généré automatiquement, pagination
+        - ajouter les **métadonnées PDF** :
+          titre, auteur Holokia, sujet, date de création
+        - prévoir un **filigrane discret** :
+          "CONFIDENTIEL" ou "HOLOKIA"
+        - terminer par une **signature automatique** et une **conclusion synthétique**
+        - ajouter un **QR Code** vers le dashboard ou le rapport en ligne
+        - respecter une mise en page professionnelle :
+          marges minimales 2 cm, espacement régulier entre sections et paragraphes
+        - structure cible :
+          page 1 garde + résumé + KPI, pages suivantes analyses/graphes/tableaux, dernière page conclusion + signature + QR code
 - [x] **T11.2** — Génération automatique de recommandations IA
         (3 actions prioritaires basées sur la complétude/confiance + affichage dans le mode Diagnostic)
 - [x] **T11.3** — Dashboard Analytics
         (KPIs Confiance / Complétude / Score qualité + graphiques d'évolution, benchmark sectoriel)
 - [ ] **T11.4** — Support multilingue
         (questions en français sur docs en anglais/arabe)
+- [x] **T11.7** — Interface multilingue (FR / EN / ES)
+        (i18n local JSON + sélecteur de langue dropdown + persistance `holokia_lang` + intégration sur toutes les pages)
+- [x] **T11.8** — Ajout du modèle LLaMA 3.3 70B
+        (option UI + mapping backend Groq `llama-3.3-70b-versatile` sur Chat / Diagnostic / Comparaison / Historique)
 - [ ] **T11.5** — Traitement automatique par email
         (client envoie PDF → reçoit diagnostic automatiquement)
 - [ ] **T11.6** — Intégration LangGraph pour retry et routing

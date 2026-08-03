@@ -78,6 +78,121 @@ async function loadLogoDataUrl() {
   return null;
 }
 
+function fillTemplate(template, vars) {
+  let out = String(template || '');
+  Object.entries(vars || {}).forEach(([key, value]) => {
+    out = out.replace(new RegExp(`\\{${key}\\}`, 'g'), String(value ?? ''));
+  });
+  return out;
+}
+
+function tPdf(key, fallback, vars) {
+  const translated = tr(key, vars);
+  if (translated && translated !== key) return translated;
+  return fillTemplate(fallback, vars || {});
+}
+
+function getSourceFileName(meta) {
+  const source = meta && meta.source_file ? String(meta.source_file) : '';
+  if (!source) return '';
+  const parts = source.split(/[\\/]+/);
+  return parts[parts.length - 1] || '';
+}
+
+function shortenText(text, max = 120) {
+  const safe = cleanPdfText(text);
+  if (safe.length <= max) return safe;
+  return `${safe.slice(0, Math.max(0, max - 3)).trim()}...`;
+}
+
+function getFieldConfidence(fieldData) {
+  const raw = Number(fieldData && fieldData.confiance);
+  if (!Number.isFinite(raw)) return 0;
+  return Math.max(0, Math.min(1, raw));
+}
+
+function getSectionMetrics(data) {
+  const stats = [];
+  let totalExpected = 0;
+  let totalFilled = 0;
+  let totalConfidence = 0;
+  let totalConfidenceCount = 0;
+  let totalFoundFields = 0;
+  const missingLabels = [];
+
+  EXPORT_SECTIONS.forEach((section) => {
+    const sectionData = data && data[section.key] ? data[section.key] : {};
+    const fieldKeys = Object.keys(sectionData);
+    let filled = 0;
+    let found = 0;
+    let confidenceSum = 0;
+    let confidenceCount = 0;
+    const weakFields = [];
+
+    fieldKeys.forEach((fieldKey) => {
+      const fieldData = sectionData[fieldKey];
+      const confidence = getFieldConfidence(fieldData);
+      const hasValue = hasFieldValue(fieldData);
+      if (hasValue) found += 1;
+      if (hasValue && confidence >= 0.6) {
+        filled += 1;
+      } else {
+        weakFields.push(labelFromKey(fieldKey));
+        missingLabels.push(labelFromKey(fieldKey));
+      }
+      confidenceSum += confidence;
+      confidenceCount += 1;
+      totalConfidence += confidence;
+      totalConfidenceCount += 1;
+    });
+
+    totalExpected += fieldKeys.length;
+    totalFilled += filled;
+    totalFoundFields += found;
+    stats.push({
+      key: section.key,
+      title: section.title,
+      fieldCount: fieldKeys.length,
+      foundCount: found,
+      filledCount: filled,
+      avgConfidence: confidenceCount ? (confidenceSum / confidenceCount) * 100 : 0,
+      weakFields: weakFields.slice(0, 4),
+      data: sectionData
+    });
+  });
+
+  const avgConfidence = totalConfidenceCount ? (totalConfidence / totalConfidenceCount) * 100 : 0;
+  const completeness = totalExpected ? (totalFilled / totalExpected) * 100 : 0;
+  const quality = (avgConfidence * completeness) / 100;
+
+  return {
+    sectionStats: stats,
+    totalExpected,
+    totalFilled,
+    totalFoundFields,
+    avgConfidence,
+    completeness,
+    quality,
+    missingLabels: Array.from(new Set(missingLabels))
+  };
+}
+
+function getRecommendationPriority(rec, index) {
+  const raw = String((rec && (rec.priorite || rec.priority || rec.niveau)) || '').toLowerCase();
+  if (raw.includes('haut') || raw.includes('high') || raw.includes('critical')) {
+    return { label: 'Haute', fill: [254, 226, 226], text: [185, 28, 28], impact: 5 };
+  }
+  if (raw.includes('faib') || raw.includes('low')) {
+    return { label: 'Faible', fill: [220, 252, 231], text: [22, 101, 52], impact: 2 };
+  }
+  if (raw.includes('moy') || raw.includes('medium')) {
+    return { label: 'Moyenne', fill: [255, 237, 213], text: [194, 65, 12], impact: 3 };
+  }
+  if (index === 0) return { label: 'Haute', fill: [254, 226, 226], text: [185, 28, 28], impact: 5 };
+  if (index === 1) return { label: 'Moyenne', fill: [255, 237, 213], text: [194, 65, 12], impact: 4 };
+  return { label: 'Faible', fill: [220, 252, 231], text: [22, 101, 52], impact: 3 };
+}
+
 async function exportDiagnosticPdf(data) {
   if (!data) {
     alert(tr('diagnostic.export_no_data'));
@@ -92,113 +207,603 @@ async function exportDiagnosticPdf(data) {
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const margin = 14;
+  const margin = 15;
   const contentWidth = pageWidth - (margin * 2);
-  const lineHeight = 5;
-  let y = margin;
+  const footerHeight = 14;
+  const topContentY = 28;
+  const tableFontSize = 8.5;
+  const colors = {
+    brand: [15, 98, 254],
+    navy: [22, 53, 93],
+    light: [245, 247, 250],
+    surface: [255, 255, 255],
+    border: [216, 223, 232],
+    text: [22, 28, 45],
+    muted: [97, 108, 124],
+    success: [22, 163, 74],
+    warning: [245, 158, 11],
+    danger: [220, 38, 38],
+    paleBlue: [239, 244, 255]
+  };
+  let y = topContentY;
 
-  const ensureSpace = (needed = 10) => {
-    if (y + needed > pageHeight - margin) {
+  const meta = (data && data.meta) || {};
+  const sourceFileName = getSourceFileName(meta) || `${meta.entreprise || 'document'}.pdf`;
+  const metrics = getSectionMetrics(data);
+  const recommendations = Array.isArray(data.recommandations) ? data.recommandations.slice(0, 3) : [];
+  const questionsUsed = Array.isArray(meta.questions_utilisees) ? meta.questions_utilisees : [];
+  const generatedAt = new Date();
+  const sectionOverviewRows = metrics.sectionStats
+    .filter((section) => section.fieldCount > 0)
+    .map((section) => [
+      section.title,
+      `${section.filledCount}/${section.fieldCount}`,
+      `${Math.round(section.avgConfidence)}%`,
+      section.weakFields.length ? section.weakFields.join(', ') : tPdf('diagnostic.pdf_status_ok', 'RAS')
+    ]);
+
+  const executiveSummary = (() => {
+    const weakest = metrics.sectionStats
+      .filter((section) => section.fieldCount > 0)
+      .sort((a, b) => a.avgConfidence - b.avgConfidence)
+      .slice(0, 2)
+      .map((section) => section.title);
+    const weakPart = weakest.length
+      ? tPdf('diagnostic.pdf_exec_weak_part', 'Les points a renforcer concernent principalement {areas}.', { areas: weakest.join(', ') })
+      : tPdf('diagnostic.pdf_exec_weak_none', 'Aucune zone critique n a ete detectee dans les sections analysees.');
+    const missingPart = metrics.missingLabels.length
+      ? tPdf(
+          'diagnostic.pdf_exec_missing_part',
+          'Les champs a consolider en priorite sont {fields}.',
+          { fields: metrics.missingLabels.slice(0, 4).join(', ') }
+        )
+      : tPdf('diagnostic.pdf_exec_missing_none', 'Les informations attendues sont globalement presentes et sourcables.');
+    return [
+      tPdf(
+        'diagnostic.pdf_exec_intro',
+        'Le diagnostic automatique de {company} indique une completude de {completeness}% et une confiance moyenne de {confidence}%.',
+        {
+          company: meta.entreprise || tPdf('diagnostic.pdf_not_specified', 'Non specifie'),
+          completeness: Math.round(metrics.completeness),
+          confidence: Math.round(metrics.avgConfidence)
+        }
+      ),
+      weakPart,
+      missingPart,
+      recommendations.length
+        ? tPdf(
+            'diagnostic.pdf_exec_reco',
+            '{count} action(s) prioritaire(s) sont recommandees pour ameliorer la qualite documentaire et la fiabilite des sources.',
+            { count: recommendations.length }
+          )
+        : tPdf('diagnostic.pdf_exec_reco_none', 'Aucune recommandation automatique supplementaire n a ete generee.')
+    ].join(' ');
+  })();
+
+  pdf.setProperties({
+    title: cleanPdfText(tPdf('diagnostic.pdf_meta_title', 'Rapport de Diagnostic IA')),
+    author: 'Holokia',
+    subject: cleanPdfText(tPdf('diagnostic.pdf_meta_subject', 'Analyse documentaire automatisee')),
+    creator: 'Holokia',
+    keywords: cleanPdfText(`Holokia, diagnostic, RAG, ${meta.entreprise || ''}`),
+    producer: 'Holokia'
+  });
+
+  const ensureSpace = (needed = 10, nextPageTop = topContentY) => {
+    if (y + needed > pageHeight - footerHeight - 6) {
       pdf.addPage();
-      y = margin;
+      y = nextPageTop;
     }
   };
 
-  const drawWrapped = (text, x, size = 10, color = [20, 20, 20], gapAfter = 2) => {
+  const drawWrapped = (text, x, size = 10, color = colors.text, gapAfter = 2, width = contentWidth - (x - margin), fontStyle = 'normal', lineGap = 4.8) => {
     const safe = cleanPdfText(text);
     if (!safe) return;
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('helvetica', fontStyle);
     pdf.setFontSize(size);
     pdf.setTextColor(color[0], color[1], color[2]);
-    const lines = pdf.splitTextToSize(safe, contentWidth - (x - margin));
+    const lines = pdf.splitTextToSize(safe, width);
     lines.forEach((line) => {
-      ensureSpace(lineHeight + 1);
+      ensureSpace(lineGap + 1);
       pdf.text(line, x, y);
-      y += lineHeight;
+      y += lineGap;
     });
     y += gapAfter;
   };
 
-  const drawSectionTitle = (title) => {
-    ensureSpace(12);
-    pdf.setDrawColor(60, 87, 243);
-    pdf.setLineWidth(0.6);
-    pdf.line(margin, y, pageWidth - margin, y);
-    y += 6;
+  const drawBadge = (x, badgeY, label, fillColor, textColor, w = 24) => {
+    pdf.setFillColor(fillColor[0], fillColor[1], fillColor[2]);
+    pdf.setDrawColor(fillColor[0], fillColor[1], fillColor[2]);
+    pdf.roundedRect(x, badgeY, w, 7, 2, 2, 'FD');
     pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(14);
-    pdf.setTextColor(20, 20, 20);
+    pdf.setFontSize(8);
+    pdf.setTextColor(textColor[0], textColor[1], textColor[2]);
+    pdf.text(cleanPdfText(label), x + (w / 2), badgeY + 4.5, { align: 'center' });
+  };
+
+  const drawSectionTitle = (kicker, title, subtitle) => {
+    ensureSpace(18);
+    pdf.setDrawColor(colors.brand[0], colors.brand[1], colors.brand[2]);
+    pdf.setLineWidth(0.7);
+    pdf.line(margin, y, pageWidth - margin, y);
+    y += 5;
+    if (kicker) {
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(8.5);
+      pdf.setTextColor(colors.brand[0], colors.brand[1], colors.brand[2]);
+      pdf.text(cleanPdfText(kicker), margin, y);
+      y += 5;
+    }
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(17);
+    pdf.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
     pdf.text(cleanPdfText(title), margin, y);
-    y += 7;
+    y += 6;
+    if (subtitle) {
+      drawWrapped(subtitle, margin, 9.5, colors.muted, 3, contentWidth, 'normal', 4.2);
+    }
+  };
+
+  const drawKpiCard = (x, cardY, w, h, label, value, caption, accent) => {
+    pdf.setFillColor(colors.surface[0], colors.surface[1], colors.surface[2]);
+    pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+    pdf.roundedRect(x, cardY, w, h, 4, 4, 'FD');
+    pdf.setFillColor(accent[0], accent[1], accent[2]);
+    pdf.roundedRect(x + 3, cardY + 3, 2.5, h - 6, 1, 1, 'F');
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(9);
+    pdf.setTextColor(colors.muted[0], colors.muted[1], colors.muted[2]);
+    pdf.text(cleanPdfText(label), x + 9, cardY + 8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(20);
+    pdf.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+    pdf.text(cleanPdfText(value), x + 9, cardY + 18);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(colors.muted[0], colors.muted[1], colors.muted[2]);
+    const lines = pdf.splitTextToSize(cleanPdfText(caption), w - 14);
+    lines.slice(0, 2).forEach((line, index) => {
+      pdf.text(line, x + 9, cardY + 25 + (index * 4));
+    });
+  };
+
+  const drawTable = (columns, rows, widths, options = {}) => {
+    const startX = options.x || margin;
+    const headerFill = options.headerFill || colors.navy;
+    const headerText = options.headerText || [255, 255, 255];
+    const bodyFontSize = options.bodyFontSize || tableFontSize;
+    const lineSize = options.lineSize || 3.8;
+    const rowPadding = options.rowPadding || 2.2;
+    const headerHeight = options.headerHeight || 8;
+
+    const drawHeader = () => {
+      ensureSpace(headerHeight + 1);
+      let x = startX;
+      pdf.setFillColor(headerFill[0], headerFill[1], headerFill[2]);
+      pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+      columns.forEach((column, idx) => {
+        pdf.rect(x, y, widths[idx], headerHeight, 'FD');
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(8.5);
+        pdf.setTextColor(headerText[0], headerText[1], headerText[2]);
+        pdf.text(cleanPdfText(column), x + 2, y + 5.2);
+        x += widths[idx];
+      });
+      y += headerHeight;
+    };
+
+    drawHeader();
+    rows.forEach((row, rowIndex) => {
+      const cellLines = row.map((cell, idx) => {
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(bodyFontSize);
+        return pdf.splitTextToSize(cleanPdfText(cell), widths[idx] - 4);
+      });
+      const rowHeight = Math.max(...cellLines.map((lines) => Math.max(lines.length, 1))) * lineSize + (rowPadding * 2);
+      if (y + rowHeight > pageHeight - footerHeight - 6) {
+        pdf.addPage();
+        y = topContentY;
+        drawHeader();
+      }
+
+      let x = startX;
+      const fill = rowIndex % 2 === 0 ? [255, 255, 255] : colors.light;
+      row.forEach((_, idx) => {
+        pdf.setFillColor(fill[0], fill[1], fill[2]);
+        pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+        pdf.rect(x, y, widths[idx], rowHeight, 'FD');
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(bodyFontSize);
+        pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+        cellLines[idx].forEach((line, lineIndex) => {
+          pdf.text(line, x + 2, y + rowPadding + 2.6 + (lineIndex * lineSize));
+        });
+        x += widths[idx];
+      });
+      y += rowHeight;
+    });
+    y += 4;
+  };
+
+  const drawRecommendationCard = (rec, index) => {
+    const priority = getRecommendationPriority(rec, index);
+    const cardHeight = 38;
+    ensureSpace(cardHeight + 4);
+    pdf.setFillColor(255, 255, 255);
+    pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+    pdf.roundedRect(margin, y, contentWidth, cardHeight, 4, 4, 'FD');
+    drawBadge(pageWidth - margin - 28, y + 4, priority.label, priority.fill, priority.text, 28);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(11.5);
+    pdf.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+    pdf.text(cleanPdfText(rec.titre || tPdf('diagnostic.pdf_action', 'Action prioritaire')), margin + 4, y + 9);
+    let localY = y + 15;
+    const actionLines = pdf.splitTextToSize(cleanPdfText(rec.action || ''), contentWidth - 10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(9.5);
+    pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+    actionLines.slice(0, 3).forEach((line) => {
+      pdf.text(line, margin + 4, localY);
+      localY += 4.3;
+    });
+    const justification = rec.raison
+      ? tPdf('diagnostic.pdf_justification', 'Justification: {reason}', { reason: rec.raison })
+      : '';
+    if (justification) {
+      const justLines = pdf.splitTextToSize(cleanPdfText(justification), contentWidth - 10);
+      pdf.setFontSize(8.5);
+      pdf.setTextColor(colors.muted[0], colors.muted[1], colors.muted[2]);
+      justLines.slice(0, 2).forEach((line) => {
+        pdf.text(line, margin + 4, localY);
+        localY += 4;
+      });
+    }
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(8.5);
+    pdf.setTextColor(colors.brand[0], colors.brand[1], colors.brand[2]);
+    pdf.text(
+      cleanPdfText(
+        tPdf('diagnostic.pdf_expected_impact', 'Impact attendu: {stars}', {
+          stars: '★'.repeat(priority.impact)
+        })
+      ),
+      margin + 4,
+      y + cardHeight - 4
+    );
+    y += cardHeight + 4;
+  };
+
+  const finalizeDocument = () => {
+    const totalPages = pdf.getNumberOfPages();
+    for (let page = 1; page <= totalPages; page += 1) {
+      pdf.setPage(page);
+      if (page > 1) {
+        pdf.setTextColor(236, 240, 247);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(34);
+        pdf.text(
+          cleanPdfText(tPdf('diagnostic.pdf_confidential', 'CONFIDENTIEL')),
+          pageWidth / 2,
+          pageHeight / 2,
+          { align: 'center', angle: 35 }
+        );
+      }
+      pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+      pdf.line(margin, pageHeight - footerHeight, pageWidth - margin, pageHeight - footerHeight);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(colors.muted[0], colors.muted[1], colors.muted[2]);
+      pdf.text(cleanPdfText(tPdf('diagnostic.pdf_footer', '© Holokia 2026 · Rapport genere automatiquement')), margin, pageHeight - 8);
+      pdf.text(
+        cleanPdfText(
+          tPdf('diagnostic.pdf_page', 'Page {page} / {total}', { page, total: totalPages })
+        ),
+        pageWidth - margin,
+        pageHeight - 8,
+        { align: 'right' }
+      );
+    }
   };
 
   const logoDataUrl = await loadLogoDataUrl();
+
+  pdf.setFillColor(colors.light[0], colors.light[1], colors.light[2]);
+  pdf.rect(0, 0, pageWidth, pageHeight, 'F');
+  pdf.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+  pdf.rect(0, 0, pageWidth, 62, 'F');
+  pdf.setFillColor(colors.brand[0], colors.brand[1], colors.brand[2]);
+  pdf.rect(0, 62, pageWidth, 4, 'F');
+
   if (logoDataUrl) {
     try {
-      pdf.addImage(logoDataUrl, 'PNG', margin, y, 30, 16);
+      pdf.addImage(logoDataUrl, 'PNG', margin, 15, 42, 22);
     } catch (_) {}
   }
 
   pdf.setFont('helvetica', 'bold');
-  pdf.setFontSize(20);
-  pdf.setTextColor(20, 20, 20);
-  pdf.text(cleanPdfText(tr('diagnostic.pdf_title')), margin + 36, y + 8);
-  y += 20;
-
+  pdf.setFontSize(25);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_title', 'RAPPORT DE DIAGNOSTIC IA')), margin, 82);
   pdf.setFont('helvetica', 'normal');
-  pdf.setFontSize(10);
-  pdf.setTextColor(90, 90, 90);
-  const meta = (data && data.meta) || {};
-  drawWrapped(tr('diagnostic.pdf_company', { company: meta.entreprise || tr('common.not_specified') }), margin, 10, [70, 70, 70], 0);
-  drawWrapped(tr('diagnostic.pdf_export_date', { date: new Date().toLocaleString() }), margin, 10, [70, 70, 70], 0);
-  drawWrapped(tr('diagnostic.pdf_model', { model: meta.modele_utilise || tr('common.not_specified'), provider: meta.provider || tr('common.not_specified') }), margin, 10, [70, 70, 70], 4);
+  pdf.setFontSize(11);
+  pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_subtitle', 'Analyse automatique des documents et synthese executive')), margin, 90);
 
-  const recs = Array.isArray(data.recommandations) ? data.recommandations : [];
-  if (recs.length > 0) {
-    drawSectionTitle(tr('diagnostic.pdf_recommendations'));
-    recs.slice(0, 3).forEach((rec, idx) => {
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(11);
-      ensureSpace(8);
-      pdf.text(`${idx + 1}. ${cleanPdfText(rec.titre || 'Action')}`, margin, y);
-      y += 5;
-      drawWrapped(rec.action || '', margin + 4, 10, [30, 30, 30], 1);
-      if (rec.raison) {
-        drawWrapped(tr('diagnostic.pdf_justification', { reason: rec.raison }), margin + 4, 9, [90, 90, 90], 2);
-      }
-      y += 1;
+  pdf.setFillColor(255, 255, 255);
+  pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  pdf.roundedRect(margin, 108, contentWidth, 84, 5, 5, 'FD');
+
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(12);
+  pdf.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+  pdf.text(cleanPdfText(tPdf('diagnostic.pdf_general_info', 'Informations generales')), margin + 6, 119);
+
+  const coverLines = [
+    `${tPdf('diagnostic.pdf_company_label', 'Entreprise')} : ${cleanPdfText(meta.entreprise || tPdf('diagnostic.pdf_not_specified', 'Non specifie'))}`,
+    `${tPdf('diagnostic.pdf_document_label', 'Document')} : ${cleanPdfText(sourceFileName)}`,
+    `${tPdf('diagnostic.pdf_export_date_label', 'Date')} : ${cleanPdfText(generatedAt.toLocaleDateString())}`,
+    `${tPdf('diagnostic.pdf_export_time_label', 'Heure')} : ${cleanPdfText(generatedAt.toLocaleTimeString())}`,
+    `${tPdf('diagnostic.pdf_model_label', 'Modele')} : ${cleanPdfText(meta.modele_utilise || tPdf('diagnostic.pdf_not_specified', 'Non specifie'))}`,
+    `${tPdf('diagnostic.pdf_provider_label', 'Provider')} : ${cleanPdfText(meta.provider || tPdf('diagnostic.pdf_not_specified', 'Non specifie'))}`,
+    `${tPdf('diagnostic.pdf_version_label', 'Version')} : v1.1`
+  ];
+  let coverY = 130;
+  coverLines.forEach((line) => {
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10.5);
+    pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+    pdf.text(line, margin + 6, coverY);
+    coverY += 9;
+  });
+
+  drawBadge(margin, 203, tPdf('diagnostic.pdf_confidential', 'CONFIDENTIEL'), [226, 232, 240], colors.navy, 42);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9.5);
+  pdf.setTextColor(colors.muted[0], colors.muted[1], colors.muted[2]);
+  const coverNoteLines = pdf.splitTextToSize(
+    cleanPdfText(tPdf('diagnostic.pdf_cover_note', 'Document genere automatiquement pour usage interne et client.')),
+    contentWidth - 48
+  );
+  coverNoteLines.slice(0, 2).forEach((line, index) => {
+    pdf.text(line, margin + 48, 207 + (index * 4));
+  });
+
+  pdf.addPage();
+  y = topContentY;
+
+  drawSectionTitle(
+    tPdf('diagnostic.pdf_summary_kicker', 'RESUME EXECUTIF'),
+    tPdf('diagnostic.pdf_summary_title', 'Synthese de pilotage'),
+    tPdf('diagnostic.pdf_summary_subtitle', 'Lecture rapide pour la direction et les equipes projet')
+  );
+  drawWrapped(executiveSummary, margin, 10.5, colors.text, 5, contentWidth, 'normal', 4.9);
+
+  const cardGap = 6;
+  const cardWidth = (contentWidth - cardGap) / 2;
+  const cardHeight = 31;
+  const cardY = y;
+  drawKpiCard(
+    margin,
+    cardY,
+    cardWidth,
+    cardHeight,
+    tPdf('diagnostic.pdf_kpi_completeness', 'Completude'),
+    `${Math.round(metrics.completeness)}%`,
+    tPdf('diagnostic.pdf_kpi_completeness_caption', 'Champs fiables / champs attendus'),
+    colors.brand
+  );
+  drawKpiCard(
+    margin + cardWidth + cardGap,
+    cardY,
+    cardWidth,
+    cardHeight,
+    tPdf('diagnostic.pdf_kpi_confidence', 'Confiance'),
+    `${Math.round(metrics.avgConfidence)}%`,
+    tPdf('diagnostic.pdf_kpi_confidence_caption', 'Moyenne des confiances extraites'),
+    colors.success
+  );
+  drawKpiCard(
+    margin,
+    cardY + cardHeight + 6,
+    cardWidth,
+    cardHeight,
+    tPdf('diagnostic.pdf_kpi_documents', 'Documents'),
+    '1',
+    tPdf('diagnostic.pdf_kpi_documents_caption', 'Rapport analyse dans cette extraction'),
+    colors.warning
+  );
+  drawKpiCard(
+    margin + cardWidth + cardGap,
+    cardY + cardHeight + 6,
+    cardWidth,
+    cardHeight,
+    tPdf('diagnostic.pdf_kpi_quality', 'Score global'),
+    `${Math.round(metrics.quality)}%`,
+    tPdf('diagnostic.pdf_kpi_quality_caption', 'Confiance x completude'),
+    colors.navy
+  );
+  y = cardY + (cardHeight * 2) + 12;
+
+  drawSectionTitle(
+    tPdf('diagnostic.pdf_overview_kicker', 'PILOTAGE'),
+    tPdf('diagnostic.pdf_section_overview', 'Vue d ensemble des sections'),
+    tPdf('diagnostic.pdf_section_overview_subtitle', 'Couverture et niveau de confiance par domaine')
+  );
+  drawTable(
+    [
+      tPdf('diagnostic.pdf_table_section', 'Section'),
+      tPdf('diagnostic.pdf_table_coverage', 'Couverture'),
+      tPdf('diagnostic.pdf_table_confidence', 'Confiance'),
+      tPdf('diagnostic.pdf_table_watchouts', 'Points de vigilance')
+    ],
+    sectionOverviewRows,
+    [42, 28, 26, 86]
+  );
+
+  drawSectionTitle(
+    tPdf('diagnostic.pdf_documents_kicker', 'TRACEABILITE'),
+    tPdf('diagnostic.pdf_documents', 'Documents analyses'),
+    tPdf('diagnostic.pdf_documents_subtitle', 'Source principale ayant servi au diagnostic')
+  );
+  drawTable(
+    [
+      tPdf('diagnostic.pdf_table_document', 'Document'),
+      tPdf('diagnostic.pdf_table_company', 'Entreprise'),
+      tPdf('diagnostic.pdf_table_model', 'Modele'),
+      tPdf('diagnostic.pdf_table_approach', 'Approche')
+    ],
+    [[
+      sourceFileName,
+      meta.entreprise || tPdf('diagnostic.pdf_not_specified', 'Non specifie'),
+      meta.modele_utilise || tPdf('diagnostic.pdf_not_specified', 'Non specifie'),
+      meta.approche || tPdf('diagnostic.pdf_not_specified', 'Non specifie')
+    ]],
+    [58, 46, 42, 36]
+  );
+
+  if (questionsUsed.length > 0) {
+    drawSectionTitle(
+      tPdf('diagnostic.pdf_questions_kicker', 'PARAMETRAGE'),
+      tPdf('diagnostic.pdf_questions_used', 'Questions utilisees'),
+      tPdf('diagnostic.pdf_questions_subtitle', 'Questions ayant guide l extraction de ce rapport')
+    );
+    questionsUsed.slice(0, 8).forEach((question, index) => {
+      drawWrapped(`${index + 1}. ${question}`, margin, 9.5, colors.text, 1.5, contentWidth, 'normal', 4.5);
     });
   }
 
-  EXPORT_SECTIONS.forEach((section) => {
-    const sectionData = data[section.key] || {};
-    const fields = Object.keys(sectionData);
-    if (fields.length === 0) return;
+  pdf.addPage();
+  y = topContentY;
+  drawSectionTitle(
+    tPdf('diagnostic.pdf_reco_kicker', 'ACTIONS PRIORITAIRES'),
+    tPdf('diagnostic.pdf_recommendations', 'Recommandations IA'),
+    tPdf('diagnostic.pdf_reco_subtitle', 'Plan d action cible pour ameliorer la qualite documentaire')
+  );
 
-    drawSectionTitle(section.title);
-    fields.forEach((fieldKey) => {
-      const fieldData = sectionData[fieldKey];
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(10);
-      ensureSpace(7);
-      pdf.setTextColor(20, 20, 20);
-      pdf.text(cleanPdfText(labelFromKey(fieldKey)), margin, y);
-      y += 5;
-
-      drawWrapped(fieldToText(fieldData), margin + 4, 10, [35, 35, 35], 1);
-      if (fieldData && fieldData.source) {
-        const page = fieldData.source.page != null ? `${tr('common.page')} ${fieldData.source.page}` : tr('common.page');
-        drawWrapped(`${tr('common.source')}: ${page}`, margin + 4, 9, [60, 87, 243], 0);
-        if (fieldData.source.extrait) {
-          drawWrapped(`Extrait: ${fieldData.source.extrait}`, margin + 4, 8, [100, 100, 100], 2);
-        } else {
-          y += 2;
-        }
-      } else {
-        y += 2;
-      }
+  if (recommendations.length > 0) {
+    recommendations.forEach((rec, index) => {
+      drawRecommendationCard(rec, index);
     });
-  });
+  } else {
+    drawWrapped(
+      tPdf('diagnostic.pdf_reco_none', 'Aucune recommandation automatique n a ete generee pour cette extraction.'),
+      margin,
+      10,
+      colors.muted,
+      4
+    );
+  }
+
+  if (metrics.missingLabels.length > 0) {
+    drawSectionTitle(
+      tPdf('diagnostic.pdf_missing_kicker', 'POINTS A COMPLETER'),
+      tPdf('diagnostic.pdf_missing_title', 'Informations a consolider'),
+      tPdf('diagnostic.pdf_missing_subtitle', 'Champs insuffisamment renseignes ou a confiance trop faible')
+    );
+    drawTable(
+      [tPdf('diagnostic.pdf_table_missing', 'Champ a renforcer')],
+      metrics.missingLabels.slice(0, 10).map((label) => [label]),
+      [contentWidth]
+    );
+  }
+
+  metrics.sectionStats
+    .filter((section) => section.fieldCount > 0)
+    .forEach((section) => {
+      pdf.addPage();
+      y = topContentY;
+      drawSectionTitle(
+        tPdf('diagnostic.pdf_detail_kicker', 'ANALYSE DETAILLEE'),
+        section.title,
+        tPdf(
+          'diagnostic.pdf_detail_subtitle',
+          'Champs extraits, niveau de confiance et references source'
+        )
+      );
+
+      drawWrapped(
+        tPdf(
+          'diagnostic.pdf_detail_summary',
+          'Couverture fiable: {filled}/{total} champs · Confiance moyenne: {confidence}%',
+          {
+            filled: section.filledCount,
+            total: section.fieldCount,
+            confidence: Math.round(section.avgConfidence)
+          }
+        ),
+        margin,
+        10,
+        colors.muted,
+        4
+      );
+
+      const rows = Object.keys(section.data).map((fieldKey) => {
+        const fieldData = section.data[fieldKey];
+        const page = fieldData && fieldData.source && fieldData.source.page != null
+          ? `${tPdf('diagnostic.pdf_page_short', 'p.')} ${fieldData.source.page}`
+          : tPdf('diagnostic.pdf_not_specified', 'Non specifie');
+        const excerpt = fieldData && fieldData.source && fieldData.source.extrait
+          ? ` · ${shortenText(fieldData.source.extrait, 80)}`
+          : '';
+        return [
+          labelFromKey(fieldKey),
+          fieldToText(fieldData),
+          `${Math.round(getFieldConfidence(fieldData) * 100)}%`,
+          `${page}${excerpt}`
+        ];
+      });
+
+      drawTable(
+        [
+          tPdf('diagnostic.pdf_table_field', 'Champ'),
+          tPdf('diagnostic.pdf_table_value', 'Valeur'),
+          tPdf('diagnostic.pdf_table_confidence', 'Confiance'),
+          tPdf('diagnostic.pdf_table_source', 'Source')
+        ],
+        rows,
+        [34, 70, 22, 56]
+      );
+    });
+
+  pdf.addPage();
+  y = topContentY;
+  drawSectionTitle(
+    tPdf('diagnostic.pdf_conclusion_kicker', 'CLOTURE'),
+    tPdf('diagnostic.pdf_conclusion', 'Conclusion'),
+    tPdf('diagnostic.pdf_conclusion_subtitle', 'Synthese finale et signature automatique')
+  );
+  drawWrapped(
+    tPdf(
+      'diagnostic.pdf_conclusion_text',
+      'Le diagnostic met en evidence un niveau de qualite documentaire de {quality}% avec une completude de {completeness}% et une confiance moyenne de {confidence}%. Les recommandations formulees permettent de prioriser les actions necessaires pour renforcer la conformite, la traçabilite et la completude des informations.',
+      {
+        quality: Math.round(metrics.quality),
+        completeness: Math.round(metrics.completeness),
+        confidence: Math.round(metrics.avgConfidence)
+      }
+    ),
+    margin,
+    10.5,
+    colors.text,
+    5
+  );
+
+  pdf.setFillColor(colors.paleBlue[0], colors.paleBlue[1], colors.paleBlue[2]);
+  pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
+  pdf.roundedRect(margin, y, contentWidth, 28, 4, 4, 'FD');
+  pdf.setFont('helvetica', 'bold');
+  pdf.setFontSize(10.5);
+  pdf.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+  pdf.text(cleanPdfText(tPdf('diagnostic.pdf_signature_title', 'Signature automatique')), margin + 5, y + 9);
+  pdf.setFont('helvetica', 'normal');
+  pdf.setFontSize(9.5);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
+  pdf.text(
+    cleanPdfText(tPdf('diagnostic.pdf_signature_text', 'Rapport genere automatiquement par le Copilot IA Holokia. Aucune modification manuelle.')),
+    margin + 5,
+    y + 17
+  );
+
+  finalizeDocument();
 
   pdf.save(getExportFileName(data));
 }
