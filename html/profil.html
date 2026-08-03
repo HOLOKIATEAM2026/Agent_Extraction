@@ -79,6 +79,31 @@
     color:var(--muted);
     margin-bottom:12px;
   }
+  .panel-title-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .info-btn{
+    width:18px;
+    height:18px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:var(--glass);
+    color:var(--muted);
+    font-family:var(--mono);
+    font-size:11px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+    cursor:help;
+  }
+  :root:not([data-theme="light"]) .info-btn{
+    background:var(--paper-3);
+    color:var(--ink);
+  }
   .row{
     display:flex;
     gap:10px;
@@ -265,7 +290,10 @@
       </section>
 
       <section class="panel">
-        <div class="panel-title" data-i18n="profile.evolution">Évolution (NIST / Data)</div>
+        <div class="panel-title panel-title-row">
+          <span data-i18n="profile.evolution">Évolution (NIST / Data)</span>
+          <button type="button" class="info-btn" data-i18n-title="profile.evolution_tip" data-i18n-aria-label="profile.evolution_tip" aria-label="Info" title="Info">i</button>
+        </div>
         <div class="chart-box">
           <canvas id="chartCanvas" height="180" style="width:100%;display:block;"></canvas>
         </div>

@@ -254,6 +254,7 @@
     "no_profile": "No hay perfil disponible.",
     "kpis": "Puntuación media NIST: {nist} · Puntuación media Data: {data} · Informes: {reports}",
     "evolution": "Evolución (NIST / Data)",
+    "evolution_tip": "Evolución de puntuaciones en el tiempo. NIST = madurez de ciberseguridad/gobernanza (inspirada en NIST CSF). Data = madurez de datos (calidad, gobernanza, documentación).",
     "chart_nist": "Puntuación NIST",
     "chart_data": "Puntuación Data",
     "saving": "Guardando...",

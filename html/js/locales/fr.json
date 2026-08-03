@@ -254,6 +254,7 @@
     "no_profile": "Aucun profil disponible.",
     "kpis": "Score NIST moyen: {nist} · Score Data moyen: {data} · Rapports: {reports}",
     "evolution": "Évolution (NIST / Data)",
+    "evolution_tip": "Graphique d'évolution des scores dans le temps. NIST = maturité cybersécurité/gouvernance (inspirée du NIST CSF). Data = maturité data (qualité, gouvernance, documentation).",
     "chart_nist": "Score NIST",
     "chart_data": "Score Data",
     "saving": "Enregistrement...",
