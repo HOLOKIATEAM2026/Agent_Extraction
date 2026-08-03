@@ -344,6 +344,29 @@ async function exportDiagnosticPdf(data) {
     }
   };
 
+  const getCurrentPageNumber = () => {
+    try {
+      const info = pdf.internal.getCurrentPageInfo();
+      return info && info.pageNumber ? info.pageNumber : 1;
+    } catch (_) {
+      return 1;
+    }
+  };
+
+  const drawWatermark = () => {
+    const pageNumber = getCurrentPageNumber();
+    if (pageNumber <= 1) return;
+    pdf.setTextColor(248, 250, 252);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(44);
+    pdf.text(
+      cleanPdfText(tPdf('diagnostic.pdf_confidential', 'CONFIDENTIEL')),
+      pageWidth / 2,
+      pageHeight / 2,
+      { align: 'center', angle: 35 }
+    );
+  };
+
   const drawKpiCard = (x, cardY, w, h, label, value, caption, accent) => {
     pdf.setFillColor(colors.surface[0], colors.surface[1], colors.surface[2]);
     pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
@@ -403,6 +426,7 @@ async function exportDiagnosticPdf(data) {
       if (y + rowHeight > pageHeight - footerHeight - 6) {
         pdf.addPage();
         y = topContentY;
+        drawWatermark();
         drawHeader();
       }
 
@@ -477,17 +501,6 @@ async function exportDiagnosticPdf(data) {
     const totalPages = pdf.getNumberOfPages();
     for (let page = 1; page <= totalPages; page += 1) {
       pdf.setPage(page);
-      if (page > 1) {
-        pdf.setTextColor(236, 240, 247);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setFontSize(34);
-        pdf.text(
-          cleanPdfText(tPdf('diagnostic.pdf_confidential', 'CONFIDENTIEL')),
-          pageWidth / 2,
-          pageHeight / 2,
-          { align: 'center', angle: 35 }
-        );
-      }
       pdf.setDrawColor(colors.border[0], colors.border[1], colors.border[2]);
       pdf.line(margin, pageHeight - footerHeight, pageWidth - margin, pageHeight - footerHeight);
       pdf.setFont('helvetica', 'normal');
@@ -516,16 +529,17 @@ async function exportDiagnosticPdf(data) {
 
   if (logoDataUrl) {
     try {
-      pdf.addImage(logoDataUrl, 'PNG', margin, 15, 42, 22);
+      pdf.addImage(logoDataUrl, 'PNG', margin, 13, 50, 26);
     } catch (_) {}
   }
 
   pdf.setFont('helvetica', 'bold');
   pdf.setFontSize(25);
-  pdf.setTextColor(255, 255, 255);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_title', 'RAPPORT DE DIAGNOSTIC IA')), margin, 82);
   pdf.setFont('helvetica', 'normal');
   pdf.setFontSize(11);
+  pdf.setTextColor(colors.text[0], colors.text[1], colors.text[2]);
   pdf.text(cleanPdfText(tPdf('diagnostic.pdf_report_subtitle', 'Analyse automatique des documents et synthese executive')), margin, 90);
 
   pdf.setFillColor(255, 255, 255);
@@ -569,6 +583,7 @@ async function exportDiagnosticPdf(data) {
 
   pdf.addPage();
   y = topContentY;
+  drawWatermark();
 
   drawSectionTitle(
     tPdf('diagnostic.pdf_summary_kicker', 'RESUME EXECUTIF'),
@@ -673,6 +688,7 @@ async function exportDiagnosticPdf(data) {
 
   pdf.addPage();
   y = topContentY;
+  drawWatermark();
   drawSectionTitle(
     tPdf('diagnostic.pdf_reco_kicker', 'ACTIONS PRIORITAIRES'),
     tPdf('diagnostic.pdf_recommendations', 'Recommandations IA'),
@@ -711,6 +727,7 @@ async function exportDiagnosticPdf(data) {
     .forEach((section) => {
       pdf.addPage();
       y = topContentY;
+      drawWatermark();
       drawSectionTitle(
         tPdf('diagnostic.pdf_detail_kicker', 'ANALYSE DETAILLEE'),
         section.title,
@@ -766,6 +783,7 @@ async function exportDiagnosticPdf(data) {
 
   pdf.addPage();
   y = topContentY;
+  drawWatermark();
   drawSectionTitle(
     tPdf('diagnostic.pdf_conclusion_kicker', 'CLOTURE'),
     tPdf('diagnostic.pdf_conclusion', 'Conclusion'),
