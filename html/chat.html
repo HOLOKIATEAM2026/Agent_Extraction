@@ -1110,53 +1110,54 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
 }
 
 .btn-attach {
-  background: var(--paper-2);
-  border: 1px solid var(--line);
+  background: transparent;
+  border: none;
   color: var(--muted);
   font-size: 22px;
   line-height: 1;
-  font-weight: 600;
-  width: 34px;
-  height: 34px;
+  font-weight: 500;
+  width: 42px;
+  height: 42px;
   padding: 0;
+  margin: 4px 6px 4px 8px;
   cursor: pointer;
-  border-radius: 10px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
   position: relative;
   flex: 0 0 auto;
 }
 .btn-attach:hover {
-  color: var(--on-accent);
-  background: var(--blue);
-  border-color: var(--blue);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(60,87,243,0.22);
+  color: var(--text);
+  background: var(--paper-2);
+}
+.btn-attach:active {
+  transform: scale(0.96);
 }
 .attach-badge {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 2px;
+  right: 2px;
   background: var(--blue);
   color: var(--on-accent);
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 700;
-  padding: 2px 5px;
+  padding: 1px 5px;
   border-radius: 999px;
-  line-height: 1;
+  line-height: 1.3;
   min-width: 16px;
   text-align: center;
-  border: 1.5px solid var(--paper-2);
+  border: 1.5px solid var(--card);
 }
 
 .chat-input {
   flex: 1;
   width: 100%;
   padding: 13px 14px;
-  padding-left: 0;
+  padding-left: 4px;
   padding-right: 48px;
   background: transparent;
   border: none;
