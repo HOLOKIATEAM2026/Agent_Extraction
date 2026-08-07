@@ -1,14 +1,12 @@
 {
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "pip install -r requirements.txt",
-    "nixpacksPlanVersion": 1
+    "buildCommand": "pip install --no-cache-dir -r requirements.txt"
   },
   "deploy": {
     "healthcheckPath": "/docs",
     "healthcheckTimeout": 300,
-    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+    "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
