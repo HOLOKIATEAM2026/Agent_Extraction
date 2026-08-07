@@ -1110,33 +1110,46 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
 }
 
 .btn-attach {
-  background: transparent;
-  border: none;
+  background: var(--paper-2);
+  border: 1px solid var(--line);
   color: var(--muted);
-  font-size: 18px;
-  padding: 10px 14px;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 600;
+  width: 34px;
+  height: 34px;
+  padding: 0;
   cursor: pointer;
-  display: flex;
+  border-radius: 10px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
   position: relative;
+  flex: 0 0 auto;
 }
 .btn-attach:hover {
-  color: var(--blue);
+  color: var(--on-accent);
+  background: var(--blue);
+  border-color: var(--blue);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(60,87,243,0.22);
 }
 .attach-badge {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: -6px;
+  right: -6px;
   background: var(--blue);
   color: var(--on-accent);
   font-family: var(--mono);
-  font-size: 8px;
-  font-weight: bold;
-  padding: 1px 4px;
-  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 999px;
   line-height: 1;
+  min-width: 16px;
+  text-align: center;
+  border: 1.5px solid var(--paper-2);
 }
 
 .chat-input {
@@ -1418,7 +1431,7 @@ html:not([data-i18n-ready="1"]) .lang-switcher{
 
       <div class="input-row">
         <div class="input-wrapper">
-          <button id="btnUpload" class="btn-attach" data-i18n-title="chat.attach_docs" title="Joindre des documents">📎<span id="docCountBadge" class="attach-badge" style="display:none">0</span></button>
+          <button id="btnUpload" class="btn-attach" data-i18n-title="chat.attach_docs" title="Joindre des documents" aria-label="Joindre des documents">+<span id="docCountBadge" class="attach-badge" style="display:none">0</span></button>
           <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.md" style="display:none" data-i18n-aria-label="chat.select_files" aria-label="Sélectionner des fichiers">
           
           <textarea

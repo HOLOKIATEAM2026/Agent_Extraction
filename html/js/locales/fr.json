@@ -225,7 +225,7 @@
     "evolution": "Évolution (confiance moyenne)",
     "evolution_hint": "Affiche l’évolution quotidienne de la confiance moyenne.",
     "models_split": "Répartition par modèle",
-    "models_split_hint": "Part des analyses par modèle (groq, mistral, openai, …).",
+    "models_split_hint": "Part des analyses par modèle (LLaMA 3.1 8B, LLaMA 3.3 70B, GPT-4o, …).",
     "radar": "Maturité par domaine (radar)",
     "radar_hint": "Moyenne par section : stratégique, financier, RH, data, cyber.",
     "top_companies": "Top entreprises (volume)",

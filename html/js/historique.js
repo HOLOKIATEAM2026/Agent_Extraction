@@ -3,6 +3,24 @@ let currentExtractionId = null;
 const COMPLETENESS_MIN_CONFIDENCE = 0.6;
 let compareMode = false;
 
+function getModelLabel(ext) {
+  const modelVal = String(ext?.model || '').trim();
+  const providerVal = String(ext?.provider || '').trim();
+  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
+    return window.ModelLabels.resolve({ model: modelVal, provider: providerVal });
+  }
+  return modelVal || providerVal || '-';
+}
+
+function getModelFilterKey(ext) {
+  const modelVal = String(ext?.model || '').trim();
+  const providerVal = String(ext?.provider || '').trim();
+  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
+    return window.ModelLabels.resolveKey({ model: modelVal, provider: providerVal });
+  }
+  return modelVal || providerVal || '';
+}
+
 async function loadHistorique() {
   const tbody = document.getElementById('historiqueTableBody');
   try {
@@ -32,7 +50,7 @@ function populateCompareSelect(extractions) {
     });
     const option = document.createElement('option');
     option.value = ext.id;
-    option.textContent = `${ext.company || 'Inconnu'} - ${date} (${ext.model || ext.provider || '?'})`;
+    option.textContent = `${ext.company || 'Inconnu'} - ${date} (${getModelLabel(ext)})`;
     select.appendChild(option);
   });
 }
@@ -145,7 +163,7 @@ function renderHistorique(extractions) {
       <td style="padding: 15px; font-family: var(--mono); font-size: 11px; color: var(--muted);">${ext.document_file || '-'}</td>
       <td style="padding: 15px; font-family: var(--mono); font-size: 12px;">
         <span style="background: rgba(60,87,243,0.18); color: var(--blue); padding: 4px 8px; border-radius: 4px;">
-          ${ext.model || ext.provider || '-'}
+          ${getModelLabel(ext)}
         </span>
       </td>
       <td style="padding: 15px; font-family: var(--mono); font-size: 12px; color: ${confColor}; font-weight: 500;">
@@ -319,16 +337,24 @@ document.getElementById('btnCopyModal').addEventListener('click', async () => {
 function getFilteredExtractions() {
   const entrepriseStr = document.getElementById('filterEntreprise').value.toLowerCase();
   const dateStr = document.getElementById('filterDate').value;
-  const modelStr = document.getElementById('filterModel').value.toLowerCase();
+  const modelStr = String(document.getElementById('filterModel').value || '').trim();
 
   return allExtractions.filter(ext => {
     const matchEnt = !entrepriseStr || (ext.company && ext.company.toLowerCase().includes(entrepriseStr));
     const extDate = ext.created_at ? ext.created_at.split('T')[0] : '';
     const matchDate = !dateStr || extDate === dateStr;
-    const matchModel = !modelStr || (
-      (ext.model && ext.model.toLowerCase().includes(modelStr)) ||
-      (ext.provider && ext.provider.toLowerCase().includes(modelStr))
-    );
+    let matchModel = true;
+    if (modelStr) {
+      const extKey = getModelFilterKey(ext).toLowerCase();
+      const label = getModelLabel(ext).toLowerCase();
+      const rawModel = String(ext.model || '').toLowerCase();
+      const rawProvider = String(ext.provider || '').toLowerCase();
+      matchModel =
+        extKey === modelStr.toLowerCase() ||
+        label.includes(modelStr.toLowerCase()) ||
+        rawModel.includes(modelStr.toLowerCase()) ||
+        rawProvider.includes(modelStr.toLowerCase());
+    }
     return matchEnt && matchDate && matchModel;
   });
 }
@@ -352,7 +378,7 @@ function exportToCSV() {
       date,
       ext.company || '',
       ext.document_file || '',
-      ext.model || ext.provider || '',
+      getModelLabel(ext),
       conf,
       comp
     ];

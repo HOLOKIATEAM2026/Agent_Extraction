@@ -90,13 +90,13 @@
       <div style="display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap;">
         <input type="text" id="filterEntreprise" placeholder="Filtrer par entreprise..." data-i18n-placeholder="history.filter_company" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 200px; background: transparent; color: var(--ink);">
         <input type="date" id="filterDate" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
-        <select id="filterModel" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 150px; background: transparent; color: var(--ink);">
+        <select id="filterModel" style="padding: 10px; border: 1px solid var(--line); font-family: var(--mono); font-size: 12px; width: 170px; background: transparent; color: var(--ink);">
           <option value="" data-i18n="history.all_models">Tous les modèles</option>
-          <option value="groq">Groq (LLaMA 3.1 8B)</option>
-          <option value="llama-3.3-70b-versatile">Groq (LLaMA 3.3 70B)</option>
-          <!--<option value="mistral">Mistral</option>
+          <option value="llama-3.1-8b-instant">LLaMA 3.1 8B</option>
+          <option value="llama-3.3-70b-versatile">LLaMA 3.3 70B</option>
+          <!--<option value="mistral">Mistral 7B</option>
           <option value="qwen3:8b">Qwen 3 8B</option>-->
-          <option value="openai">OpenAI (GPT-4o)</option>
+          <option value="gpt-4o">GPT-4o</option>
         </select>
         <button id="btnExportCSV" class="btn-outline" style="margin-left: auto; padding: 10px 20px;" data-i18n="history.export_csv">Exporter CSV</button>
       </div>

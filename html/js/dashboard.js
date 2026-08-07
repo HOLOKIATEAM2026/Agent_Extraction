@@ -32,8 +32,22 @@ function dayKey(dateStr) {
 }
 
 function getProviderModel(ext) {
-  const model = (ext && (ext.model || ext.provider)) ? String(ext.model || ext.provider) : '';
-  return model || 'inconnu';
+  const modelVal = (ext && ext.model) ? String(ext.model).trim() : '';
+  const providerVal = (ext && ext.provider) ? String(ext.provider).trim() : '';
+  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
+    const key = window.ModelLabels.resolveKey({ model: modelVal, provider: providerVal });
+    return key || modelVal || providerVal || 'inconnu';
+  }
+  return (ext && (ext.model || ext.provider)) ? String(ext.model || ext.provider) : '' || 'inconnu';
+}
+
+function getProviderModelLabel(ext) {
+  const modelVal = (ext && ext.model) ? String(ext.model).trim() : '';
+  const providerVal = (ext && ext.provider) ? String(ext.provider).trim() : '';
+  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
+    return window.ModelLabels.resolve({ model: modelVal, provider: providerVal });
+  }
+  return (ext && (ext.model || ext.provider)) ? String(ext.model || ext.provider) : '' || 'inconnu';
 }
 
 function getCompany(ext) {
@@ -236,10 +250,20 @@ function renderCharts(extractions) {
     });
   }
 
-  const models = extractions.map(getProviderModel);
-  const modelCounts = groupCounts(models);
-  const donutLabels = Array.from(modelCounts.keys());
-  const donutData = donutLabels.map(k => modelCounts.get(k));
+  const modelKeys = extractions.map(getProviderModel);
+  const modelLabels = extractions.map(getProviderModelLabel);
+  const merged = new Map();
+  for (let i = 0; i < modelKeys.length; i++) {
+    const k = modelKeys[i];
+    const lbl = modelLabels[i];
+    if (!merged.has(k)) {
+      merged.set(k, { count: 0, label: lbl || k });
+    }
+    merged.get(k).count += 1;
+  }
+  const donutLabels = Array.from(merged.values()).map(v => v.label);
+  const donutData = Array.from(merged.values()).map(v => v.count);
+  const donutTooltips = Array.from(merged.values()).map(v => `${v.label}: ${v.count} analyse(s)`);
   const donutCanvas = document.getElementById('donutChart');
   if (donutCanvas) {
     charts.donut = new Chart(donutCanvas, {
@@ -261,7 +285,21 @@ function renderCharts(extractions) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } }
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label(ctx) {
+                if (ctx.datasetIndex === 0 && Array.isArray(donutTooltips) && donutTooltips[ctx.dataIndex]) {
+                  return donutTooltips[ctx.dataIndex];
+                }
+                const label = ctx.label || '';
+                const val = typeof ctx.parsed === 'number' ? ctx.parsed : 0;
+                return `${label}: ${val} analyse(s)`;
+              }
+            }
+          }
+        }
       }
     });
   }
@@ -377,15 +415,20 @@ function fillSelect(select, items, options = {}) {
   }
   for (const it of items) {
     const opt = document.createElement('option');
-    opt.value = it;
-    opt.textContent = it;
+    if (it && typeof it === 'object' && (it.value != null || it.text != null)) {
+      opt.value = it.value != null ? String(it.value) : (it.text != null ? String(it.text) : '');
+      opt.textContent = it.text != null ? String(it.text) : (it.value != null ? String(it.value) : '');
+    } else {
+      opt.value = it;
+      opt.textContent = it;
+    }
     select.appendChild(opt);
   }
 }
 
 function applyFilters(all) {
   const company = (document.getElementById('companyFilter') || {}).value || '';
-  const model = (document.getElementById('modelFilter') || {}).value || '';
+  const model = String((document.getElementById('modelFilter') || {}).value || '').trim();
   const from = (document.getElementById('fromDate') || {}).value || '';
   const to = (document.getElementById('toDate') || {}).value || '';
 
@@ -394,7 +437,19 @@ function applyFilters(all) {
 
   return all.filter(ext => {
     if (company && getCompany(ext) !== company) return false;
-    if (model && getProviderModel(ext) !== model) return false;
+    if (model) {
+      const extKey = String(getProviderModel(ext) || '').toLowerCase();
+      const extLabel = String(getProviderModelLabel(ext) || '').toLowerCase();
+      const rawModel = String(ext?.model || '').toLowerCase();
+      const rawProvider = String(ext?.provider || '').toLowerCase();
+      const wanted = model.toLowerCase();
+      const ok =
+        extKey === wanted ||
+        extLabel.includes(wanted) ||
+        rawModel.includes(wanted) ||
+        rawProvider.includes(wanted);
+      if (!ok) return false;
+    }
     const ts = ext.created_at ? new Date(ext.created_at).getTime() : null;
     if (fromTs != null && ts != null && ts < fromTs) return false;
     if (toTs != null && ts != null && ts > toTs) return false;
@@ -419,10 +474,21 @@ function updateUI(allExtractions) {
   const prevModel = modelEl ? modelEl.value : '';
 
   const companySet = new Set(allExtractions.map(getCompany).filter(c => c && c !== '—'));
-  const modelSet = new Set(allExtractions.map(getProviderModel));
+  const modelKeyLabel = new Map();
+  for (const ext of allExtractions) {
+    const k = getProviderModel(ext);
+    if (!k || k === 'inconnu') continue;
+    const lbl = getProviderModelLabel(ext);
+    if (!modelKeyLabel.has(k)) {
+      modelKeyLabel.set(k, lbl || k);
+    }
+  }
+  const modelItems = Array.from(modelKeyLabel.entries())
+    .sort((a, b) => (a[1] > b[1] ? 1 : a[1] < b[1] ? -1 : 0))
+    .map(([key, label]) => ({ value: key, text: label }));
 
   fillSelect(companyEl, Array.from(companySet).sort(), { withAll: true, allLabel: 'Toutes' });
-  fillSelect(modelEl, Array.from(modelSet).sort(), { withAll: true, allLabel: 'Tous' });
+  fillSelect(modelEl, modelItems, { withAll: true, allLabel: 'Tous' });
   if (companyEl && prevCompany) companyEl.value = prevCompany;
   if (modelEl && prevModel) modelEl.value = prevModel;
 
