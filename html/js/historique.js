@@ -4,20 +4,20 @@ const COMPLETENESS_MIN_CONFIDENCE = 0.6;
 let compareMode = false;
 
 function getModelLabel(ext) {
+  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
+    return window.ModelLabels.resolve(ext);
+  }
   const modelVal = String(ext?.model || '').trim();
   const providerVal = String(ext?.provider || '').trim();
-  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
-    return window.ModelLabels.resolve({ model: modelVal, provider: providerVal });
-  }
   return modelVal || providerVal || '-';
 }
 
 function getModelFilterKey(ext) {
+  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
+    return window.ModelLabels.resolveKey(ext);
+  }
   const modelVal = String(ext?.model || '').trim();
   const providerVal = String(ext?.provider || '').trim();
-  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
-    return window.ModelLabels.resolveKey({ model: modelVal, provider: providerVal });
-  }
   return modelVal || providerVal || '';
 }
 

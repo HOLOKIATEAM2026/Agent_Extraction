@@ -32,22 +32,22 @@ function dayKey(dateStr) {
 }
 
 function getProviderModel(ext) {
+  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
+    const key = window.ModelLabels.resolveKey(ext);
+    if (key) return key;
+  }
   const modelVal = (ext && ext.model) ? String(ext.model).trim() : '';
   const providerVal = (ext && ext.provider) ? String(ext.provider).trim() : '';
-  if (window.ModelLabels && typeof window.ModelLabels.resolveKey === 'function') {
-    const key = window.ModelLabels.resolveKey({ model: modelVal, provider: providerVal });
-    return key || modelVal || providerVal || 'inconnu';
-  }
-  return (ext && (ext.model || ext.provider)) ? String(ext.model || ext.provider) : '' || 'inconnu';
+  return modelVal || providerVal || 'inconnu';
 }
 
 function getProviderModelLabel(ext) {
+  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
+    return window.ModelLabels.resolve(ext);
+  }
   const modelVal = (ext && ext.model) ? String(ext.model).trim() : '';
   const providerVal = (ext && ext.provider) ? String(ext.provider).trim() : '';
-  if (window.ModelLabels && typeof window.ModelLabels.resolve === 'function') {
-    return window.ModelLabels.resolve({ model: modelVal, provider: providerVal });
-  }
-  return (ext && (ext.model || ext.provider)) ? String(ext.model || ext.provider) : '' || 'inconnu';
+  return modelVal || providerVal || 'inconnu';
 }
 
 function getCompany(ext) {

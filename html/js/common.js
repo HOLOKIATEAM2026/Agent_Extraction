@@ -69,16 +69,59 @@ window.ModelLabels = {
   allOptions() {
     return MODEL_LABEL_MAP.map(o => ({ key: o.key, label: o.label }));
   },
-  resolve(extOrModel, provider) {
+  _extractModelAndProvider(extOrModel, provider) {
     let modelVal = '';
     let providerVal = '';
     if (extOrModel && typeof extOrModel === 'object') {
-      modelVal = String(extOrModel.model || '').trim();
-      providerVal = String(extOrModel.provider || '').trim();
+      const ext = extOrModel;
+      const extractMetaModel = (obj) => {
+        if (!obj || typeof obj !== 'object') return '';
+        const meta = obj.meta;
+        if (meta && typeof meta === 'object') {
+          const v = meta.modele_utilise || meta.model || meta.model_name || meta.modelName;
+          if (typeof v === 'string' && v.trim()) return v.trim();
+          const p = meta.provider;
+          if (typeof p === 'string' && p.trim() && !providerVal) providerVal = p.trim();
+        }
+        return '';
+      };
+      modelVal = String(ext.model || '').trim();
+      providerVal = String(ext.provider || '').trim();
+      const altModels = [
+        extractMetaModel(ext.ui_result),
+        extractMetaModel(ext.result),
+        typeof ext.result === 'object' && ext.result && typeof ext.result.result === 'object' ? extractMetaModel(ext.result.result) : '',
+        typeof ext.result === 'object' && ext.result && typeof ext.result.final === 'object' ? extractMetaModel(ext.result.final) : '',
+      ].filter(Boolean);
+      const hasBadGenericTop = ['groq', 'openai', 'ollama'].includes(modelVal.toLowerCase()) || !modelVal;
+      if (altModels.length && hasBadGenericTop) {
+        const specific = altModels.find(v => {
+          const s = String(v).toLowerCase();
+          return (
+            s.includes('llama') || s.includes('gpt') || s.includes('mistral') || s.includes('qwen') ||
+            s.includes('llama-3') || s.includes('llama3') || s.includes('gpt-4o') ||
+            s.includes('8b') || s.includes('70b') || s.includes('4o')
+          );
+        });
+        modelVal = specific || altModels[0] || modelVal;
+      } else if (altModels.length && !modelVal) {
+        modelVal = altModels[0];
+      }
+      if (!providerVal && extOrModel && typeof extOrModel === 'object') {
+        const providers = [
+          (ext.ui_result && ext.ui_result.meta && ext.ui_result.meta.provider) || '',
+          (ext.result && ext.result.meta && ext.result.meta.provider) || '',
+        ].filter(Boolean);
+        if (providers.length) providerVal = String(providers[0]).trim();
+      }
     } else {
       modelVal = String(extOrModel || '').trim();
       providerVal = String(provider || '').trim();
     }
+    return { modelVal, providerVal };
+  },
+  resolve(extOrModel, provider) {
+    const { modelVal, providerVal } = this._extractModelAndProvider(extOrModel, provider);
     const m = modelVal;
     const p = providerVal;
     const found = MODEL_LABEL_MAP.find(o => o.match(m, p));
@@ -87,15 +130,7 @@ window.ModelLabels = {
     return p || '—';
   },
   resolveKey(extOrModel, provider) {
-    let modelVal = '';
-    let providerVal = '';
-    if (extOrModel && typeof extOrModel === 'object') {
-      modelVal = String(extOrModel.model || '').trim();
-      providerVal = String(extOrModel.provider || '').trim();
-    } else {
-      modelVal = String(extOrModel || '').trim();
-      providerVal = String(provider || '').trim();
-    }
+    const { modelVal, providerVal } = this._extractModelAndProvider(extOrModel, provider);
     const m = modelVal;
     const p = providerVal;
     const found = MODEL_LABEL_MAP.find(o => o.match(m, p));
